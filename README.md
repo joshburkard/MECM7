@@ -89,6 +89,7 @@ other functions will be described in the [Help](./Help/README.md) folder
 - [`Get-CM7DeviceVariable`](./Help/Get-CM7DeviceVariable.md) - Retrieve device variables from a MECM device using CIM
 - [`New-CM7DeviceVariable`](./Help/New-CM7DeviceVariable.md) - Create a new device variable on a MECM device using CIM
 - [`Remove-CM7DeviceVariable`](./Help/Remove-CM7DeviceVariable.md) - Remove a device variable from a MECM device using CIM
+- [`Get-CM7MaintenanceWindow`](./Help/Get-CM7MaintenanceWindow.md) - Retrieve maintenance windows from a collection using CIM
 
 ### Object Management
 

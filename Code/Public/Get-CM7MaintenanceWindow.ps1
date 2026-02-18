@@ -1,4 +1,4 @@
-﻿function Get-CM7MaintenanceWindow {
+function Get-CM7MaintenanceWindow {
     <#
         .SYNOPSIS
             Retrieves maintenance windows from a MECM collection using CIM.
