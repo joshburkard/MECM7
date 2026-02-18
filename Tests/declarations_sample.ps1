@@ -1215,6 +1215,36 @@ $script:TestData = @{
     }
 
     # ========================================================================
+    # Remove-CM7MaintenanceWindow
+    # ========================================================================
+    'Remove-CM7MaintenanceWindow' = @{
+        ByCollectionName = @{
+            CollectionName = "Test-Collection-Direct"  # Replace with your test collection name
+            MaintenanceWindowName = "Test-RemoveMW"  # Will be made unique with timestamp in tests
+        }
+        ByCollectionID = @{
+            CollectionID = "SMS00001"  # Replace with your test collection ID
+            MaintenanceWindowName = "Test-RemoveMW-ByID"  # Will be made unique with timestamp in tests
+        }
+        ByServiceWindowID = @{
+            CollectionName = "Test-Collection-Direct"  # Replace with your test collection name
+            # ServiceWindowID will be determined at test runtime after creating a test MW
+        }
+        ByWildcard = @{
+            CollectionName = "Test-Collection-Direct"  # Replace with your test collection name
+            MaintenanceWindowNamePattern = "Test-RemoveMW-Wildcard_*"  # Pattern for batch removal
+        }
+        NonExistentCollection = @{
+            CollectionName = "NONEXISTENT-COLLECTION-999"
+            MaintenanceWindowName = "Test-RemoveMW"
+        }
+        NonExistentMaintenanceWindow = @{
+            CollectionName = "Test-Collection-Direct"  # Replace with your test collection name
+            MaintenanceWindowName = "NonExistentMW999"
+        }
+    }
+
+    # ========================================================================
     # Move-CM7Object
     # ========================================================================
     'Move-CM7Object' = @{

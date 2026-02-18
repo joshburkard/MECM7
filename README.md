@@ -91,6 +91,7 @@ other functions will be described in the [Help](./Help/README.md) folder
 - [`Remove-CM7DeviceVariable`](./Help/Remove-CM7DeviceVariable.md) - Remove a device variable from a MECM device using CIM
 - [`Get-CM7MaintenanceWindow`](./Help/Get-CM7MaintenanceWindow.md) - Retrieve maintenance windows from a collection using CIM
 - [`New-CM7MaintenanceWindow`](./Help/New-CM7MaintenanceWindow.md) - Create a new maintenance window on a collection using CIM
+- [`Remove-CM7MaintenanceWindow`](./Help/Remove-CM7MaintenanceWindow.md) - Remove a maintenance window from a collection using CIM
 
 ### Object Management
 
@@ -163,6 +164,7 @@ MECM7/
 │   │   ├── Move-CM7Object.ps1
 │   │   ├── New-CM7Collection.ps1
 │   │   ├── New-CM7MaintenanceWindow.ps1
+│   │   ├── Remove-CM7MaintenanceWindow.ps1
 │   │   ├── Remove-CM7Collection.ps1
 │   │   └── ...
 │   └── Private/         # Internal helper functions
@@ -188,6 +190,7 @@ MECM7/
 │   ├── Test-Move-CM7Object.Tests.ps1
 │   ├── Test-New-CM7Collection.Tests.ps1
 │   ├── Test-New-CM7MaintenanceWindow.Tests.ps1
+│   ├── Test-Remove-CM7MaintenanceWindow.Tests.ps1
 │   ├── Test-Remove-CM7Collection.Tests.ps1
 │   ├── declarations.ps1
 │   └── declarations_sample.ps1
@@ -211,6 +214,7 @@ MECM7/
 │   ├── Move-CM7Object.md
 │   ├── New-CM7Collection.md
 │   ├── New-CM7MaintenanceWindow.md
+│   ├── Remove-CM7MaintenanceWindow.md
 │   ├── Remove-CM7Collection.md
 │   └── ...
 └── Examples/            # Usage examples
