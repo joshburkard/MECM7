@@ -129,6 +129,28 @@ $script:TestData = @{
     }
 
     # ========================================================================
+    # Get-CM7DeviceCollection
+    # ========================================================================
+    'Get-CM7DeviceCollection' = @{
+        ByName = @{
+            Name = "All Systems"
+            ExpectedCount = 1
+        }
+        ByCollectionID = @{
+            CollectionID = "SMS00001"  # "All Systems" device collection
+            ExpectedCount = 1
+        }
+        NonExistent = @{
+            Name = "NonExistent Device Collection 999"
+            CollectionID = "XXX99999"
+            ExpectedCount = 0
+        }
+        All = @{
+            ExpectedMinCount = 1  # At least 1 device collection should exist
+        }
+    }
+
+    # ========================================================================
     # Get-CM7CollectionDirectMembershipRule
     # ========================================================================
     'Get-CMASCollectionDirectMembershipRule' = @{

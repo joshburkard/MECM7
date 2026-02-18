@@ -74,6 +74,7 @@ other functions will be described in the [Help](./Help/README.md) folder
 ### Collection Management
 
 - [`Get-CM7Collection`](./Help/Get-CM7Collection.md) - Retrieve collection information from MECM
+- [`Get-CM7DeviceCollection`](./Help/Get-CM7DeviceCollection.md) - Retrieve device collection information from MECM (wrapper for Get-CM7Collection -CollectionType Device)
 - [`New-CM7Collection`](./Help/New-CM7Collection.md) - Create a new device or user collection in MECM
 - [`Remove-CM7Collection`](./Help/Remove-CM7Collection.md) - Remove a device or user collection from MECM
 - [`Get-CM7CollectionMember`](./Help/Get-CM7CollectionMember.md) - Retrieve all members of a collection using CIM
@@ -116,6 +117,9 @@ Invoke-Pester -Path ".\Tests\Test-Get-CM7Device.Tests.ps1"
 # Run tests for Get-CM7Collection
 Invoke-Pester -Path ".\Tests\Test-Get-CM7Collection.Tests.ps1"
 
+# Run tests for Get-CM7DeviceCollection
+Invoke-Pester -Path ".\Tests\Test-Get-CM7DeviceCollection.Tests.ps1"
+
 # Run all tests
 Invoke-Pester -Path ".\Tests\"
 
@@ -154,6 +158,7 @@ MECM7/
 │   │   ├── Connect-CM7.ps1
 │   │   ├── Get-CM7Device.ps1
 │   │   ├── Get-CM7Collection.ps1
+│   │   ├── Get-CM7DeviceCollection.ps1
 │   │   ├── Get-CM7CollectionMember.ps1
 │   │   ├── Get-CM7CollectionDirectMembership.ps1
 │   │   ├── Get-CM7CollectionExcludeMembershipRule.ps1
@@ -181,6 +186,7 @@ MECM7/
 │   ├── Test-Connect-CM7.Tests.ps1
 │   ├── Test-Get-CM7Device.Tests.ps1
 │   ├── Test-Get-CM7Collection.Tests.ps1
+│   ├── Test-Get-CM7DeviceCollection.Tests.ps1
 │   ├── Test-Get-CM7CollectionMember.Tests.ps1
 │   ├── Test-Get-CM7CollectionDirectMembership.Tests.ps1
 │   ├── Test-Get-CM7CollectionExcludeMembershipRule.Tests.ps1
@@ -207,6 +213,7 @@ MECM7/
 │   ├── Connect-CM7.md
 │   ├── Get-CM7Device.md
 │   ├── Get-CM7Collection.md
+│   ├── Get-CM7DeviceCollection.md
 │   ├── Get-CM7CollectionMember.md
 │   ├── Get-CM7CollectionDirectMembership.md
 │   ├── Get-CM7CollectionExcludeMembershipRule.md
