@@ -1388,6 +1388,36 @@ $script:TestData = @{
     }
 
     # ========================================================================
+    # Get-CM7SoftwareUpdateDeployment
+    # ========================================================================
+    'Get-CM7SoftwareUpdateDeployment' = @{
+        ByCollectionName = @{
+            CollectionName = "Your-Collection-With-SUDeployment"  # Replace with a collection that has a software update deployment
+            ExpectedMinCount = 1
+        }
+        ByAssignmentId = @{
+            AssignmentId = 0  # Replace with an actual assignment ID (integer) from your environment
+        }
+        ByName = @{
+            Name = "*"  # Replace with actual deployment name or wildcard
+            ExpectedMinCount = 1
+        }
+        ByCollectionNameWildcard = @{
+            CollectionName = "Your-Collection-*"
+            ExpectedMinCount = 1
+        }
+        NonExistent = @{
+            CollectionName = "NonExistent-Collection-999"
+            AssignmentId = 999999999
+            Name = "NonExistent-SoftwareUpdateDeployment-999"
+            ExpectedCount = 0
+        }
+        All = @{
+            ExpectedMinCount = 1  # At least 1 software update deployment should exist
+        }
+    }
+
+    # ========================================================================
     # Move-CM7Object
     # ========================================================================
     'Move-CM7Object' = @{
