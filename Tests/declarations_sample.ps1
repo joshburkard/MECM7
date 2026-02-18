@@ -1388,6 +1388,45 @@ $script:TestData = @{
     }
 
     # ========================================================================
+    # Get-CM7SoftwareUpdate
+    # ========================================================================
+    'Get-CM7SoftwareUpdate' = @{
+        ByArticleId = @{
+            ArticleId = "4038779"  # Replace with an existing KB article ID in your environment
+            ExpectedCount = 1
+        }
+        ByName = @{
+            Name = "*4038779*"  # Replace with a name wildcard matching a known update
+            ExpectedMinCount = 1
+        }
+        ByNameExact = @{
+            Name = ""  # Replace with the exact localized display name of a known update
+            ExpectedCount = 1
+        }
+        BySeverity = @{
+            Severity = "Critical"
+            ExpectedMinCount = 0  # May vary per environment
+        }
+        IsDeployed = @{
+            IsDeployed = $true
+            ExpectedMinCount = 0  # May vary per environment
+        }
+        IsNotSuperseded = @{
+            IsSuperseded = $false
+            ExpectedMinCount = 0  # May vary per environment
+        }
+        NonExistent = @{
+            ArticleId = "0000000"
+            Name = "NonExistent-SoftwareUpdate-999"
+            BulletinId = "NONEXISTENT-999"
+            ExpectedCount = 0
+        }
+        All = @{
+            ExpectedMinCount = 1  # At least 1 software update should exist
+        }
+    }
+
+    # ========================================================================
     # Get-CM7SoftwareUpdateDeployment
     # ========================================================================
     'Get-CM7SoftwareUpdateDeployment' = @{

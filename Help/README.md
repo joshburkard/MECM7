@@ -30,6 +30,7 @@ This directory contains markdown documentation for all MECM7 module functions.
 | [Invoke-CM7Script](./Invoke-CM7Script.md) | Invokes (runs) an approved MECM script on target devices or a collection using CIM. |
 | [Get-CM7ScriptExecutionStatus](./Get-CM7ScriptExecutionStatus.md) | Retrieves the execution status and results of MECM scripts using CIM. |
 | [Get-CM7Deployment](./Get-CM7Deployment.md) | Retrieves deployment information from MECM using CIM. |
+| [Get-CM7SoftwareUpdate](./Get-CM7SoftwareUpdate.md) | Retrieves software update information from MECM using CIM. |
 | [Get-CM7SoftwareUpdateDeployment](./Get-CM7SoftwareUpdateDeployment.md) | Retrieves software update deployment information from MECM using CIM. |
 | [Move-CM7Object](./Move-CM7Object.md) | Moves MECM objects (collections, packages, etc.) between folders using CIM. |
 | [New-CM7Collection](./New-CM7Collection.md) | Creates a new device or user collection in MECM using CIM. |
