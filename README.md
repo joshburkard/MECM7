@@ -93,6 +93,10 @@ other functions will be described in the [Help](./Help/README.md) folder
 - [`New-CM7MaintenanceWindow`](./Help/New-CM7MaintenanceWindow.md) - Create a new maintenance window on a collection using CIM
 - [`Remove-CM7MaintenanceWindow`](./Help/Remove-CM7MaintenanceWindow.md) - Remove a maintenance window from a collection using CIM
 
+### Script Management
+
+- [`Invoke-CM7Script`](./Help/Invoke-CM7Script.md) - Invoke (run) an approved MECM script on target devices or a collection using CIM
+
 ### Object Management
 
 - [`Move-CM7Object`](./Help/Move-CM7Object.md) - Move MECM objects (collections, packages, etc.) between folders using CIM
@@ -161,6 +165,7 @@ MECM7/
 │   │   ├── Get-CM7DeviceVariable.ps1
 │   │   ├── New-CM7DeviceVariable.ps1
 │   │   ├── Remove-CM7DeviceVariable.ps1
+│   │   ├── Invoke-CM7Script.ps1
 │   │   ├── Move-CM7Object.ps1
 │   │   ├── New-CM7Collection.ps1
 │   │   ├── New-CM7MaintenanceWindow.ps1
@@ -187,6 +192,7 @@ MECM7/
 │   ├── Test-Get-CM7DeviceVariable.Tests.ps1
 │   ├── Test-New-CM7DeviceVariable.Tests.ps1
 │   ├── Test-Remove-CM7DeviceVariable.Tests.ps1
+│   ├── Test-Invoke-CM7Script.Tests.ps1
 │   ├── Test-Move-CM7Object.Tests.ps1
 │   ├── Test-New-CM7Collection.Tests.ps1
 │   ├── Test-New-CM7MaintenanceWindow.Tests.ps1
@@ -211,6 +217,7 @@ MECM7/
 │   ├── Get-CM7DeviceVariable.md
 │   ├── New-CM7DeviceVariable.md
 │   ├── Remove-CM7DeviceVariable.md
+│   ├── Invoke-CM7Script.md
 │   ├── Move-CM7Object.md
 │   ├── New-CM7Collection.md
 │   ├── New-CM7MaintenanceWindow.md

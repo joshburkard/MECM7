@@ -583,7 +583,57 @@ $script:TestData = @{
     }
 
     # ========================================================================
-    # Get-CMASScript
+    # Get-CM7Script
+    # ========================================================================
+    'Get-CM7Script' = @{
+        ByName = @{
+            ScriptName = "Test-Script"  # Replace with an existing script name
+            ExpectedCount = 1
+        }
+        ByGuid = @{
+            ScriptGuid = "00000000-0000-0000-0000-000000000000"  # Replace with actual script GUID
+            ExpectedCount = 1
+        }
+        NonExistent = @{
+            ScriptName = "NonExistent-Script-999"
+            ExpectedCount = 0
+        }
+        All = @{
+            ExpectedMinCount = 0  # May have no scripts
+        }
+    }
+
+    # ========================================================================
+    # Invoke-CM7Script
+    # ========================================================================
+    'Invoke-CM7Script' = @{
+        ByScriptNameAndDeviceName = @{
+            ScriptName = "Test-Script"  # Replace with an existing approved script name
+            DeviceName = "TEST-DEVICE-001"  # Replace with an existing device name
+            ScriptParameters = @{
+                ComputerName = "localhost"  # Replace with actual script parameters
+            }
+        }
+        ByScriptGuidAndResourceId = @{
+            ScriptGuid = "00000000-0000-0000-0000-000000000000"  # Replace with actual script GUID
+            ResourceId = 16777220  # Replace with actual ResourceID
+            ScriptParameters = @{
+                ComputerName = "localhost"
+            }
+        }
+        ByScriptNameAndCollectionId = @{
+            ScriptName = "Test-Script"  # Replace with an existing approved script name
+            CollectionId = "SMS00001"  # Replace with target collection ID
+            ScriptParameters = @{}
+        }
+        NonExistent = @{
+            ScriptName = "NonExistent-Script-999"
+            DeviceName = "TEST-DEVICE-001"
+        }
+    }
+
+    # ========================================================================
+    # Get-CMASScript (Legacy)
     # ========================================================================
     'Get-CMASScript' = @{
         ByName = @{
@@ -604,7 +654,7 @@ $script:TestData = @{
     }
 
     # ========================================================================
-    # Invoke-CMASScript
+    # Invoke-CMASScript (Legacy)
     # ========================================================================
     'Invoke-CMASScript' = @{
         ByScriptNameAndDeviceName = @{
@@ -629,7 +679,23 @@ $script:TestData = @{
     }
 
     # ========================================================================
-    # Get-CMASScriptExecutionStatus
+    # Get-CM7ScriptExecutionStatus
+    # ========================================================================
+    'Get-CM7ScriptExecutionStatus' = @{
+        ByClientOperationId = @{
+            ClientOperationId = 16777220  # Replace with actual operation ID from a script execution
+        }
+        ByScriptGuidAndResourceId = @{
+            ScriptGuid = "00000000-0000-0000-0000-000000000000"
+            TargetResourceId = 16777220
+        }
+        NonExistent = @{
+            ClientOperationId = 999999999
+        }
+    }
+
+    # ========================================================================
+    # Get-CMASScriptExecutionStatus (Legacy)
     # ========================================================================
     'Get-CMASScriptExecutionStatus' = @{
         ByClientOperationId = @{
@@ -1356,11 +1422,11 @@ $script:TestCollectionName = $script:TestData['Get-CM7Collection'].ByName.Name
 $script:TestNonExistentCollectionID = $script:TestData['Get-CM7Collection'].NonExistent.CollectionID
 $script:TestNonExistentCollectionName = $script:TestData['Get-CM7Collection'].NonExistent.Name
 
-$script:TestScriptGuid = $script:TestData['Get-CMASScript'].ByGuid.ScriptGuid
-$script:TestScriptName = $script:TestData['Get-CMASScript'].ByName.ScriptName
+$script:TestScriptGuid = $script:TestData['Get-CM7Script'].ByGuid.ScriptGuid
+$script:TestScriptName = $script:TestData['Get-CM7Script'].ByName.ScriptName
 
-$script:TestClientOperationID = $script:TestData['Get-CMASScriptExecutionStatus'].ByClientOperationId.ClientOperationId
-$script:TestTargetResourceID = $script:TestData['Invoke-CMASScript'].ByScriptGuidAndResourceId.ResourceId
+$script:TestClientOperationID = $script:TestData['Get-CM7ScriptExecutionStatus'].ByClientOperationId.ClientOperationId
+$script:TestTargetResourceID = $script:TestData['Invoke-CM7Script'].ByScriptGuidAndResourceId.ResourceId
 
 $script:ExpectedDeviceCount = $script:TestData['Get-CM7Device'].ByName.ExpectedCount
 $script:ExpectedCollectionCount = $script:TestData['Get-CM7Collection'].ByName.ExpectedCount

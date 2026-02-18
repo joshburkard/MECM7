@@ -21,3 +21,4 @@
 0.1.19 | added Get-CM7MaintenanceWindow | 2026-02-18 | Josua Burkard
 0.1.20 | added New-CM7MaintenanceWindow | 2026-02-18 | Josua Burkard
 0.1.21 | added Remove-CM7MaintenanceWindow | 2026-02-18 | Josua Burkard
+0.1.22 | added Invoke-CM7Script | 2026-02-18 | Josua Burkard
