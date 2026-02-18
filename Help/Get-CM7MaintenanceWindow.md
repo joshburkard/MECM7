@@ -52,7 +52,7 @@ Specifies the CollectionID of the collection to retrieve maintenance windows for
 - **Accept pipeline input**: False
 - **Accept wildcard characters**: No
 
-Example: `SD101C00`
+Example: `CM101C00`
 
 ### -MaintenanceWindowName
 
@@ -110,10 +110,10 @@ Retrieves all maintenance windows defined on the "Test-Collection-Direct" collec
 ### Example 2: Retrieve maintenance windows by collection ID
 
 ```powershell
-Get-CM7MaintenanceWindow -CollectionId "SD101C00"
+Get-CM7MaintenanceWindow -CollectionId "CM101C00"
 ```
 
-Retrieves all maintenance windows for the collection with ID "SD101C00".
+Retrieves all maintenance windows for the collection with ID "CM101C00".
 
 ### Example 3: Retrieve a specific maintenance window by name
 
@@ -217,10 +217,10 @@ This function is equivalent to the ConfigurationManager module's `Get-CMMaintena
 
 ```powershell
 # ConfigurationManager module (requires ConfigMgr console)
-Get-CMMaintenanceWindow -CollectionId "SD101C00"
+Get-CMMaintenanceWindow -CollectionId "CM101C00"
 
 # MECM7 module (requires only WinRM access)
-Get-CM7MaintenanceWindow -CollectionId "SD101C00"
+Get-CM7MaintenanceWindow -CollectionId "CM101C00"
 ```
 
 ## SEE ALSO

@@ -26,8 +26,8 @@ function Get-CM7MaintenanceWindow {
             Retrieves all maintenance windows for the "Test-Collection-Direct" collection.
 
         .EXAMPLE
-            Get-CM7MaintenanceWindow -CollectionId "SD101C00"
-            Retrieves all maintenance windows for the collection with ID "SD101C00".
+            Get-CM7MaintenanceWindow -CollectionId "CM101C00"
+            Retrieves all maintenance windows for the collection with ID "CM101C00".
 
         .EXAMPLE
             Get-CM7MaintenanceWindow -CollectionName "Test-Collection-Direct" -MaintenanceWindowName "Daily MW"

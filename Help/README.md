@@ -23,6 +23,7 @@ This directory contains markdown documentation for all MECM7 module functions.
 | [New-CM7DeviceVariable](./New-CM7DeviceVariable.md) | Creates a new device variable on a MECM device using CIM. |
 | [Remove-CM7DeviceVariable](./Remove-CM7DeviceVariable.md) | Removes a device variable from a MECM device using CIM. |
 | [Get-CM7MaintenanceWindow](./Get-CM7MaintenanceWindow.md) | Retrieves maintenance windows from a MECM collection using CIM. |
+| [New-CM7MaintenanceWindow](./New-CM7MaintenanceWindow.md) | Creates a new maintenance window on a MECM collection using CIM. |
 | [Move-CM7Object](./Move-CM7Object.md) | Moves MECM objects (collections, packages, etc.) between folders using CIM. |
 | [New-CM7Collection](./New-CM7Collection.md) | Creates a new device or user collection in MECM using CIM. |
 | [Remove-CM7Collection](./Remove-CM7Collection.md) | Removes a device or user collection from MECM using CIM. |

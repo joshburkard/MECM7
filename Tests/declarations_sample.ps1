@@ -372,48 +372,93 @@ $script:TestData = @{
     }
 
     # ========================================================================
-    # New-CMASMaintenanceWindow
+    # New-CM7MaintenanceWindow
     # ========================================================================
-    'New-CMASMaintenanceWindow' = @{
+    'New-CM7MaintenanceWindow' = @{
         ByCollectionName = @{
             CollectionName = "Test-Collection-Direct"
             Name = "Test-MainWin-Daily"
             StartTime = (Get-Date).AddDays(1).Date.AddHours(22)  # Tomorrow at 10 PM
-            Duration = 3600  # 1 hour in seconds
+            DurationMinutes = 60  # 1 hour
             IsEnabled = $true
             RecurrenceType = "Daily"
             DayOfWeek = "Monday"
+            ApplyTo = "Any"
+            IsUtc = $false
         }
         ByCollectionID = @{
-            CollectionID = "SMS00001"
+            CollectionID = "SMS00001"  # Replace with your test collection ID
             Name = "Test-MainWin-Weekly"
             StartTime = (Get-Date).AddDays(1).Date.AddHours(22)  # Tomorrow at 10 PM
-            Duration = 7200  # 2 hours in seconds
+            DurationMinutes = 120  # 2 hours
             IsEnabled = $true
             RecurrenceType = "Weekly"
             DayOfWeek = "Friday"
+            ApplyTo = "SoftwareUpdatesOnly"
+            IsUtc = $false
         }
         WithSpecificTime = @{
             CollectionName = "Test-Collection-Direct"
             Name = "Test-MainWin-Specific"
             StartTime = (Get-Date).AddDays(7).Date.AddHours(2)  # 7 days from now at 2 AM
-            Duration = 1800  # 30 minutes in seconds
+            DurationMinutes = 30  # 30 minutes
             IsEnabled = $true
             RecurrenceType = "None"
+            ApplyTo = "TaskSequencesOnly"
+            IsUtc = $false
         }
         DisabledWindow = @{
             CollectionName = "Test-Collection-Direct"
             Name = "Test-MainWin-Disabled"
             StartTime = (Get-Date).AddDays(1).Date.AddHours(22)
-            Duration = 3600
+            DurationMinutes = 60  # 1 hour
             IsEnabled = $false
             RecurrenceType = "Daily"
+            ApplyTo = "Any"
+            IsUtc = $false
+        }
+        MonthlyByWeekday = @{
+            CollectionName = "Test-Collection-Direct"
+            Name = "Test-MainWin-MonthlyByWeekday"
+            StartTime = (Get-Date).AddDays(1).Date.AddHours(1)  # Tomorrow at 1 AM
+            DurationMinutes = 180  # 3 hours
+            IsEnabled = $true
+            RecurrenceType = "MonthlyByWeekday"
+            DayOfWeek = "Tuesday"
+            WeekOrder = "Second"
+            ForNumberOfMonths = 1
+            ApplyTo = "SoftwareUpdatesOnly"
+            IsUtc = $false
+        }
+        MonthlyByDate = @{
+            CollectionName = "Test-Collection-Direct"
+            Name = "Test-MainWin-MonthlyByDate"
+            StartTime = (Get-Date).AddDays(1).Date.AddHours(3)  # Tomorrow at 3 AM
+            DurationMinutes = 120  # 2 hours
+            IsEnabled = $true
+            RecurrenceType = "MonthlyByDate"
+            MonthDay = 15
+            ForNumberOfMonths = 1
+            ApplyTo = "Any"
+            IsUtc = $false
         }
         NonExistentCollection = @{
             CollectionName = "NonExistent-Collection-999"
             Name = "Test-MainWin"
             StartTime = (Get-Date).AddDays(1).Date.AddHours(22)
-            Duration = 3600
+            DurationMinutes = 60  # 1 hour
+            ApplyTo = "Any"
+            IsUtc = $false
+        }
+        UTCTimeZone = @{
+            CollectionName = "Test-Collection-Direct"
+            Name = "Test-MainWin-UTC"
+            StartTime = (Get-Date).AddDays(1).Date.AddHours(22)
+            DurationMinutes = 60  # 1 hour
+            IsEnabled = $true
+            RecurrenceType = "None"
+            ApplyTo = "Any"
+            IsUtc = $true
         }
     }
 
