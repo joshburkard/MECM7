@@ -151,6 +151,28 @@ $script:TestData = @{
     }
 
     # ========================================================================
+    # Get-CM7UserCollection
+    # ========================================================================
+    'Get-CM7UserCollection' = @{
+        ByName = @{
+            Name = "All Users"
+            ExpectedCount = 1
+        }
+        ByCollectionID = @{
+            CollectionID = "SMS00002"  # "All Users" user collection
+            ExpectedCount = 1
+        }
+        NonExistent = @{
+            Name = "NonExistent User Collection 999"
+            CollectionID = "XXX99999"
+            ExpectedCount = 0
+        }
+        All = @{
+            ExpectedMinCount = 1  # At least 1 user collection should exist
+        }
+    }
+
+    # ========================================================================
     # Get-CM7CollectionDirectMembershipRule
     # ========================================================================
     'Get-CMASCollectionDirectMembershipRule' = @{

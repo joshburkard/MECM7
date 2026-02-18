@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE report PUBLIC "-//JACOCO//DTD Report 1.1//EN" "report.dtd"[]>
-<report name="Pester (02/18/2026 18:38:39)">
-  <sessioninfo id="this" start="1771439863425" dump="1771439919623" />
+<report name="Pester (02/18/2026 18:46:31)">
+  <sessioninfo id="this" start="1771440384362" dump="1771440391418" />
   <package name="Public">
-    <class name="Public/Get-CM7DeviceCollection" sourcefilename="Get-CM7DeviceCollection.ps1">
-      <method name="Get-CM7DeviceCollection" desc="()" line="60">
+    <class name="Public/Get-CM7UserCollection" sourcefilename="Get-CM7UserCollection.ps1">
+      <method name="Get-CM7UserCollection" desc="()" line="60">
         <counter type="INSTRUCTION" missed="0" covered="15" />
         <counter type="LINE" missed="0" covered="14" />
         <counter type="METHOD" missed="0" covered="1" />
@@ -14,7 +14,7 @@
       <counter type="METHOD" missed="0" covered="1" />
       <counter type="CLASS" missed="0" covered="1" />
     </class>
-    <sourcefile name="Get-CM7DeviceCollection.ps1">
+    <sourcefile name="Get-CM7UserCollection.ps1">
       <line nr="60" mi="0" ci="2" mb="0" cb="0" />
       <line nr="61" mi="0" ci="1" mb="0" cb="0" />
       <line nr="65" mi="0" ci="1" mb="0" cb="0" />

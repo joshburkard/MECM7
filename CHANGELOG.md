@@ -24,3 +24,4 @@
 0.1.22 | added Invoke-CM7Script | 2026-02-18 | Josua Burkard
 0.1.23 | added Get-CM7ScriptExecutionStatus | 2026-02-18 | Josua Burkard
 0.1.24 | added Get-CM7DeviceCollection | 2026-02-18 | Josua Burkard
+0.1.25 | added Get-CM7UserCollection | 2026-02-18 | Josua Burkard

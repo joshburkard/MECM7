@@ -2,12 +2,13 @@
 
 This file tracks the test coverage status for all functions in the MECMAdminService module.
 
-**Last Updated:** 2026-02-18 19:38:39
+**Last Updated:** 2026-02-18 19:46:31
 
 | Function | Status | Passed | Failed | Skipped | Coverage % | Duration |
 |----------|--------|--------|--------|---------|------------|----------|
 | Get-CM7ScriptExecutionStatus | Test-Get-CM7ScriptExecutionStatus.Tests.ps1 | 🟢 Passed | 20 | 0 | 0 | 93.75% | 21.15s |
 | Get-CM7DeviceCollection | Test-Get-CM7DeviceCollection.Tests.ps1 | 🟢 Passed | 18 | 0 | 0 | 100% | 56.2s |
+| Get-CM7UserCollection | Test-Get-CM7UserCollection.Tests.ps1 | 🟢 Passed | 18 | 0 | 0 | 100% | 7.06s |
 | Add-CM7CollectionMembershipRule | 🟢 Passed | 31 | 0 | 0 | 92.86% | 62.19s |
 | Connect-CM7 | 🟡 Partial | 25 | 0 | 2 | 100% | 8.9s |
 | Get-CM7Collection | 🟢 Passed | 18 | 0 | 0 | 96.88% | 23.39s |
@@ -37,5 +38,6 @@ This file tracks the test coverage status for all functions in the MECMAdminServ
 - 🟡 **Partial** - Some tests passed, some skipped
 - 🔴 **Failed** - One or more tests failed
 - ⏳ **Not Run** - Tests have not been executed yet
+
 
 

@@ -10,6 +10,7 @@ This directory contains markdown documentation for all MECM7 module functions.
 | [Get-CM7Device](./Get-CM7Device.md) | Retrieves device information from MECM using CIM. |
 | [Get-CM7Collection](./Get-CM7Collection.md) | Retrieves collection information from MECM using CIM. |
 | [Get-CM7DeviceCollection](./Get-CM7DeviceCollection.md) | Retrieves device collection information from MECM using CIM. Wrapper for Get-CM7Collection -CollectionType Device. |
+| [Get-CM7UserCollection](./Get-CM7UserCollection.md) | Retrieves user collection information from MECM using CIM. Wrapper for Get-CM7Collection -CollectionType User. |
 | [Get-CM7CollectionMember](./Get-CM7CollectionMember.md) | Retrieves all members of a MECM collection using CIM. |
 | [Get-CM7CollectionDirectMembership](./Get-CM7CollectionDirectMembership.md) | Retrieves direct membership information for a MECM collection using CIM. |
 | [Get-CM7CollectionExcludeMembershipRule](./Get-CM7CollectionExcludeMembershipRule.md) | Retrieves exclude membership rules for a MECM collection using CIM. |
