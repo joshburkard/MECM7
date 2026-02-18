@@ -739,6 +739,39 @@ $script:TestData = @{
     }
 
     # ========================================================================
+    # Get-CM7Deployment
+    # ========================================================================
+    'Get-CM7Deployment' = @{
+        ByCollectionName = @{
+            CollectionName = "Test-Collection-Direct"  # Replace with a collection that has a deployment
+            ExpectedMinCount = 1
+        }
+        ByDeploymentId = @{
+            DeploymentId = ""  # Replace with an actual deployment ID from your environment
+        }
+        BySoftwareName = @{
+            SoftwareName = "*"  # Replace with actual software name or wildcard
+            ExpectedMinCount = 1
+        }
+        ByFeatureType = @{
+            FeatureType = "Application"  # Replace with the type matching your test deployment
+            ExpectedMinCount = 0
+        }
+        ByCollectionNameWildcard = @{
+            CollectionName = "Test-Collection-*"
+            ExpectedMinCount = 1
+        }
+        NonExistent = @{
+            CollectionName = "NonExistent-Collection-999"
+            DeploymentId = "{00000000-0000-0000-0000-000000000000}"
+            ExpectedCount = 0
+        }
+        All = @{
+            ExpectedMinCount = 1  # At least 1 deployment should exist
+        }
+    }
+
+    # ========================================================================
     # Get-CMASScriptExecutionStatus (Legacy)
     # ========================================================================
     'Get-CMASScriptExecutionStatus' = @{

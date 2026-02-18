@@ -100,6 +100,10 @@ other functions will be described in the [Help](./Help/README.md) folder
 - [`Invoke-CM7Script`](./Help/Invoke-CM7Script.md) - Invoke (run) an approved MECM script on target devices or a collection using CIM
 - [`Get-CM7ScriptExecutionStatus`](./Help/Get-CM7ScriptExecutionStatus.md) - Retrieve the execution status and results of MECM scripts using CIM
 
+### Deployment Management
+
+- [`Get-CM7Deployment`](./Help/Get-CM7Deployment.md) - Retrieve deployment information from MECM using CIM
+
 ### Object Management
 
 - [`Move-CM7Object`](./Help/Move-CM7Object.md) - Move MECM objects (collections, packages, etc.) between folders using CIM
@@ -117,6 +121,9 @@ Invoke-Pester -Path ".\Tests\Test-Get-CM7Device.Tests.ps1"
 
 # Run tests for Get-CM7Collection
 Invoke-Pester -Path ".\Tests\Test-Get-CM7Collection.Tests.ps1"
+
+# Run tests for Get-CM7Deployment
+Invoke-Pester -Path ".\Tests\Test-Get-CM7Deployment.Tests.ps1"
 
 # Run tests for Get-CM7DeviceCollection
 Invoke-Pester -Path ".\Tests\Test-Get-CM7DeviceCollection.Tests.ps1"
@@ -178,6 +185,7 @@ MECM7/
 │   │   ├── Remove-CM7DeviceVariable.ps1
 │   │   ├── Invoke-CM7Script.ps1
 │   │   ├── Get-CM7ScriptExecutionStatus.ps1
+│   │   ├── Get-CM7Deployment.ps1
 │   │   ├── Move-CM7Object.ps1
 │   │   ├── New-CM7Collection.ps1
 │   │   ├── New-CM7MaintenanceWindow.ps1
@@ -208,6 +216,7 @@ MECM7/
 │   ├── Test-Remove-CM7DeviceVariable.Tests.ps1
 │   ├── Test-Invoke-CM7Script.Tests.ps1
 │   ├── Test-Get-CM7ScriptExecutionStatus.Tests.ps1
+│   ├── Test-Get-CM7Deployment.Tests.ps1
 │   ├── Test-Move-CM7Object.Tests.ps1
 │   ├── Test-New-CM7Collection.Tests.ps1
 │   ├── Test-New-CM7MaintenanceWindow.Tests.ps1
@@ -236,6 +245,7 @@ MECM7/
 │   ├── Remove-CM7DeviceVariable.md
 │   ├── Invoke-CM7Script.md
 │   ├── Get-CM7ScriptExecutionStatus.md
+│   ├── Get-CM7Deployment.md
 │   ├── Move-CM7Object.md
 │   ├── New-CM7Collection.md
 │   ├── New-CM7MaintenanceWindow.md
