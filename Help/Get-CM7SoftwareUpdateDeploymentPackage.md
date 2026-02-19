@@ -29,7 +29,7 @@ Key features:
 
 ### -Id
 
-Specifies the unique package ID of the software update deployment package to retrieve. This is the PackageID property (e.g., "SD100DDC").
+Specifies the unique package ID of the software update deployment package to retrieve. This is the PackageID property (e.g., "ABC00001").
 
 - **Type**: String
 - **Position**: Named
@@ -39,7 +39,7 @@ Specifies the unique package ID of the software update deployment package to ret
 - **Accept pipeline input**: False
 - **Accept wildcard characters**: No
 
-Example: `"SD100DDC"`
+Example: `"ABC00001"`
 
 ### -Name
 
@@ -54,9 +54,9 @@ Specifies the name of the software update deployment package. Supports PowerShel
 - **Accept wildcard characters**: Yes
 
 Examples:
-- `"SO Servers-SecurityPatches-2024-01"` - Exact match
-- `"SO Servers*"` - All packages whose names start with "SO Servers"
-- `"*SecurityPatches*"` - All packages containing "SecurityPatches" in the name
+- `"My-SecurityPatches-2024-01"` - Exact match
+- `"My-Security*"` - All packages whose names start with "My-Security"
+- `"*Patches*"` - All packages containing "Patches" in the name
 
 ### -Fast
 
@@ -96,7 +96,7 @@ Retrieves all software update deployment packages from MECM.
 ### EXAMPLE 2: Get a software update deployment package by ID
 
 ```powershell
-Get-CM7SoftwareUpdateDeploymentPackage -Id "SD100DDC"
+Get-CM7SoftwareUpdateDeploymentPackage -Id "ABC00001"
 ```
 
 Retrieves the specific software update deployment package with the given package ID.
@@ -104,7 +104,7 @@ Retrieves the specific software update deployment package with the given package
 ### EXAMPLE 3: Get software update deployment packages by name
 
 ```powershell
-Get-CM7SoftwareUpdateDeploymentPackage -Name "SO Servers-SecurityPatches-2024-01"
+Get-CM7SoftwareUpdateDeploymentPackage -Name "My-SecurityPatches-2024-01"
 ```
 
 Retrieves the software update deployment package with the specified name.
@@ -112,10 +112,10 @@ Retrieves the software update deployment package with the specified name.
 ### EXAMPLE 4: Get software update deployment packages using wildcard name
 
 ```powershell
-Get-CM7SoftwareUpdateDeploymentPackage -Name "SO Servers*"
+Get-CM7SoftwareUpdateDeploymentPackage -Name "My-Security*"
 ```
 
-Retrieves all software update deployment packages whose names start with "SO Servers".
+Retrieves all software update deployment packages whose names start with "My-Security".
 
 ### EXAMPLE 5: Get software update deployment packages containing a keyword
 
@@ -166,7 +166,7 @@ Finds all software update deployment packages sorted by size (largest first).
 ### EXAMPLE 10: Get software update deployment packages with verbose output
 
 ```powershell
-Get-CM7SoftwareUpdateDeploymentPackage -Name "SO Servers-SecurityPatches-2024-01" -Verbose
+Get-CM7SoftwareUpdateDeploymentPackage -Name "My-SecurityPatches-2024-01" -Verbose
 ```
 
 Retrieves software update deployment packages with verbose output showing the WQL queries being executed.
@@ -189,7 +189,7 @@ The function returns custom objects with the following commonly used properties:
 
 | Property | Type | Description |
 |----------|------|-------------|
-| PackageID | string | Unique package identifier (e.g., "SD100DDC") |
+| PackageID | string | Unique package identifier (e.g., "ABC00001") |
 | Name | string | Name of the software update deployment package |
 | Description | string | Description of the package |
 | SourceSite | string | Source site code |
@@ -208,10 +208,10 @@ Example object:
 
 ```powershell
 PSTypeName         : MECM7.SoftwareUpdateDeploymentPackage
-PackageID          : SD100DDC
-Name               : SO Servers-SecurityPatches-2024-01
+PackageID          : ABC00001
+Name               : My-SecurityPatches-2024-01
 Description        : Security patches for servers - January 2024
-SourceSite         : SD1
+SourceSite         : CM1
 PkgSourcePath      : \\server\share\Updates\SecurityPatches\2024-01
 PackageSize        : 1048576
 SourceVersion      : 15
@@ -247,13 +247,13 @@ The function translates parameters into WQL queries:
 SELECT * FROM SMS_SoftwareUpdatePackage
 
 -- By Package ID
-SELECT * FROM SMS_SoftwareUpdatePackage WHERE PackageID = 'SD100DDC'
+SELECT * FROM SMS_SoftwareUpdatePackage WHERE PackageID = 'ABC00001'
 
 -- By Name (exact)
-SELECT * FROM SMS_SoftwareUpdatePackage WHERE Name = 'SO Servers-SecurityPatches-2024-01'
+SELECT * FROM SMS_SoftwareUpdatePackage WHERE Name = 'My-SecurityPatches-2024-01'
 
 -- By Name (wildcard)
-SELECT * FROM SMS_SoftwareUpdatePackage WHERE Name LIKE 'SO Servers%'
+SELECT * FROM SMS_SoftwareUpdatePackage WHERE Name LIKE 'My-Security%'
 
 -- Fast mode
 SELECT PackageID, Name, Description, SourceSite, PkgSourcePath, PackageSize, ... FROM SMS_SoftwareUpdatePackage

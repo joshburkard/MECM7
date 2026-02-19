@@ -1516,6 +1516,32 @@ $script:TestData = @{
     }
 
     # ========================================================================
+    # Get-CM7SoftwareUpdateGroup
+    # ========================================================================
+    'Get-CM7SoftwareUpdateGroup' = @{
+        ByName = @{
+            Name = "Your-SU-Group-Name"  # Replace with an existing software update group name
+            ExpectedCount = 1
+        }
+        ById = @{
+            Id = 0  # Replace with actual CI_ID of the above group (integer)
+            ExpectedName = "Your-SU-Group-Name"  # Expected name when querying by ID
+        }
+        ByNameWildcard = @{
+            Name = "Your-SU-*"  # Replace with wildcard pattern matching one or more groups
+            ExpectedMinCount = 1
+        }
+        NonExistent = @{
+            Id = 999999999
+            Name = "NonExistent-SoftwareUpdateGroup-999"
+            ExpectedCount = 0
+        }
+        All = @{
+            ExpectedMinCount = 1  # At least 1 software update group should exist
+        }
+    }
+
+    # ========================================================================
     # Get-CM7SoftwareUpdateDeploymentPackage
     # ========================================================================
     'Get-CM7SoftwareUpdateDeploymentPackage' = @{

@@ -105,6 +105,7 @@ other functions will be described in the [Help](./Help/README.md) folder
 - [`Get-CM7SoftwareUpdate`](./Help/Get-CM7SoftwareUpdate.md) - Retrieve software update information from MECM using CIM
 - [`Get-CM7SoftwareUpdateDeployment`](./Help/Get-CM7SoftwareUpdateDeployment.md) - Retrieve software update deployment information from MECM using CIM
 - [`Get-CM7SoftwareUpdateDeploymentPackage`](./Help/Get-CM7SoftwareUpdateDeploymentPackage.md) - Retrieve software update deployment package information from MECM using CIM
+- [`Get-CM7SoftwareUpdateGroup`](./Help/Get-CM7SoftwareUpdateGroup.md) - Retrieve software update group information from MECM using CIM
 
 ### Deployment Management
 
@@ -139,6 +140,9 @@ Invoke-Pester -Path ".\Tests\Test-Get-CM7SoftwareUpdateDeployment.Tests.ps1"
 
 # Run tests for Get-CM7SoftwareUpdateDeploymentPackage
 Invoke-Pester -Path ".\Tests\Test-Get-CM7SoftwareUpdateDeploymentPackage.Tests.ps1"
+
+# Run tests for Get-CM7SoftwareUpdateGroup
+Invoke-Pester -Path ".\Tests\Test-Get-CM7SoftwareUpdateGroup.Tests.ps1"
 
 # Run tests for Get-CM7DeviceCollection
 Invoke-Pester -Path ".\Tests\Test-Get-CM7DeviceCollection.Tests.ps1"

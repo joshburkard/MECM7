@@ -29,3 +29,5 @@
 0.1.27 | added Get-CM7SoftwareUpdateDeployment | 2026-02-18 | Josua Burkard
 0.1.28 | added Get-CM7SoftwareUpdate | 2026-02-18 | Josua Burkard
 0.1.29 | added Get-CMSoftwareUpdateDeploymentPackage | 2026-02-19 | Josua Burkard
+0.1.30 | added Get-CM7SoftwareUpdateGroup | 2026-02-19 | Josua Burkard
+0.01.00030 | added Get-CM7SoftwareUpdateGroup | 2026-02-19 | Josua Burkard
