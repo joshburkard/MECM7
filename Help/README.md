@@ -35,6 +35,7 @@ This directory contains markdown documentation for all MECM7 module functions.
 | [Get-CM7SoftwareUpdateDeploymentPackage](./Get-CM7SoftwareUpdateDeploymentPackage.md) | Retrieves software update deployment package information from MECM using CIM. |
 | [Get-CM7SoftwareUpdateGroup](./Get-CM7SoftwareUpdateGroup.md) | Retrieves software update group information from MECM using CIM. |
 | [New-CM7SoftwareUpdateGroup](./New-CM7SoftwareUpdateGroup.md) | Creates a new software update group in MECM using CIM. |
+| [New-CM7SoftwareUpdateDeployment](./New-CM7SoftwareUpdateDeployment.md) | Creates a new software update deployment in MECM using CIM. |
 | [Move-CM7Object](./Move-CM7Object.md) | Moves MECM objects (collections, packages, etc.) between folders using CIM. |
 | [New-CM7Collection](./New-CM7Collection.md) | Creates a new device or user collection in MECM using CIM. |
 | [Remove-CM7Collection](./Remove-CM7Collection.md) | Removes a device or user collection from MECM using CIM. |

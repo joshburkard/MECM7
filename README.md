@@ -107,6 +107,7 @@ other functions will be described in the [Help](./Help/README.md) folder
 - [`Get-CM7SoftwareUpdateDeploymentPackage`](./Help/Get-CM7SoftwareUpdateDeploymentPackage.md) - Retrieve software update deployment package information from MECM using CIM
 - [`Get-CM7SoftwareUpdateGroup`](./Help/Get-CM7SoftwareUpdateGroup.md) - Retrieve software update group information from MECM using CIM
 - [`New-CM7SoftwareUpdateGroup`](./Help/New-CM7SoftwareUpdateGroup.md) - Create a new software update group in MECM using CIM
+- [`New-CM7SoftwareUpdateDeployment`](./Help/New-CM7SoftwareUpdateDeployment.md) - Create a new software update deployment in MECM using CIM
 
 ### Deployment Management
 
@@ -147,6 +148,9 @@ Invoke-Pester -Path ".\Tests\Test-Get-CM7SoftwareUpdateGroup.Tests.ps1"
 
 # Run tests for New-CM7SoftwareUpdateGroup
 Invoke-Pester -Path ".\Tests\Test-New-CM7SoftwareUpdateGroup.Tests.ps1"
+
+# Run tests for New-CM7SoftwareUpdateDeployment
+Invoke-Pester -Path ".\Tests\Test-New-CM7SoftwareUpdateDeployment.Tests.ps1"
 
 # Run tests for Get-CM7DeviceCollection
 Invoke-Pester -Path ".\Tests\Test-Get-CM7DeviceCollection.Tests.ps1"
@@ -213,6 +217,7 @@ MECM7/
 │   │   ├── Get-CM7SoftwareUpdateDeployment.ps1
 │   │   ├── Get-CM7SoftwareUpdateDeploymentPackage.ps1
 │   │   ├── New-CM7SoftwareUpdateGroup.ps1
+│   │   ├── New-CM7SoftwareUpdateDeployment.ps1
 │   │   ├── Move-CM7Object.ps1
 │   │   ├── New-CM7Collection.ps1
 │   │   ├── New-CM7MaintenanceWindow.ps1
@@ -248,6 +253,7 @@ MECM7/
 │   ├── Test-Get-CM7SoftwareUpdateDeployment.Tests.ps1
 │   ├── Test-Get-CM7SoftwareUpdateDeploymentPackage.Tests.ps1
 │   ├── Test-New-CM7SoftwareUpdateGroup.Tests.ps1
+│   ├── Test-New-CM7SoftwareUpdateDeployment.Tests.ps1
 │   ├── Test-Move-CM7Object.Tests.ps1
 │   ├── Test-New-CM7Collection.Tests.ps1
 │   ├── Test-New-CM7MaintenanceWindow.Tests.ps1
@@ -281,6 +287,7 @@ MECM7/
 │   ├── Get-CM7SoftwareUpdateDeployment.md
 │   ├── Get-CM7SoftwareUpdateDeploymentPackage.md
 │   ├── New-CM7SoftwareUpdateGroup.md
+│   ├── New-CM7SoftwareUpdateDeployment.md
 │   ├── Move-CM7Object.md
 │   ├── New-CM7Collection.md
 │   ├── New-CM7MaintenanceWindow.md

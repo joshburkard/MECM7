@@ -1599,6 +1599,41 @@ $script:TestData = @{
         }
     }
 
+    # ========================================================================
+    # New-CM7SoftwareUpdateDeployment
+    # ========================================================================
+    'New-CM7SoftwareUpdateDeployment' = @{
+        BasicDeployment = @{
+            SoftwareUpdateGroupName = "Your-Existing-SU-Group-Name"  # Replace with an existing software update group name
+            CollectionName = "Your-Test-Collection"  # Replace with an existing collection name
+            DeploymentType = "Required"
+        }
+        AvailableDeployment = @{
+            SoftwareUpdateGroupName = "Your-Existing-SU-Group-Name"  # Replace with an existing software update group name
+            CollectionName = "Your-Test-Collection"  # Replace with an existing collection name
+            DeploymentType = "Available"
+        }
+        WithDeadline = @{
+            SoftwareUpdateGroupName = "Your-Existing-SU-Group-Name"  # Replace with an existing software update group name
+            CollectionName = "Your-Test-Collection"  # Replace with an existing collection name
+            DeploymentType = "Required"
+            DeadlineDays = 7  # Deadline in days from now
+        }
+        WithDescription = @{
+            SoftwareUpdateGroupName = "Your-Existing-SU-Group-Name"  # Replace with an existing software update group name
+            CollectionName = "Your-Test-Collection"  # Replace with an existing collection name
+            Description = "Test deployment created by automated tests"
+        }
+        NonExistentGroup = @{
+            SoftwareUpdateGroupName = "NonExistent-SoftwareUpdateGroup-999"
+            CollectionName = "Your-Test-Collection"  # Replace with an existing collection name
+        }
+        NonExistentCollection = @{
+            SoftwareUpdateGroupName = "Your-Existing-SU-Group-Name"  # Replace with an existing software update group name
+            CollectionName = "NonExistent-Collection-999"
+        }
+    }
+
 }
 #endregion
 
