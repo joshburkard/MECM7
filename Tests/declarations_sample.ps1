@@ -1515,6 +1515,32 @@ $script:TestData = @{
         RestoreFolderPath = "XXX:\DeviceCollection\YourFolder\SubFolder"  # Folder to move test collections back to after tests
     }
 
+    # ========================================================================
+    # Get-CM7SoftwareUpdateDeploymentPackage
+    # ========================================================================
+    'Get-CM7SoftwareUpdateDeploymentPackage' = @{
+        ByName = @{
+            Name = "Your-SU-Deployment-Package-Name"  # Replace with an existing software update deployment package name
+            ExpectedCount = 1
+        }
+        ById = @{
+            Id = "XXX00001"  # Replace with actual package ID
+            ExpectedName = "Your-SU-Deployment-Package-Name"  # Expected name when querying by ID
+        }
+        ByNameWildcard = @{
+            Name = "Your-SU-*"  # Replace with wildcard pattern matching one or more packages
+            ExpectedMinCount = 1
+        }
+        NonExistent = @{
+            Id = "ZZZZZZZZ"
+            Name = "NonExistent-SoftwareUpdateDeploymentPackage-999"
+            ExpectedCount = 0
+        }
+        All = @{
+            ExpectedMinCount = 1  # At least 1 software update deployment package should exist
+        }
+    }
+
 }
 #endregion
 
