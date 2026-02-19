@@ -1567,6 +1567,38 @@ $script:TestData = @{
         }
     }
 
+    # ========================================================================
+    # New-CM7SoftwareUpdateGroup
+    # ========================================================================
+    'New-CM7SoftwareUpdateGroup' = @{
+        BasicGroup = @{
+            Name = "Test-SUG-Basic"
+            Description = "Test software update group created by automated tests"
+        }
+        WithUpdates = @{
+            Name = "Test-SUG-WithUpdates"
+            Description = "Test SUG with updates"
+            # Replace with actual CI_IDs of existing software updates in your environment
+            UpdateIds = @()  # Will be populated dynamically in tests if needed
+        }
+        WithArticleIds = @{
+            Name = "Test-SUG-WithArticles"
+            Description = "Test SUG with article IDs"
+            # Replace with actual Article IDs (KB numbers) of existing software updates
+            ArticleIds = @()  # Will be populated dynamically in tests if needed
+        }
+        DuplicateName = @{
+            Name = "Your-Existing-SU-Group-Name"  # Replace with an existing software update group name
+        }
+        NonExistentArticle = @{
+            Name = "Test-SUG-BadArticle"
+            ArticleIds = @("0000000")  # Non-existent Article ID
+        }
+        ExistingGroup = @{
+            Name = "Your-Existing-SU-Group-Name"  # Replace with an existing software update group for duplicate check testing
+        }
+    }
+
 }
 #endregion
 
