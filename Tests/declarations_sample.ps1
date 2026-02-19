@@ -1711,6 +1711,25 @@ $script:TestData = @{
         }
     }
 
+    # ========================================================================
+    # Invoke-CM7CollectionUpdate
+    # ========================================================================
+    'Invoke-CM7CollectionUpdate' = @{
+        ByName = @{
+            Name = "Test-Collection-Query"  # Replace with an existing collection name
+            ExpectedSuccess = $true
+        }
+        ByCollectionId = @{
+            CollectionId = "SMS00001"  # Replace with actual collection ID
+            ExpectedSuccess = $true
+        }
+        NonExistent = @{
+            Name = "NonExistent-Collection-XYZ999"
+            CollectionId = "XXX99999"
+            ExpectedSuccess = $false
+        }
+    }
+
 }
 #endregion
 

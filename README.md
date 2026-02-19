@@ -101,6 +101,10 @@ other functions will be described in the [Help](./Help/README.md) folder
 - [`Invoke-CM7ClientNotification`](./Help/Invoke-CM7ClientNotification.md) - Send a client notification action (policy refresh, inventory, restart, etc.) to target devices or a collection using CIM
 - [`Get-CM7ScriptExecutionStatus`](./Help/Get-CM7ScriptExecutionStatus.md) - Retrieve the execution status and results of MECM scripts using CIM
 
+### Collection Update
+
+- [`Invoke-CM7CollectionUpdate`](./Help/Invoke-CM7CollectionUpdate.md) - Trigger a collection membership evaluation (refresh) on a MECM collection using CIM
+
 ### Software Update Management
 
 - [`Get-CM7SoftwareUpdate`](./Help/Get-CM7SoftwareUpdate.md) - Retrieve software update information from MECM using CIM
@@ -217,6 +221,7 @@ MECM7/
 │   │   ├── Remove-CM7DeviceVariable.ps1
 │   │   ├── Invoke-CM7Script.ps1
 │   │   ├── Invoke-CM7ClientNotification.ps1
+│   │   ├── Invoke-CM7CollectionUpdate.ps1
 │   │   ├── Get-CM7ScriptExecutionStatus.ps1
 │   │   ├── Get-CM7Deployment.ps1
 │   │   ├── Get-CM7SoftwareUpdate.ps1
@@ -255,6 +260,7 @@ MECM7/
 │   ├── Test-Remove-CM7DeviceVariable.Tests.ps1
 │   ├── Test-Invoke-CM7Script.Tests.ps1
 │   ├── Test-Invoke-CM7ClientNotification.Tests.ps1
+│   ├── Test-Invoke-CM7CollectionUpdate.Tests.ps1
 │   ├── Test-Get-CM7ScriptExecutionStatus.Tests.ps1
 │   ├── Test-Get-CM7Deployment.Tests.ps1
 │   ├── Test-Get-CM7SoftwareUpdate.Tests.ps1
@@ -291,6 +297,7 @@ MECM7/
 │   ├── Remove-CM7DeviceVariable.md
 │   ├── Invoke-CM7Script.md
 │   ├── Invoke-CM7ClientNotification.md
+│   ├── Invoke-CM7CollectionUpdate.md
 │   ├── Get-CM7ScriptExecutionStatus.md
 │   ├── Get-CM7Deployment.md
 │   ├── Get-CM7SoftwareUpdate.md

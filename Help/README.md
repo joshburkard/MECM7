@@ -29,6 +29,7 @@ This directory contains markdown documentation for all MECM7 module functions.
 | [Remove-CM7MaintenanceWindow](./Remove-CM7MaintenanceWindow.md) | Removes a maintenance window from a MECM collection using CIM. |
 | [Invoke-CM7Script](./Invoke-CM7Script.md) | Invokes (runs) an approved MECM script on target devices or a collection using CIM. |
 | [Invoke-CM7ClientNotification](./Invoke-CM7ClientNotification.md) | Sends a client notification action (policy refresh, inventory, restart, etc.) to target devices or a collection using CIM. |
+| [Invoke-CM7CollectionUpdate](./Invoke-CM7CollectionUpdate.md) | Triggers a collection membership evaluation (refresh) on a MECM collection using CIM. |
 | [Get-CM7ScriptExecutionStatus](./Get-CM7ScriptExecutionStatus.md) | Retrieves the execution status and results of MECM scripts using CIM. |
 | [Get-CM7Deployment](./Get-CM7Deployment.md) | Retrieves deployment information from MECM using CIM. |
 | [Get-CM7SoftwareUpdate](./Get-CM7SoftwareUpdate.md) | Retrieves software update information from MECM using CIM. |
