@@ -98,6 +98,7 @@ other functions will be described in the [Help](./Help/README.md) folder
 ### Script Management
 
 - [`Invoke-CM7Script`](./Help/Invoke-CM7Script.md) - Invoke (run) an approved MECM script on target devices or a collection using CIM
+- [`Invoke-CM7ClientNotification`](./Help/Invoke-CM7ClientNotification.md) - Send a client notification action (policy refresh, inventory, restart, etc.) to target devices or a collection using CIM
 - [`Get-CM7ScriptExecutionStatus`](./Help/Get-CM7ScriptExecutionStatus.md) - Retrieve the execution status and results of MECM scripts using CIM
 
 ### Software Update Management
@@ -215,6 +216,7 @@ MECM7/
 │   │   ├── New-CM7DeviceVariable.ps1
 │   │   ├── Remove-CM7DeviceVariable.ps1
 │   │   ├── Invoke-CM7Script.ps1
+│   │   ├── Invoke-CM7ClientNotification.ps1
 │   │   ├── Get-CM7ScriptExecutionStatus.ps1
 │   │   ├── Get-CM7Deployment.ps1
 │   │   ├── Get-CM7SoftwareUpdate.ps1
@@ -252,6 +254,7 @@ MECM7/
 │   ├── Test-New-CM7DeviceVariable.Tests.ps1
 │   ├── Test-Remove-CM7DeviceVariable.Tests.ps1
 │   ├── Test-Invoke-CM7Script.Tests.ps1
+│   ├── Test-Invoke-CM7ClientNotification.Tests.ps1
 │   ├── Test-Get-CM7ScriptExecutionStatus.Tests.ps1
 │   ├── Test-Get-CM7Deployment.Tests.ps1
 │   ├── Test-Get-CM7SoftwareUpdate.Tests.ps1
@@ -287,6 +290,7 @@ MECM7/
 │   ├── New-CM7DeviceVariable.md
 │   ├── Remove-CM7DeviceVariable.md
 │   ├── Invoke-CM7Script.md
+│   ├── Invoke-CM7ClientNotification.md
 │   ├── Get-CM7ScriptExecutionStatus.md
 │   ├── Get-CM7Deployment.md
 │   ├── Get-CM7SoftwareUpdate.md

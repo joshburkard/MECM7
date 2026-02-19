@@ -1649,6 +1649,34 @@ $script:TestData = @{
     }
 
     # ========================================================================
+    # Invoke-CM7ClientNotification
+    # ========================================================================
+    'Invoke-CM7ClientNotification' = @{
+        ByDeviceName = @{
+            ActionType = "ClientNotificationRequestMachinePolicyNow"
+            DeviceName = "TEST-DEVICE-001"  # Replace with an existing device name
+        }
+        ByResourceId = @{
+            ActionType = "ClientNotificationRequestMachinePolicyNow"
+            ResourceId = 16777220  # Replace with an existing device ResourceID
+            ResourceIdArray = @(16777220, 16777221)  # Optional: Array for multi-target tests
+        }
+        ByCollectionId = @{
+            ActionType = "ClientNotificationRequestMachinePolicyNow"
+            CollectionId = "SMS00001"  # Replace with an existing collection ID
+        }
+        ByCollectionName = @{
+            ActionType = "ClientNotificationRequestMachinePolicyNow"
+            CollectionName = "All Systems"  # Replace with an existing collection name
+        }
+        NonExistent = @{
+            DeviceName = "NONEXISTENT-DEVICE-999"
+            CollectionName = "NonExistent-Collection-999"
+            CollectionId = "XXX99999"
+        }
+    }
+
+    # ========================================================================
     # New-CM7SoftwareUpdateDeployment
     # ========================================================================
     'New-CM7SoftwareUpdateDeployment' = @{
