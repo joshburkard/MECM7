@@ -78,9 +78,9 @@ function Invoke-CM7Script {
             Runs a script on multiple devices specified by an array of ResourceIDs.
 
         .EXAMPLE
-            Invoke-CM7Script -ScriptName "get pending reboot" -CollectionId "SD101129"
+            Invoke-CM7Script -ScriptName "get pending reboot" -CollectionId "CM101129"
 
-            Runs the script on all members of the collection with ID "SD101129".
+            Runs the script on all members of the collection with ID "CM101129".
 
         .OUTPUTS
             PSCustomObject (MECM7.ScriptInvocation) with properties:

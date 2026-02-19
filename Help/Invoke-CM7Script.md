@@ -99,7 +99,7 @@ Specifies the CollectionID of the target collection. The script will be executed
 - **Accept pipeline input**: False
 - **Accept wildcard characters**: No
 
-Example: `"SD101129"`
+Example: `"CM101129"`
 
 ### -ScriptParameters
 
@@ -164,10 +164,10 @@ Runs the script on two devices specified by their ResourceIDs.
 ### Example 5: Run a script on a collection
 
 ```powershell
-Invoke-CM7Script -ScriptName "get pending reboot" -CollectionId "SD101129"
+Invoke-CM7Script -ScriptName "get pending reboot" -CollectionId "CM101129"
 ```
 
-Runs the script on all members of the collection with ID "SD101129".
+Runs the script on all members of the collection with ID "CM101129".
 
 ### Example 6: Run a script and track its execution
 

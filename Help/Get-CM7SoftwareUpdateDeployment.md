@@ -233,7 +233,7 @@ Example object:
 PSTypeName                    : MECM7.SoftwareUpdateDeployment
 AssignmentID                  : 16777220
 AssignmentName                : 2024-01 Security Updates
-TargetCollectionID            : SD101C00
+TargetCollectionID            : CM101C00
 CollectionName                : SP_ACC_2024-01-18_18:00_00:00_automatic_reboot
 AssignmentDescription         : Monthly security updates deployment
 AssignmentAction              : Install
@@ -283,7 +283,7 @@ SELECT * FROM SMS_UpdatesAssignment WHERE AssignmentName LIKE '2024%'
 
 -- By Collection Name (resolved to ID first)
 SELECT CollectionID, Name FROM SMS_Collection WHERE Name = 'MyCollection'
-SELECT * FROM SMS_UpdatesAssignment WHERE TargetCollectionID = 'SD101C00'
+SELECT * FROM SMS_UpdatesAssignment WHERE TargetCollectionID = 'CM101C00'
 
 -- Fast mode
 SELECT AssignmentID, AssignmentName, TargetCollectionID, ... FROM SMS_UpdatesAssignment

@@ -63,9 +63,9 @@ function Get-CM7ScriptExecutionStatus {
             Returns execution status for all scripts run against the collection "Test-Collection-Direct".
 
         .EXAMPLE
-            Get-CM7ScriptExecutionStatus -CollectionId "SD101129" -ScriptName "get pending reboot"
+            Get-CM7ScriptExecutionStatus -CollectionId "CM101129" -ScriptName "get pending reboot"
 
-            Returns execution status for the script "get pending reboot" run against collection "SD101129".
+            Returns execution status for the script "get pending reboot" run against collection "CM101129".
 
         .OUTPUTS
             PSCustomObject (MECM7.ScriptExecutionStatus) with properties:

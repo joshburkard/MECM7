@@ -15,7 +15,7 @@ function Get-CM7SoftwareUpdateDeploymentPackage {
 
         .PARAMETER Id
             The unique package ID of the software update deployment package to retrieve.
-            This is the PackageID property (e.g., "SD100DDC").
+            This is the PackageID property (e.g., "CM100DDC").
 
         .PARAMETER Name
             The name of the software update deployment package. Supports wildcard characters (* and ?).
@@ -30,7 +30,7 @@ function Get-CM7SoftwareUpdateDeploymentPackage {
             Retrieves all software update deployment packages.
 
         .EXAMPLE
-            Get-CM7SoftwareUpdateDeploymentPackage -Id "SD100DDC"
+            Get-CM7SoftwareUpdateDeploymentPackage -Id "CM100DDC"
             Retrieves the software update deployment package with the specified package ID.
 
         .EXAMPLE

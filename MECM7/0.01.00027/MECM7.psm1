@@ -2990,9 +2990,9 @@ function Get-CM7ScriptExecutionStatus {
             Returns execution status for all scripts run against the collection "Test-Collection-Direct".
 
         .EXAMPLE
-            Get-CM7ScriptExecutionStatus -CollectionId "SD101129" -ScriptName "get pending reboot"
+            Get-CM7ScriptExecutionStatus -CollectionId "CM101129" -ScriptName "get pending reboot"
 
-            Returns execution status for the script "get pending reboot" run against collection "SD101129".
+            Returns execution status for the script "get pending reboot" run against collection "CM101129".
 
         .OUTPUTS
             PSCustomObject (MECM7.ScriptExecutionStatus) with properties:
@@ -3653,9 +3653,9 @@ function Invoke-CM7Script {
             Runs a script on multiple devices specified by an array of ResourceIDs.
 
         .EXAMPLE
-            Invoke-CM7Script -ScriptName "get pending reboot" -CollectionId "SD101129"
+            Invoke-CM7Script -ScriptName "get pending reboot" -CollectionId "CM101129"
 
-            Runs the script on all members of the collection with ID "SD101129".
+            Runs the script on all members of the collection with ID "CM101129".
 
         .OUTPUTS
             PSCustomObject (MECM7.ScriptInvocation) with properties:

@@ -2990,9 +2990,9 @@ function Get-CM7ScriptExecutionStatus {
             Returns execution status for all scripts run against the collection "Test-Collection-Direct".
 
         .EXAMPLE
-            Get-CM7ScriptExecutionStatus -CollectionId "SD101129" -ScriptName "get pending reboot"
+            Get-CM7ScriptExecutionStatus -CollectionId "CM101129" -ScriptName "get pending reboot"
 
-            Returns execution status for the script "get pending reboot" run against collection "SD101129".
+            Returns execution status for the script "get pending reboot" run against collection "CM101129".
 
         .OUTPUTS
             PSCustomObject (MECM7.ScriptExecutionStatus) with properties:
@@ -3801,7 +3801,7 @@ function Get-CM7SoftwareUpdateDeploymentPackage {
 
         .PARAMETER Id
             The unique package ID of the software update deployment package to retrieve.
-            This is the PackageID property (e.g., "SD100DDC").
+            This is the PackageID property (e.g., "CM100DDC").
 
         .PARAMETER Name
             The name of the software update deployment package. Supports wildcard characters (* and ?).
@@ -3816,7 +3816,7 @@ function Get-CM7SoftwareUpdateDeploymentPackage {
             Retrieves all software update deployment packages.
 
         .EXAMPLE
-            Get-CM7SoftwareUpdateDeploymentPackage -Id "SD100DDC"
+            Get-CM7SoftwareUpdateDeploymentPackage -Id "CM100DDC"
             Retrieves the software update deployment package with the specified package ID.
 
         .EXAMPLE
@@ -4338,9 +4338,9 @@ function Invoke-CM7Script {
             Runs a script on multiple devices specified by an array of ResourceIDs.
 
         .EXAMPLE
-            Invoke-CM7Script -ScriptName "get pending reboot" -CollectionId "SD101129"
+            Invoke-CM7Script -ScriptName "get pending reboot" -CollectionId "CM101129"
 
-            Runs the script on all members of the collection with ID "SD101129".
+            Runs the script on all members of the collection with ID "CM101129".
 
         .OUTPUTS
             PSCustomObject (MECM7.ScriptInvocation) with properties:

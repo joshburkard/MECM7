@@ -55,7 +55,7 @@ Specifies the CollectionID of the collection to add the maintenance window to. M
 - **Accept pipeline input**: False
 - **Accept wildcard characters**: No
 
-Example: `SD101C00`
+Example: `CM101C00`
 
 ### -Name
 
@@ -296,7 +296,7 @@ Creates a daily maintenance window starting at 10 PM, lasting 1 hour, applying t
 ### Example 2: Create a weekly software updates window
 
 ```powershell
-New-CM7MaintenanceWindow -CollectionId "SD101C00" -Name "Weekly Updates" -StartTime "2026-02-21 02:00" -DurationMinutes 120 -RecurrenceType Weekly -DayOfWeek Saturday -ApplyTo SoftwareUpdatesOnly -Force
+New-CM7MaintenanceWindow -CollectionId "CM101C00" -Name "Weekly Updates" -StartTime "2026-02-21 02:00" -DurationMinutes 120 -RecurrenceType Weekly -DayOfWeek Saturday -ApplyTo SoftwareUpdatesOnly -Force
 ```
 
 Creates a weekly maintenance window for software updates only, every Saturday at 2 AM for 2 hours.
@@ -425,10 +425,10 @@ This function combines the equivalent of both `New-CMSchedule` and `New-CMMainte
 ```powershell
 # ConfigurationManager module (requires ConfigMgr console)
 $schedule = New-CMSchedule -Start "2026-02-20 22:00" -DurationInterval Hours -DurationCount 1 -RecurInterval Days -RecurCount 1
-New-CMMaintenanceWindow -CollectionId "SD101C00" -Schedule $schedule -Name "Daily MW" -ApplyTo AllDeploymentType
+New-CMMaintenanceWindow -CollectionId "CM101C00" -Schedule $schedule -Name "Daily MW" -ApplyTo AllDeploymentType
 
 # MECM7 module (requires only WinRM access)
-New-CM7MaintenanceWindow -CollectionId "SD101C00" -Name "Daily MW" -StartTime "2026-02-20 22:00" -DurationMinutes 60 -RecurrenceType Daily -Force
+New-CM7MaintenanceWindow -CollectionId "CM101C00" -Name "Daily MW" -StartTime "2026-02-20 22:00" -DurationMinutes 60 -RecurrenceType Daily -Force
 ```
 
 ## SEE ALSO

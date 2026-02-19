@@ -78,7 +78,7 @@ Example: `"Test-Collection-Direct"`
 
 ### -CollectionId
 
-Specifies the ID of the target collection for the deployment (e.g., "SD101C00").
+Specifies the ID of the target collection for the deployment (e.g., "CM101C00").
 Mutually exclusive with `-CollectionName`.
 
 - **Type**: String
@@ -89,7 +89,7 @@ Mutually exclusive with `-CollectionName`.
 - **Accept pipeline input**: False
 - **Accept wildcard characters**: No
 
-Example: `"SD101C00"`
+Example: `"CM101C00"`
 
 ### -DeploymentName
 
@@ -349,7 +349,7 @@ Creates a required deployment with an enforcement deadline 7 days from now.
 ### EXAMPLE 4: Create a deployment using CI_ID and collection ID
 
 ```powershell
-New-CM7SoftwareUpdateDeployment -SoftwareUpdateGroupId 17129359 -CollectionId "SD101C00" -DeploymentName "Custom Deployment Name" -Description "Monthly patching" -Force
+New-CM7SoftwareUpdateDeployment -SoftwareUpdateGroupId 17129359 -CollectionId "CM101C00" -DeploymentName "Custom Deployment Name" -Description "Monthly patching" -Force
 ```
 
 Creates a deployment using the software update group CI_ID and collection ID with a custom name.
@@ -459,7 +459,7 @@ Example object:
 PSTypeName                    : MECM7.SoftwareUpdateDeployment
 AssignmentID                  : 16777350
 AssignmentName                : SO Servers-SecurityPatches-2024-01
-TargetCollectionID            : SD101C00
+TargetCollectionID            : CM101C00
 CollectionName                : Test-Collection-Direct
 AssignmentDescription         : Monthly security patching
 AssignmentAction              : Install

@@ -1,4 +1,4 @@
-function New-CM7SoftwareUpdateDeployment {
+﻿function New-CM7SoftwareUpdateDeployment {
     <#
         .SYNOPSIS
             Creates a new software update deployment in MECM using CIM.
@@ -32,7 +32,7 @@ function New-CM7SoftwareUpdateDeployment {
             Mutually exclusive with CollectionId.
 
         .PARAMETER CollectionId
-            The ID of the target collection for the deployment (e.g., "SD101C00").
+            The ID of the target collection for the deployment (e.g., "CM101C00").
             Mutually exclusive with CollectionName.
 
         .PARAMETER DeploymentName
@@ -122,7 +122,7 @@ function New-CM7SoftwareUpdateDeployment {
             Creates a required deployment with a 7-day enforcement deadline.
 
         .EXAMPLE
-            New-CM7SoftwareUpdateDeployment -SoftwareUpdateGroupId 17129359 -CollectionId "SD101C00" -DeploymentName "Custom Deployment Name" -Description "Monthly patching" -Force
+            New-CM7SoftwareUpdateDeployment -SoftwareUpdateGroupId 17129359 -CollectionId "CM101C00" -DeploymentName "Custom Deployment Name" -Description "Monthly patching" -Force
             Creates a deployment using CI_ID and collection ID with a custom name and description.
 
         .EXAMPLE

@@ -238,10 +238,10 @@ Example object:
 ```powershell
 PSTypeName       : MECM7.Deployment
 DeploymentID     : {12345678-1234-1234-1234-123456789012}
-CollectionID     : SD101C00
+CollectionID     : CM101C00
 CollectionName   : Test-Collection-Direct
 SoftwareName     : My Application
-PackageID        : SD100001
+PackageID        : CM100001
 FeatureType      : Application
 NumberTargeted   : 10
 NumberSuccess    : 8

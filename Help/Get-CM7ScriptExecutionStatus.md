@@ -83,7 +83,7 @@ Specifies the target collection ID to filter execution results by. Can be combin
 - **Accept pipeline input**: False
 - **Accept wildcard characters**: No
 
-Example: `"SD101129"`
+Example: `"CM101129"`
 
 ## OUTPUTS
 
@@ -168,10 +168,10 @@ Returns summary entries for all script executions targeted at the collection "Te
 ### Example 5: Combined filter — collection ID and script name
 
 ```powershell
-Get-CM7ScriptExecutionStatus -CollectionId "SD101129" -ScriptName "get pending reboot"
+Get-CM7ScriptExecutionStatus -CollectionId "CM101129" -ScriptName "get pending reboot"
 ```
 
-Returns summary entries for the script "get pending reboot" run specifically against collection "SD101129".
+Returns summary entries for the script "get pending reboot" run specifically against collection "CM101129".
 
 ### Example 6: Invoke a script and track execution to completion
 
