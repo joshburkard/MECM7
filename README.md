@@ -115,6 +115,10 @@ other functions will be described in the [Help](./Help/README.md) folder
 - [`Add-CM7SoftwareUpdateToGroup`](./Help/Add-CM7SoftwareUpdateToGroup.md) - Add software updates to a software update group in MECM using CIM
 - [`New-CM7SoftwareUpdateDeployment`](./Help/New-CM7SoftwareUpdateDeployment.md) - Create a new software update deployment in MECM using CIM
 
+### Task Sequence Management
+
+- [`Get-CM7TaskSequence`](./Help/Get-CM7TaskSequence.md) - Retrieve task sequence information from MECM using CIM
+
 ### Deployment Management
 
 - [`Get-CM7Deployment`](./Help/Get-CM7Deployment.md) - Retrieve deployment information from MECM using CIM
@@ -151,6 +155,9 @@ Invoke-Pester -Path ".\Tests\Test-Get-CM7SoftwareUpdateDeploymentPackage.Tests.p
 
 # Run tests for Get-CM7SoftwareUpdateGroup
 Invoke-Pester -Path ".\Tests\Test-Get-CM7SoftwareUpdateGroup.Tests.ps1"
+
+# Run tests for Get-CM7TaskSequence
+Invoke-Pester -Path ".\Tests\Test-Get-CM7TaskSequence.Tests.ps1"
 
 # Run tests for New-CM7SoftwareUpdateGroup
 Invoke-Pester -Path ".\Tests\Test-New-CM7SoftwareUpdateGroup.Tests.ps1"
@@ -230,6 +237,7 @@ MECM7/
 │   │   ├── New-CM7SoftwareUpdateGroup.ps1
 │   │   ├── Add-CM7SoftwareUpdateToGroup.ps1
 │   │   ├── New-CM7SoftwareUpdateDeployment.ps1
+│   │   ├── Get-CM7TaskSequence.ps1
 │   │   ├── Move-CM7Object.ps1
 │   │   ├── New-CM7Collection.ps1
 │   │   ├── New-CM7MaintenanceWindow.ps1
@@ -269,6 +277,7 @@ MECM7/
 │   ├── Test-New-CM7SoftwareUpdateGroup.Tests.ps1
 │   ├── Test-Add-CM7SoftwareUpdateToGroup.Tests.ps1
 │   ├── Test-New-CM7SoftwareUpdateDeployment.Tests.ps1
+│   ├── Test-Get-CM7TaskSequence.Tests.ps1
 │   ├── Test-Move-CM7Object.Tests.ps1
 │   ├── Test-New-CM7Collection.Tests.ps1
 │   ├── Test-New-CM7MaintenanceWindow.Tests.ps1
@@ -306,6 +315,7 @@ MECM7/
 │   ├── New-CM7SoftwareUpdateGroup.md
 │   ├── Add-CM7SoftwareUpdateToGroup.md
 │   ├── New-CM7SoftwareUpdateDeployment.md
+│   ├── Get-CM7TaskSequence.md
 │   ├── Move-CM7Object.md
 │   ├── New-CM7Collection.md
 │   ├── New-CM7MaintenanceWindow.md

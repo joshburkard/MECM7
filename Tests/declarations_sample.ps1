@@ -1730,6 +1730,32 @@ $script:TestData = @{
         }
     }
 
+    # ========================================================================
+    # Get-CM7TaskSequence
+    # ========================================================================
+    'Get-CM7TaskSequence' = @{
+        ByName = @{
+            Name = "Your-TaskSequence-Name"  # Replace with an existing task sequence name
+            ExpectedCount = 1
+        }
+        ByPackageId = @{
+            PackageId = "ABC00001"  # Replace with actual PackageID of the task sequence
+            ExpectedName = "Your-TaskSequence-Name"  # Replace with expected task sequence name
+        }
+        ByNameWildcard = @{
+            Name = "Install*"  # Replace with wildcard pattern matching existing task sequences
+            ExpectedMinCount = 1
+        }
+        NonExistent = @{
+            PackageId = "XXX99999"
+            Name = "NonExistent-TaskSequence-999"
+            ExpectedCount = 0
+        }
+        All = @{
+            ExpectedMinCount = 1  # At least 1 task sequence should exist
+        }
+    }
+
 }
 #endregion
 

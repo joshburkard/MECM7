@@ -36,3 +36,4 @@
 0.01.00034 | added Add-CM7SoftwareUpdateToGroup | 2026-02-19 | Josua Burkard
 0.01.00035 | Invoke-CM7ClientNotification | 2026-02-19 | Josua Burkard
 0.01.00036 | added Invoke-CM7CollectionUpdate | 2026-02-19 | Josua Burkard
+0.01.00037 | added Get-CM7TaskSequence | 2026-02-19 | Josua Burkard
