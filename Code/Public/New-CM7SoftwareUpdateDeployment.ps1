@@ -1,4 +1,4 @@
-﻿function New-CM7SoftwareUpdateDeployment {
+function New-CM7SoftwareUpdateDeployment {
     <#
         .SYNOPSIS
             Creates a new software update deployment in MECM using CIM.

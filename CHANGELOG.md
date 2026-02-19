@@ -33,3 +33,4 @@
 0.01.00030 | added Get-CM7SoftwareUpdateGroup | 2026-02-19 | Josua Burkard
 0.01.00032 | added New-CM7SoftwareUpdateGroup | 2026-02-19 | Josua Burkard
 0.01.00033 | added New-CM7SoftwareUpdateDeployment | 2026-02-19 | Josua Burkard
+0.01.00034 | added Add-CM7SoftwareUpdateToGroup | 2026-02-19 | Josua Burkard

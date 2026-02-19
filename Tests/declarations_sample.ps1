@@ -1600,6 +1600,55 @@ $script:TestData = @{
     }
 
     # ========================================================================
+    # Add-CM7SoftwareUpdateToGroup
+    # ========================================================================
+    'Add-CM7SoftwareUpdateToGroup' = @{
+        TestGroup = @{
+            SoftwareUpdateGroupName = "Your-Test-SUG-Name"  # Replace with an existing software update group for testing
+        }
+        ByGroupNameAndUpdateId = @{
+            SoftwareUpdateGroupName = "Your-Test-SUG-Name"  # Replace with your test software update group name
+            # UpdateId will be resolved dynamically in tests from ArticleId
+        }
+        ByGroupNameAndArticleId = @{
+            SoftwareUpdateGroupName = "Your-Test-SUG-Name"  # Replace with your test software update group name
+            ArticleId = @("4038779")  # Replace with an existing software update Article ID (KB number)
+        }
+        ByGroupNameAndSoftwareUpdate = @{
+            SoftwareUpdateGroupName = "Your-Test-SUG-Name"  # Replace with your test software update group name
+            ArticleId = "4038779"  # Replace with Article ID used to retrieve the software update object in tests
+        }
+        ByGroupNameAndSoftwareUpdateName = @{
+            SoftwareUpdateGroupName = "Your-Test-SUG-Name"  # Replace with your test software update group name
+            SoftwareUpdateName = "*4038779*"  # Replace with wildcard pattern to match the update by name
+        }
+        ByGroupId = @{
+            # SoftwareUpdateGroupId will be resolved dynamically in tests
+            ArticleId = @("4038779")  # Replace with an existing software update Article ID
+        }
+        ByGroupObject = @{
+            SoftwareUpdateGroupName = "Your-Test-SUG-Name"  # Replace with your test software update group name
+            ArticleId = @("4038779")  # Replace with an existing software update Article ID
+        }
+        DuplicateUpdate = @{
+            SoftwareUpdateGroupName = "Your-Test-SUG-Name"  # Replace with your test software update group name
+            ArticleId = @("4038779")  # Replace with Article ID - will be added first, then attempted again
+        }
+        NonExistentGroup = @{
+            SoftwareUpdateGroupName = "NonExistent-SoftwareUpdateGroup-999"
+            ArticleId = @("4038779")  # Replace with an existing Article ID
+        }
+        NonExistentGroupId = @{
+            SoftwareUpdateGroupId = 999999999
+            ArticleId = @("4038779")  # Replace with an existing Article ID
+        }
+        NonExistentArticle = @{
+            SoftwareUpdateGroupName = "Your-Test-SUG-Name"  # Replace with your test software update group name
+            ArticleId = @("0000000")  # Non-existent Article ID
+        }
+    }
+
+    # ========================================================================
     # New-CM7SoftwareUpdateDeployment
     # ========================================================================
     'New-CM7SoftwareUpdateDeployment' = @{
