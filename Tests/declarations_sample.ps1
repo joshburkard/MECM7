@@ -1845,6 +1845,41 @@ $script:TestData = @{
         }
     }
 
+    # ========================================================================
+    # Get-CM7TaskSequenceDeployment
+    # ========================================================================
+    'Get-CM7TaskSequenceDeployment' = @{
+        ByCollectionName = @{
+            CollectionName = "Your-Collection-With-TSDeployment"  # Replace with a collection that has a task sequence deployment
+            CollectionId = "SMS00001"  # Replace with actual collection ID
+            ExpectedMinCount = 1
+        }
+        ByTaskSequenceName = @{
+            TaskSequenceName = "Your-TaskSequence-Name"  # Replace with a task sequence that has a deployment
+            TaskSequencePackageId = "ABC00001"  # Replace with actual PackageID
+            ExpectedMinCount = 1
+        }
+        ByTaskSequencePackageId = @{
+            TaskSequencePackageId = "ABC00001"  # Replace with actual PackageID of a deployed task sequence
+            ExpectedMinCount = 1
+        }
+        ByCollectionNameWildcard = @{
+            CollectionName = "Your-Collection-*"  # Replace with wildcard pattern matching collections with TS deployments
+            ExpectedMinCount = 1
+        }
+        NonExistent = @{
+            CollectionName = "NonExistent-Collection-999"
+            AdvertisementID = "XXX99999"
+            TaskSequenceName = "NonExistent-TaskSequence-999"
+            TaskSequencePackageId = "XXX99999"
+            DeploymentName = "NonExistent-Deployment-999"
+            ExpectedCount = 0
+        }
+        All = @{
+            ExpectedMinCount = 1  # At least 1 task sequence deployment should exist
+        }
+    }
+
 }
 #endregion
 

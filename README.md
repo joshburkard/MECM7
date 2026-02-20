@@ -14,6 +14,8 @@ A PowerShell module for managing Microsoft Endpoint Configuration Manager (MECM)
 
 MECM7 provides a collection of PowerShell functions for common MECM administration tasks. The module works with PowerShell 5.1+ and PowerShell 7.x, using CIM (Common Information Model) cmdlets for remote management via WinRM.
 
+The most commands in the legacy ConfigurationManager module are dependent on WMI which isn't anymore possible in PowerShell 7.x. Importing the ConfigurationManager Module with parameter `UseWindowsPowerShell` brings multiple disadvantages.
+
 ## Requirements
 
 - **PowerShell**: 5.1 or higher (tested with PowerShell 7.5.4)
@@ -78,22 +80,22 @@ other functions will be described in the [Help](./Help/README.md) folder
 - [`Get-CM7UserCollection`](./Help/Get-CM7UserCollection.md) - Retrieve user collection information from MECM (wrapper for Get-CM7Collection -CollectionType User)
 - [`New-CM7Collection`](./Help/New-CM7Collection.md) - Create a new device or user collection in MECM
 - [`Remove-CM7Collection`](./Help/Remove-CM7Collection.md) - Remove a device or user collection from MECM
-- [`Get-CM7CollectionMember`](./Help/Get-CM7CollectionMember.md) - Retrieve all members of a collection using CIM
-- [`Get-CM7CollectionDirectMembership`](./Help/Get-CM7CollectionDirectMembership.md) - Retrieve direct members of a collection using CIM
-- [`Get-CM7CollectionExcludeMembershipRule`](./Help/Get-CM7CollectionExcludeMembershipRule.md) - Retrieve exclude membership rules for a collection using CIM
-- [`Get-CM7CollectionIncludeMembershipRule`](./Help/Get-CM7CollectionIncludeMembershipRule.md) - Retrieve include membership rules for a collection using CIM
-- [`Get-CM7CollectionQueryMembershipRule`](./Help/Get-CM7CollectionQueryMembershipRule.md) - Retrieve query membership rules for a collection using CIM
-- [`Add-CM7CollectionMembershipRule`](./Help/Add-CM7CollectionMembershipRule.md) - Add a membership rule (direct, query, include, or exclude) to a collection using CIM
-- [`Remove-CM7CollectionMembershipRule`](./Help/Remove-CM7CollectionMembershipRule.md) - Remove a membership rule (direct, query, include, or exclude) from a collection using CIM
-- [`Get-CM7CollectionVariable`](./Help/Get-CM7CollectionVariable.md) - Retrieve collection variables from a collection using CIM
-- [`New-CM7DeviceCollectionVariable`](./Help/New-CM7DeviceCollectionVariable.md) - Create a new collection variable on a device collection using CIM
-- [`Remove-CM7DeviceCollectionVariable`](./Help/Remove-CM7DeviceCollectionVariable.md) - Remove a collection variable from a device collection using CIM
-- [`Get-CM7DeviceVariable`](./Help/Get-CM7DeviceVariable.md) - Retrieve device variables from a MECM device using CIM
-- [`New-CM7DeviceVariable`](./Help/New-CM7DeviceVariable.md) - Create a new device variable on a MECM device using CIM
-- [`Remove-CM7DeviceVariable`](./Help/Remove-CM7DeviceVariable.md) - Remove a device variable from a MECM device using CIM
-- [`Get-CM7MaintenanceWindow`](./Help/Get-CM7MaintenanceWindow.md) - Retrieve maintenance windows from a collection using CIM
-- [`New-CM7MaintenanceWindow`](./Help/New-CM7MaintenanceWindow.md) - Create a new maintenance window on a collection using CIM
-- [`Remove-CM7MaintenanceWindow`](./Help/Remove-CM7MaintenanceWindow.md) - Remove a maintenance window from a collection using CIM
+- [`Get-CM7CollectionMember`](./Help/Get-CM7CollectionMember.md) - Retrieve all members of a collection
+- [`Get-CM7CollectionDirectMembership`](./Help/Get-CM7CollectionDirectMembership.md) - Retrieve direct members of a collection
+- [`Get-CM7CollectionExcludeMembershipRule`](./Help/Get-CM7CollectionExcludeMembershipRule.md) - Retrieve exclude membership rules for a collection
+- [`Get-CM7CollectionIncludeMembershipRule`](./Help/Get-CM7CollectionIncludeMembershipRule.md) - Retrieve include membership rules for a collection
+- [`Get-CM7CollectionQueryMembershipRule`](./Help/Get-CM7CollectionQueryMembershipRule.md) - Retrieve query membership rules for a collection
+- [`Add-CM7CollectionMembershipRule`](./Help/Add-CM7CollectionMembershipRule.md) - Add a membership rule (direct, query, include, or exclude) to a collection
+- [`Remove-CM7CollectionMembershipRule`](./Help/Remove-CM7CollectionMembershipRule.md) - Remove a membership rule (direct, query, include, or exclude) from a collection
+- [`Get-CM7CollectionVariable`](./Help/Get-CM7CollectionVariable.md) - Retrieve collection variables from a collection
+- [`New-CM7DeviceCollectionVariable`](./Help/New-CM7DeviceCollectionVariable.md) - Create a new collection variable on a device collection
+- [`Remove-CM7DeviceCollectionVariable`](./Help/Remove-CM7DeviceCollectionVariable.md) - Remove a collection variable from a device collection
+- [`Get-CM7DeviceVariable`](./Help/Get-CM7DeviceVariable.md) - Retrieve device variables from a MECM device
+- [`New-CM7DeviceVariable`](./Help/New-CM7DeviceVariable.md) - Create a new device variable on a MECM device
+- [`Remove-CM7DeviceVariable`](./Help/Remove-CM7DeviceVariable.md) - Remove a device variable from a MECM device
+- [`Get-CM7MaintenanceWindow`](./Help/Get-CM7MaintenanceWindow.md) - Retrieve maintenance windows from a collection
+- [`New-CM7MaintenanceWindow`](./Help/New-CM7MaintenanceWindow.md) - Create a new maintenance window on a collection
+- [`Remove-CM7MaintenanceWindow`](./Help/Remove-CM7MaintenanceWindow.md) - Remove a maintenance window from a collection
 
 ### Schedule Management
 
@@ -101,35 +103,36 @@ other functions will be described in the [Help](./Help/README.md) folder
 
 ### Script Management
 
-- [`Invoke-CM7Script`](./Help/Invoke-CM7Script.md) - Invoke (run) an approved MECM script on target devices or a collection using CIM
-- [`Invoke-CM7ClientNotification`](./Help/Invoke-CM7ClientNotification.md) - Send a client notification action (policy refresh, inventory, restart, etc.) to target devices or a collection using CIM
-- [`Get-CM7ScriptExecutionStatus`](./Help/Get-CM7ScriptExecutionStatus.md) - Retrieve the execution status and results of MECM scripts using CIM
+- [`Invoke-CM7Script`](./Help/Invoke-CM7Script.md) - Invoke (run) an approved MECM script on target devices or a collection
+- [`Invoke-CM7ClientNotification`](./Help/Invoke-CM7ClientNotification.md) - Send a client notification action (policy refresh, inventory, restart, etc.) to target devices or a collection
+- [`Get-CM7ScriptExecutionStatus`](./Help/Get-CM7ScriptExecutionStatus.md) - Retrieve the execution status and results of MECM scripts
 
 ### Collection Update
 
-- [`Invoke-CM7CollectionUpdate`](./Help/Invoke-CM7CollectionUpdate.md) - Trigger a collection membership evaluation (refresh) on a MECM collection using CIM
+- [`Invoke-CM7CollectionUpdate`](./Help/Invoke-CM7CollectionUpdate.md) - Trigger a collection membership evaluation (refresh) on a MECM collection
 
 ### Software Update Management
 
-- [`Get-CM7SoftwareUpdate`](./Help/Get-CM7SoftwareUpdate.md) - Retrieve software update information from MECM using CIM
-- [`Get-CM7SoftwareUpdateDeployment`](./Help/Get-CM7SoftwareUpdateDeployment.md) - Retrieve software update deployment information from MECM using CIM
-- [`Get-CM7SoftwareUpdateDeploymentPackage`](./Help/Get-CM7SoftwareUpdateDeploymentPackage.md) - Retrieve software update deployment package information from MECM using CIM
-- [`Get-CM7SoftwareUpdateGroup`](./Help/Get-CM7SoftwareUpdateGroup.md) - Retrieve software update group information from MECM using CIM
-- [`New-CM7SoftwareUpdateGroup`](./Help/New-CM7SoftwareUpdateGroup.md) - Create a new software update group in MECM using CIM
-- [`Add-CM7SoftwareUpdateToGroup`](./Help/Add-CM7SoftwareUpdateToGroup.md) - Add software updates to a software update group in MECM using CIM
-- [`New-CM7SoftwareUpdateDeployment`](./Help/New-CM7SoftwareUpdateDeployment.md) - Create a new software update deployment in MECM using CIM
+- [`Get-CM7SoftwareUpdate`](./Help/Get-CM7SoftwareUpdate.md) - Retrieve software update information from MECM
+- [`Get-CM7SoftwareUpdateDeployment`](./Help/Get-CM7SoftwareUpdateDeployment.md) - Retrieve software update deployment information from MECM
+- [`Get-CM7SoftwareUpdateDeploymentPackage`](./Help/Get-CM7SoftwareUpdateDeploymentPackage.md) - Retrieve software update deployment package information from MECM
+- [`Get-CM7SoftwareUpdateGroup`](./Help/Get-CM7SoftwareUpdateGroup.md) - Retrieve software update group information from MECM
+- [`New-CM7SoftwareUpdateGroup`](./Help/New-CM7SoftwareUpdateGroup.md) - Create a new software update group in MECM
+- [`Add-CM7SoftwareUpdateToGroup`](./Help/Add-CM7SoftwareUpdateToGroup.md) - Add software updates to a software update group in MECM
+- [`New-CM7SoftwareUpdateDeployment`](./Help/New-CM7SoftwareUpdateDeployment.md) - Create a new software update deployment in MECM
 
 ### Task Sequence Management
 
-- [`Get-CM7TaskSequence`](./Help/Get-CM7TaskSequence.md) - Retrieve task sequence information from MECM using CIM
+- [`Get-CM7TaskSequence`](./Help/Get-CM7TaskSequence.md) - Retrieve task sequence information from MECM
+- [`Get-CM7TaskSequenceDeployment`](./Help/Get-CM7TaskSequenceDeployment.md) - Retrieve task sequence deployment information from MECM
 
 ### Deployment Management
 
-- [`Get-CM7Deployment`](./Help/Get-CM7Deployment.md) - Retrieve deployment information from MECM using CIM
+- [`Get-CM7Deployment`](./Help/Get-CM7Deployment.md) - Retrieve deployment information from MECM
 
 ### Object Management
 
-- [`Move-CM7Object`](./Help/Move-CM7Object.md) - Move MECM objects (collections, packages, etc.) between folders using CIM
+- [`Move-CM7Object`](./Help/Move-CM7Object.md) - Move MECM objects (collections, packages, etc.) between folders
 
 ## Testing
 
@@ -162,6 +165,9 @@ Invoke-Pester -Path ".\Tests\Test-Get-CM7SoftwareUpdateGroup.Tests.ps1"
 
 # Run tests for Get-CM7TaskSequence
 Invoke-Pester -Path ".\Tests\Test-Get-CM7TaskSequence.Tests.ps1"
+
+# Run tests for Get-CM7TaskSequenceDeployment
+Invoke-Pester -Path ".\Tests\Test-Get-CM7TaskSequenceDeployment.Tests.ps1"
 
 # Run tests for New-CM7SoftwareUpdateGroup
 Invoke-Pester -Path ".\Tests\Test-New-CM7SoftwareUpdateGroup.Tests.ps1"
@@ -214,125 +220,38 @@ The module follows this pattern:
 
 ```
 MECM7/
+├── CI/
+│   ├── Build-Module.ps1
+│   ├── Create-ModuleDocumentation.ps1
+│   └── Module-Settings.json
 ├── Code/
 │   ├── Public/          # User-facing functions
 │   │   ├── Connect-CM7.ps1
 │   │   ├── Get-CM7Device.ps1
 │   │   ├── Get-CM7Collection.ps1
-│   │   ├── Get-CM7DeviceCollection.ps1
-│   │   ├── Get-CM7UserCollection.ps1
-│   │   ├── Get-CM7CollectionMember.ps1
-│   │   ├── Get-CM7CollectionDirectMembership.ps1
-│   │   ├── Get-CM7CollectionExcludeMembershipRule.ps1
-│   │   ├── Get-CM7CollectionIncludeMembershipRule.ps1
-│   │   ├── Get-CM7CollectionQueryMembershipRule.ps1
-│   │   ├── Add-CM7CollectionMembershipRule.ps1
-│   │   ├── Remove-CM7CollectionMembershipRule.ps1
-│   │   ├── Get-CM7CollectionVariable.ps1
-│   │   ├── New-CM7DeviceCollectionVariable.ps1
-│   │   ├── Get-CM7DeviceVariable.ps1
-│   │   ├── New-CM7DeviceVariable.ps1
-│   │   ├── Remove-CM7DeviceVariable.ps1
-│   │   ├── Invoke-CM7Script.ps1
-│   │   ├── Invoke-CM7ClientNotification.ps1
-│   │   ├── Invoke-CM7CollectionUpdate.ps1
-│   │   ├── Get-CM7ScriptExecutionStatus.ps1
-│   │   ├── Get-CM7Deployment.ps1
-│   │   ├── Get-CM7SoftwareUpdate.ps1
-│   │   ├── Get-CM7SoftwareUpdateDeployment.ps1
-│   │   ├── Get-CM7SoftwareUpdateDeploymentPackage.ps1
-│   │   ├── New-CM7SoftwareUpdateGroup.ps1
-│   │   ├── Add-CM7SoftwareUpdateToGroup.ps1
-│   │   ├── New-CM7SoftwareUpdateDeployment.ps1
-│   │   ├── Get-CM7TaskSequence.ps1
-│   │   ├── Move-CM7Object.ps1
-│   │   ├── New-CM7Collection.ps1
-│   │   ├── New-CM7MaintenanceWindow.ps1
-│   │   ├── Remove-CM7MaintenanceWindow.ps1
-│   │   ├── New-CM7Schedule.ps1
-│   │   ├── Remove-CM7Collection.ps1
 │   │   └── ...
 │   └── Private/         # Internal helper functions
 │       ├── Invoke-CM7Connection.ps1
 │       └── ...
+├── Examples/            # Usage examples
+├── MECM7/               # Module-Versions export
+│   ├── 0.01.00001
+│   │   ├── MECM7.psd1
+│   │   └── MECM7.psm1
+│   ├── 0.01.00002
+│   └── ...
 ├── Tests/               # Pester test files
 │   ├── Test-Connect-CM7.Tests.ps1
 │   ├── Test-Get-CM7Device.Tests.ps1
 │   ├── Test-Get-CM7Collection.Tests.ps1
-│   ├── Test-Get-CM7DeviceCollection.Tests.ps1
-│   ├── Test-Get-CM7UserCollection.Tests.ps1
-│   ├── Test-Get-CM7CollectionMember.Tests.ps1
-│   ├── Test-Get-CM7CollectionDirectMembership.Tests.ps1
-│   ├── Test-Get-CM7CollectionExcludeMembershipRule.Tests.ps1
-│   ├── Test-Get-CM7CollectionIncludeMembershipRule.Tests.ps1
-│   ├── Test-Get-CM7CollectionQueryMembershipRule.Tests.ps1
-│   ├── Test-Add-CM7CollectionMembershipRule.Tests.ps1
-│   ├── Test-Remove-CM7CollectionMembershipRule.Tests.ps1
-│   ├── Test-Get-CM7CollectionVariable.Tests.ps1
-│   ├── Test-New-CM7DeviceCollectionVariable.Tests.ps1
-│   ├── Test-Remove-CM7DeviceCollectionVariable.Tests.ps1
-│   ├── Test-Get-CM7DeviceVariable.Tests.ps1
-│   ├── Test-New-CM7DeviceVariable.Tests.ps1
-│   ├── Test-Remove-CM7DeviceVariable.Tests.ps1
-│   ├── Test-Invoke-CM7Script.Tests.ps1
-│   ├── Test-Invoke-CM7ClientNotification.Tests.ps1
-│   ├── Test-Invoke-CM7CollectionUpdate.Tests.ps1
-│   ├── Test-Get-CM7ScriptExecutionStatus.Tests.ps1
-│   ├── Test-Get-CM7Deployment.Tests.ps1
-│   ├── Test-Get-CM7SoftwareUpdate.Tests.ps1
-│   ├── Test-Get-CM7SoftwareUpdateDeployment.Tests.ps1
-│   ├── Test-Get-CM7SoftwareUpdateDeploymentPackage.Tests.ps1
-│   ├── Test-New-CM7SoftwareUpdateGroup.Tests.ps1
-│   ├── Test-Add-CM7SoftwareUpdateToGroup.Tests.ps1
-│   ├── Test-New-CM7SoftwareUpdateDeployment.Tests.ps1
-│   ├── Test-Get-CM7TaskSequence.Tests.ps1
-│   ├── Test-Move-CM7Object.Tests.ps1
-│   ├── Test-New-CM7Collection.Tests.ps1
-│   ├── Test-New-CM7MaintenanceWindow.Tests.ps1
-│   ├── Test-Remove-CM7MaintenanceWindow.Tests.ps1
-│   ├── Test-New-CM7Schedule.Tests.ps1
-│   ├── Test-Remove-CM7Collection.Tests.ps1
-│   ├── declarations.ps1
-│   └── declarations_sample.ps1
-├── Help/                # Function documentation
-│   ├── Connect-CM7.md
-│   ├── Get-CM7Device.md
-│   ├── Get-CM7Collection.md
-│   ├── Get-CM7DeviceCollection.md
-│   ├── Get-CM7UserCollection.md
-│   ├── Get-CM7CollectionMember.md
-│   ├── Get-CM7CollectionDirectMembership.md
-│   ├── Get-CM7CollectionExcludeMembershipRule.md
-│   ├── Get-CM7CollectionIncludeMembershipRule.md
-│   ├── Get-CM7CollectionQueryMembershipRule.md
-│   ├── Add-CM7CollectionMembershipRule.md
-│   ├── Remove-CM7CollectionMembershipRule.md
-│   ├── Get-CM7CollectionVariable.md
-│   ├── New-CM7DeviceCollectionVariable.md
-│   ├── Remove-CM7DeviceCollectionVariable.md
-│   ├── Get-CM7DeviceVariable.md
-│   ├── New-CM7DeviceVariable.md
-│   ├── Remove-CM7DeviceVariable.md
-│   ├── Invoke-CM7Script.md
-│   ├── Invoke-CM7ClientNotification.md
-│   ├── Invoke-CM7CollectionUpdate.md
-│   ├── Get-CM7ScriptExecutionStatus.md
-│   ├── Get-CM7Deployment.md
-│   ├── Get-CM7SoftwareUpdate.md
-│   ├── Get-CM7SoftwareUpdateDeployment.md
-│   ├── Get-CM7SoftwareUpdateDeploymentPackage.md
-│   ├── New-CM7SoftwareUpdateGroup.md
-│   ├── Add-CM7SoftwareUpdateToGroup.md
-│   ├── New-CM7SoftwareUpdateDeployment.md
-│   ├── Get-CM7TaskSequence.md
-│   ├── Move-CM7Object.md
-│   ├── New-CM7Collection.md
-│   ├── New-CM7MaintenanceWindow.md
-│   ├── Remove-CM7MaintenanceWindow.md
-│   ├── New-CM7Schedule.md
-│   ├── Remove-CM7Collection.md
 │   └── ...
-└── Examples/            # Usage examples
+└── Help/                # Function documentation
+    ├── README.md
+    ├── Connect-CM7.md
+    ├── Get-CM7Device.md
+    ├── Get-CM7Collection.md
+    └── ...
+
 ```
 
 ## Troubleshooting
@@ -358,6 +277,22 @@ Use the `-SkipCertificateCheck` parameter if using self-signed certificates:
 ```powershell
 Connect-CM7 -SiteServer "your-server" -SkipCertificateCheck
 ```
+
+## ⚠️ Important Notes
+
+### AI-Assisted Development
+
+Most functions in this module were developed with the assistance of AI (GitHub Copilot). All code has been reviewed, tested, and validated against live MECM environments.
+
+### Differences from the ConfigurationManager Module
+
+This module is **not** a drop-in replacement for the official ConfigurationManager module. Some functions may have:
+
+- **Different parameter names or parameter sets** compared to their ConfigurationManager equivalents
+- **Different output types** — functions return CIM instances or custom objects rather than the ConfigurationManager module's proprietary types
+- **Different default behavior** — filtering, sorting, or result formatting may differ
+
+Always refer to the [function documentation](./Help/README.md) for the exact parameters and output of each function.
 
 ## Support
 

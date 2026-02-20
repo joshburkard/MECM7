@@ -39,3 +39,4 @@
 0.01.00037 | added Get-CM7TaskSequence | 2026-02-19 | Josua Burkard
 0.01.00038 | fixing Get-CM7TaskSequence | 2026-02-20 | Josua Burkard
 0.01.00039 | added New-CM7Schedule | 2026-02-20 | Josua Burkard
+0.01.00040 | added Get-CM7TaskSequenceDeployment | 2026-02-20 | Josua Burkard
