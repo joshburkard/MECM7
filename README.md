@@ -8,7 +8,17 @@ A PowerShell module for managing Microsoft Endpoint Configuration Manager (MECM)
 ## 📋 Table of Contents
 
 - [Overview](#-overview)
-
+- [Requirements](#requirements)
+- [Installation](#-installation)
+- [Quick Start](#-quick-start)
+- [Available Functions](#-available-functions)
+- [Testing](#testing)
+- [Key Features](#key-features)
+- [Architecture](#architecture)
+- [TroubleShooting](#troubleshooting)
+- [Important Notes](#️-important-notes)
+- [Support](#support)
+- [License](#-license)
 
 ## 🎯 Overview
 
@@ -125,6 +135,7 @@ other functions will be described in the [Help](./Help/README.md) folder
 
 - [`Get-CM7TaskSequence`](./Help/Get-CM7TaskSequence.md) - Retrieve task sequence information from MECM
 - [`Get-CM7TaskSequenceDeployment`](./Help/Get-CM7TaskSequenceDeployment.md) - Retrieve task sequence deployment information from MECM
+- [`New-CM7TaskSequenceDeployment`](./Help/New-CM7TaskSequenceDeployment.md) - Create a new task sequence deployment in MECM
 
 ### Deployment Management
 
@@ -177,6 +188,9 @@ Invoke-Pester -Path ".\Tests\Test-Add-CM7SoftwareUpdateToGroup.Tests.ps1"
 
 # Run tests for New-CM7SoftwareUpdateDeployment
 Invoke-Pester -Path ".\Tests\Test-New-CM7SoftwareUpdateDeployment.Tests.ps1"
+
+# Run tests for New-CM7TaskSequenceDeployment
+Invoke-Pester -Path ".\Tests\Test-New-CM7TaskSequenceDeployment.Tests.ps1"
 
 # Run tests for New-CM7Schedule
 Invoke-Pester -Path ".\Tests\Test-New-CM7Schedule.Tests.ps1"
@@ -297,8 +311,6 @@ Always refer to the [function documentation](./Help/README.md) for the exact par
 ## Support
 
 For issues, questions, or contributions, refer to the project documentation or contact the module maintainers.
-
-## License
 
 ## 📄 License
 

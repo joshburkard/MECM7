@@ -1880,6 +1880,42 @@ $script:TestData = @{
         }
     }
 
+    # ========================================================================
+    # New-CM7TaskSequenceDeployment
+    # ========================================================================
+    'New-CM7TaskSequenceDeployment' = @{
+        BasicDeployment = @{
+            TaskSequencePackageId = "ABC00001"  # Replace with an existing task sequence PackageID
+            TaskSequenceName = "Your-TaskSequence-Name"  # Replace with an existing task sequence name
+            CollectionName = "Your-Test-Collection"  # Replace with an existing collection name
+            DeployPurpose = "Available"
+        }
+        RequiredDeployment = @{
+            TaskSequencePackageId = "ABC00001"  # Replace with an existing task sequence PackageID
+            CollectionName = "Your-Test-Collection"  # Replace with an existing collection name
+            DeployPurpose = "Required"
+        }
+        WithDeadline = @{
+            TaskSequencePackageId = "ABC00001"  # Replace with an existing task sequence PackageID
+            CollectionName = "Your-Test-Collection"  # Replace with an existing collection name
+            DeployPurpose = "Required"
+            DeadlineDays = 7  # Deadline in days from now
+        }
+        WithComment = @{
+            TaskSequencePackageId = "ABC00001"  # Replace with an existing task sequence PackageID
+            CollectionName = "Your-Test-Collection"  # Replace with an existing collection name
+            Comment = "Test deployment created by automated tests"
+        }
+        NonExistentTaskSequence = @{
+            TaskSequencePackageId = "XXX99999"
+            CollectionName = "Your-Test-Collection"  # Replace with an existing collection name
+        }
+        NonExistentCollection = @{
+            TaskSequencePackageId = "ABC00001"  # Replace with an existing task sequence PackageID
+            CollectionName = "NonExistent-Collection-999"
+        }
+    }
+
 }
 #endregion
 

@@ -42,7 +42,7 @@ Specifies the unique advertisement ID (deployment ID) of the task sequence deplo
 - **Accept pipeline input**: False
 - **Accept wildcard characters**: No
 
-Example: `"SD120BD2"`
+Example: `"CM120BD2"`
 
 ### -TaskSequenceName
 
@@ -75,7 +75,7 @@ Specifies the PackageID of the task sequence associated with the deployment.
 - **Accept pipeline input**: False
 - **Accept wildcard characters**: No
 
-Example: `"SD100FAD"`
+Example: `"CM100FAD"`
 
 ### -CollectionName
 
@@ -152,7 +152,7 @@ Retrieves all task sequence deployments from MECM.
 ### EXAMPLE 2: Get a task sequence deployment by advertisement ID
 
 ```powershell
-Get-CM7TaskSequenceDeployment -AdvertisementID "SD120BD2"
+Get-CM7TaskSequenceDeployment -AdvertisementID "CM120BD2"
 ```
 
 Retrieves the specific task sequence deployment with the given advertisement ID.
@@ -184,7 +184,7 @@ Retrieves all deployments of the task sequence named "Test Josh".
 ### EXAMPLE 6: Get task sequence deployments by task sequence PackageID
 
 ```powershell
-Get-CM7TaskSequenceDeployment -TaskSequencePackageId "SD100FAD"
+Get-CM7TaskSequenceDeployment -TaskSequencePackageId "CM100FAD"
 ```
 
 Retrieves all deployments of the task sequence with the specified PackageID.
@@ -259,14 +259,14 @@ Example object:
 
 ```powershell
 PSTypeName              : MECM7.TaskSequenceDeployment
-AdvertisementID         : SD120BD2
+AdvertisementID         : CM120BD2
 AdvertisementName       : Test Josh - SP_ACC_2025-01-30
-CollectionID            : SD1018FB
+CollectionID            : CM1018FB
 CollectionName          : SP_ACC_2025-01-30_18:00_00:00_automatic_reboot
-PackageID               : SD100FAD
+PackageID               : CM100FAD
 TaskSequenceName        : Test Josh
 ProgramName             : *
-SourceSite              : SD1
+SourceSite              : CM1
 AdvertFlags             : 42860576
 RemoteClientFlags       : 8480
 PresentTime             : 2025-01-30 18:00:00
@@ -306,17 +306,17 @@ SELECT DeploymentID FROM SMS_DeploymentSummary WHERE FeatureType = 7 AND Program
 
 -- By Collection (resolved from name)
 SELECT CollectionID, Name FROM SMS_Collection WHERE Name = 'MyCollection'
-SELECT DeploymentID FROM SMS_DeploymentSummary WHERE FeatureType = 7 AND ProgramName = '*' AND CollectionID = 'SD1018FB'
+SELECT DeploymentID FROM SMS_DeploymentSummary WHERE FeatureType = 7 AND ProgramName = '*' AND CollectionID = 'CM1018FB'
 
 -- Full advertisement details
-SELECT * FROM SMS_Advertisement WHERE AdvertisementID = 'SD120BD2'
+SELECT * FROM SMS_Advertisement WHERE AdvertisementID = 'CM120BD2'
 
 -- By Task Sequence Name (resolved to PackageID)
 SELECT PackageID, Name FROM SMS_TaskSequencePackage WHERE Name = 'Test Josh'
 -- Then filter advertisements by PackageID
 
 -- Fast mode
-SELECT AdvertisementID, AdvertisementName, CollectionID, PackageID, ... FROM SMS_Advertisement WHERE AdvertisementID = 'SD120BD2'
+SELECT AdvertisementID, AdvertisementName, CollectionID, PackageID, ... FROM SMS_Advertisement WHERE AdvertisementID = 'CM120BD2'
 ```
 
 ### Common Scenarios

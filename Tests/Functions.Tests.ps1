@@ -173,12 +173,15 @@ foreach($file in $CodeFile){
                     $pattern = [regex]::Escape($sensitive)
                     if ($sensitive.Length -le 5) { $pattern = "(?<![a-zA-Z0-9])$pattern(?![a-zA-Z0-9])" }
                     if ($content -match $pattern) {
-                        # Mask the value for safe reporting: show first 3 chars + '***'
-                        $masked = if ($sensitive.Length -gt 3) { $sensitive.Substring(0, 3) + '***' } else { '***' }
-                        $foundValues += $masked
+                        $foundValues += $sensitive
                     }
                 }
-                $foundValues | Should -BeNullOrEmpty -Because "Code files tracked by git must not contain sensitive values. Found: $($foundValues -join ', ')"
+                if ($foundValues.Count -gt 0) {
+                    $detailMsg = ($foundValues | ForEach-Object { "  '$_'" }) -join "`n"
+                    Write-Host "`nSensitive values detected in $($file.Name):" -ForegroundColor Red
+                    Write-Host $detailMsg -ForegroundColor Yellow
+                }
+                $foundValues | Should -BeNullOrEmpty -Because "Code files tracked by git must not contain sensitive values.`nDetected values:`n$( ($foundValues | ForEach-Object { '  -> ' + $_ }) -join "`n" )"
             }
         }
 
@@ -262,12 +265,15 @@ Describe "Sensitive Value Leakage Check across all git-tracked files" -Tag "Secu
                     if ($sensitive.Length -le 5) { $pattern = "(?<![a-zA-Z0-9])$pattern(?![a-zA-Z0-9])" }
                     if ($content -match $pattern) {
                         $relativePath = $filePath.Replace($Root, '').TrimStart('\', '/')
-                        $masked = if ($sensitive.Length -gt 3) { $sensitive.Substring(0, 3) + '***' } else { '***' }
-                        $violations += "  [$relativePath] contains '$masked'"
+                        $violations += "  [$relativePath] contains '$sensitive'"
                     }
                 }
             }
-            $violations | Should -BeNullOrEmpty -Because "Git-tracked files must not contain sensitive values (credentials, server names, site codes). Violations:`n$($violations -join "`n")"
+            if ($violations.Count -gt 0) {
+                Write-Host "`nSensitive values detected in git-tracked files:" -ForegroundColor Red
+                $violations | ForEach-Object { Write-Host $_ -ForegroundColor Yellow }
+            }
+            $violations | Should -BeNullOrEmpty -Because "Git-tracked files must not contain sensitive values (credentials, server names, site codes).`nViolations:`n$($violations -join "`n")"
         }
     }
 }
