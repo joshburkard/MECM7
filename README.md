@@ -95,6 +95,10 @@ other functions will be described in the [Help](./Help/README.md) folder
 - [`New-CM7MaintenanceWindow`](./Help/New-CM7MaintenanceWindow.md) - Create a new maintenance window on a collection using CIM
 - [`Remove-CM7MaintenanceWindow`](./Help/Remove-CM7MaintenanceWindow.md) - Remove a maintenance window from a collection using CIM
 
+### Schedule Management
+
+- [`New-CM7Schedule`](./Help/New-CM7Schedule.md) - Create an SMS schedule token for use with MECM CIM-based functions
+
 ### Script Management
 
 - [`Invoke-CM7Script`](./Help/Invoke-CM7Script.md) - Invoke (run) an approved MECM script on target devices or a collection using CIM
@@ -167,6 +171,9 @@ Invoke-Pester -Path ".\Tests\Test-Add-CM7SoftwareUpdateToGroup.Tests.ps1"
 
 # Run tests for New-CM7SoftwareUpdateDeployment
 Invoke-Pester -Path ".\Tests\Test-New-CM7SoftwareUpdateDeployment.Tests.ps1"
+
+# Run tests for New-CM7Schedule
+Invoke-Pester -Path ".\Tests\Test-New-CM7Schedule.Tests.ps1"
 
 # Run tests for Get-CM7DeviceCollection
 Invoke-Pester -Path ".\Tests\Test-Get-CM7DeviceCollection.Tests.ps1"
@@ -242,6 +249,7 @@ MECM7/
 │   │   ├── New-CM7Collection.ps1
 │   │   ├── New-CM7MaintenanceWindow.ps1
 │   │   ├── Remove-CM7MaintenanceWindow.ps1
+│   │   ├── New-CM7Schedule.ps1
 │   │   ├── Remove-CM7Collection.ps1
 │   │   └── ...
 │   └── Private/         # Internal helper functions
@@ -282,6 +290,7 @@ MECM7/
 │   ├── Test-New-CM7Collection.Tests.ps1
 │   ├── Test-New-CM7MaintenanceWindow.Tests.ps1
 │   ├── Test-Remove-CM7MaintenanceWindow.Tests.ps1
+│   ├── Test-New-CM7Schedule.Tests.ps1
 │   ├── Test-Remove-CM7Collection.Tests.ps1
 │   ├── declarations.ps1
 │   └── declarations_sample.ps1
@@ -320,6 +329,7 @@ MECM7/
 │   ├── New-CM7Collection.md
 │   ├── New-CM7MaintenanceWindow.md
 │   ├── Remove-CM7MaintenanceWindow.md
+│   ├── New-CM7Schedule.md
 │   ├── Remove-CM7Collection.md
 │   └── ...
 └── Examples/            # Usage examples

@@ -2,7 +2,7 @@
 
 This file tracks the test coverage status for all functions in the MECMAdminService module.
 
-**Last Updated:** 2026-02-20 08:31:16
+**Last Updated:** 2026-02-20 10:12:54
 
 | Function | Status | Passed | Failed | Skipped | Coverage % | Duration |
 |----------|--------|--------|--------|---------|------------|----------|
@@ -20,6 +20,7 @@ This file tracks the test coverage status for all functions in the MECMAdminServ
 | Invoke-CM7ClientNotification | Test-Invoke-CM7ClientNotification.Tests.ps1 | 🟢 Passed | 24 | 0 | 0 | 91.4% | 5.1s |
 | Invoke-CM7CollectionUpdate | Test-Invoke-CM7CollectionUpdate.Tests.ps1 | 🟢 Passed | 20 | 0 | 0 | 87.27% | 6.92s |
 | Get-CM7TaskSequence | Test-Get-CM7TaskSequence.Tests.ps1 | 🟢 Passed | 18 | 0 | 0 | 89.89% | 230.3s |
+| New-CM7Schedule | Test-New-CM7Schedule.Tests.ps1 | 🟢 Passed | 39 | 0 | 0 | 97.14% | 5.23s |
 | Add-CM7CollectionMembershipRule | 🟢 Passed | 31 | 0 | 0 | 92.86% | 62.19s |
 | Connect-CM7 | 🟡 Partial | 25 | 0 | 2 | 100% | 8.9s |
 | Get-CM7Collection | 🟢 Passed | 18 | 0 | 0 | 96.88% | 23.39s |
@@ -49,6 +50,14 @@ This file tracks the test coverage status for all functions in the MECMAdminServ
 - 🟡 **Partial** - Some tests passed, some skipped
 - 🔴 **Failed** - One or more tests failed
 - ⏳ **Not Run** - Tests have not been executed yet
+
+
+
+
+
+
+
+
 
 
 

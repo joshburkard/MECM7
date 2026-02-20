@@ -416,6 +416,95 @@ $script:TestData = @{
     }
 
     # ========================================================================
+    # New-CM7Schedule
+    # ========================================================================
+    'New-CM7Schedule' = @{
+        NonRecurring = @{
+            # -Nonrecurring with duration via -DurationInterval/-DurationCount
+            Start = (Get-Date).AddDays(1).Date.AddHours(22)  # Tomorrow at 10 PM
+            DurationInterval = "Hours"
+            DurationCount = 2
+        }
+        NonRecurringWithEnd = @{
+            # -Nonrecurring with duration via -End
+            Start = (Get-Date).AddDays(1).Date.AddHours(22)  # Tomorrow at 10 PM
+            End = (Get-Date).AddDays(2).Date  # Tomorrow at midnight (2 hours later)
+        }
+        RecurInterval_Daily = @{
+            # -RecurInterval Days -RecurCount 1
+            RecurInterval = "Days"
+            RecurCount = 1
+            Start = (Get-Date).AddDays(1).Date.AddHours(1)  # Tomorrow at 1 AM
+        }
+        RecurInterval_Hourly = @{
+            # -RecurInterval Hours -RecurCount 4
+            RecurInterval = "Hours"
+            RecurCount = 4
+            Start = (Get-Date).AddDays(1).Date.AddHours(0)  # Tomorrow at midnight
+        }
+        RecurInterval_Minute = @{
+            # -RecurInterval Minutes -RecurCount 30
+            RecurInterval = "Minutes"
+            RecurCount = 30
+            Start = (Get-Date).AddDays(1).Date.AddHours(0)  # Tomorrow at midnight
+        }
+        RecurWeekly = @{
+            # -DayOfWeek Saturday (weekly, default RecurCount=1)
+            DayOfWeek = "Saturday"
+            Start = (Get-Date).AddDays(1).Date.AddHours(2)  # Tomorrow at 2 AM
+        }
+        RecurWeeklyBiWeekly = @{
+            # -DayOfWeek Monday -RecurCount 2 (bi-weekly)
+            DayOfWeek = "Monday"
+            RecurCount = 2
+            Start = (Get-Date).AddDays(1).Date.AddHours(2)
+        }
+        RecurMonthlyByWeekday = @{
+            # -DayOfWeek Tuesday -WeekOrder Second
+            DayOfWeek = "Tuesday"
+            WeekOrder = "Second"
+            Start = (Get-Date).AddDays(1).Date.AddHours(1)  # Tomorrow at 1 AM
+        }
+        RecurMonthlyByDate = @{
+            # -DayOfMonth 15
+            DayOfMonth = 15
+            Start = (Get-Date).AddDays(1).Date.AddHours(3)  # Tomorrow at 3 AM
+        }
+        RecurMonthlyLastDayOfMonth = @{
+            # -LastDayOfMonth
+            Start = (Get-Date).AddDays(1).Date.AddHours(3)  # Tomorrow at 3 AM
+        }
+        WithUTC = @{
+            # -Nonrecurring -IsUtc
+            Start = (Get-Date).AddDays(1).Date.AddHours(22)
+            DurationInterval = "Hours"
+            DurationCount = 1
+            IsUtc = $true
+        }
+        WithDuration = @{
+            # -RecurInterval Days -RecurCount 7 with -DurationInterval Hours -DurationCount 3
+            RecurInterval = "Days"
+            RecurCount = 7
+            Start = (Get-Date).AddDays(1).Date.AddHours(22)
+            DurationInterval = "Hours"
+            DurationCount = 3
+        }
+        ForMaintenanceWindow = @{
+            # Schedule to test with New-CM7MaintenanceWindow
+            RecurInterval = "Days"
+            RecurCount = 7
+            Start = (Get-Date).AddDays(1).Date.AddHours(22)
+            CollectionName = "Test-Collection-Direct"  # Replace with your test collection name
+        }
+        AsString = @{
+            # Test -ScheduleString switch output
+            RecurInterval = "Days"
+            RecurCount = 1
+            Start = (Get-Date).AddDays(1).Date.AddHours(1)
+        }
+    }
+
+    # ========================================================================
     # New-CM7MaintenanceWindow
     # ========================================================================
     'New-CM7MaintenanceWindow' = @{

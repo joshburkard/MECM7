@@ -27,6 +27,7 @@ This directory contains markdown documentation for all MECM7 module functions.
 | [Get-CM7MaintenanceWindow](./Get-CM7MaintenanceWindow.md) | Retrieves maintenance windows from a MECM collection using CIM. |
 | [New-CM7MaintenanceWindow](./New-CM7MaintenanceWindow.md) | Creates a new maintenance window on a MECM collection using CIM. |
 | [Remove-CM7MaintenanceWindow](./Remove-CM7MaintenanceWindow.md) | Removes a maintenance window from a MECM collection using CIM. |
+| [New-CM7Schedule](./New-CM7Schedule.md) | Creates an SMS schedule token for use with MECM CIM-based functions. |
 | [Invoke-CM7Script](./Invoke-CM7Script.md) | Invokes (runs) an approved MECM script on target devices or a collection using CIM. |
 | [Invoke-CM7ClientNotification](./Invoke-CM7ClientNotification.md) | Sends a client notification action (policy refresh, inventory, restart, etc.) to target devices or a collection using CIM. |
 | [Invoke-CM7CollectionUpdate](./Invoke-CM7CollectionUpdate.md) | Triggers a collection membership evaluation (refresh) on a MECM collection using CIM. |
