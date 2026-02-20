@@ -130,6 +130,7 @@ function Get-CM7TaskSequence {
 
             # Choose column list based on -Fast switch
             $columns = if ($Fast) { $fastColumns } else { $fullColumns }
+            $columns = $fastColumns
 
             $query = "SELECT $columns FROM SMS_TaskSequencePackage"
             if ($filters.Count -gt 0) {
@@ -139,31 +140,68 @@ function Get-CM7TaskSequence {
             Write-Verbose "Executing query: $query"
             $taskSequences = Get-CimInstance @cimParams -Query $query
 
+            $results = @()
+
             # Output results
-            if ($taskSequences) {
+            if ([boolean]$taskSequences) {
                 foreach ($ts in $taskSequences) {
                     # Build output with essential properties (always available)
-                    $output = [PSCustomObject]@{
+
+                    $result = [PSCustomObject]@{
                         PSTypeName      = 'MECM7.TaskSequence'
                         PackageID       = $ts.PackageID
                         Name            = $ts.Name
                     }
 
                     # Set the type name
-                    $output.PSObject.TypeNames.Insert(0, 'MECM7.TaskSequence')
+                    $result.PSObject.TypeNames.Insert(0, 'MECM7.TaskSequence')
 
-                    # Add all CIM properties returned by the query
-                    $ts.CimInstanceProperties | ForEach-Object {
-                        if ($_.Name -notin $output.PSObject.Properties.Name) {
-                            $output | Add-Member -MemberType NoteProperty -Name $_.Name -Value $_.Value -Force
+                    if ( -not [boolean]$Fast) {
+                        try {
+                            $tsf = $ts | Get-CimInstance -ErrorAction SilentlyContinue
+                            if ($tsf) {
+                                foreach ($prop in @( $tsf.CimInstanceProperties) ) {
+                                    Write-Verbose "Property: $($prop.Name) = $($prop.Value)"
+                                    if ($result.PSObject.Properties.Name -notcontains $prop.Name) {
+                                        $result | Add-Member -MemberType NoteProperty -Name $prop.Name -Value $tsf.$($prop.Name) -Force
+                                    }
+                                }
+                            }
+                        }
+                        catch {
+                            Write-Verbose "Failed to retrieve full instance for task sequence '$($ts.PackageID)'. This may be due to lazy properties that cannot be retrieved via WQL over WinRM. Error: $_"
+                        }
+
+                        if ($filters.Count -gt 0) {
+                            foreach ($prop in @( $ts.CimInstanceProperties) ) {
+                                Write-Verbose "Property: $($prop.Name) = $($prop.Value)"
+                                try {
+                                    $inst = Get-CimInstance @cimParams -Query "SELECT $( $prop.Name ) FROM SMS_TaskSequencePackage WHERE PackageID = '$($ts.PackageID)'" -ErrorAction SilentlyContinue
+                                    if ($inst) {
+                                        if ($result.PSObject.Properties.Name -notcontains $prop.Name) {
+                                            $result | Add-Member -MemberType NoteProperty -Name $prop.Name -Value $inst.$($prop.Name) -Force
+                                        }
+                                        elseif ($result.$($prop.Name) -ne $inst.$($prop.Name)) {
+                                            Write-Verbose "Property '$($prop.Name)' for task sequence '$($ts.PackageID)' already exists in result with a different value. Existing: '$($result.$($prop.Name))', New: '$($inst.$($prop.Name))'. This may indicate inconsistent data or a lazy property that cannot be reliably retrieved via WQL over WinRM."
+                                            # setting property tio new value anyway to ensure we get the correct value for this property, even if it means overwriting an existing value that may be incorrect due to lazy loading issues.
+                                            $result | Add-Member -MemberType NoteProperty -Name $prop.Name -Value $inst.$($prop.Name) -Force
+                                        }
+                                    }
+                                    $result | Add-Member -MemberType NoteProperty -Name $prop.Name -Value $inst.$($prop.Name) -Force
+                                }
+                                catch {
+                                    Write-Verbose "Failed to retrieve property '$($prop.Name)' for task sequence '$($ts.PackageID)'. This property may be lazy and cannot be retrieved via WQL over WinRM. Error: $_"
+                                }
+                            }
                         }
                     }
 
-                    Write-Output $output
+                    $results += $result
                 }
             } else {
                 Write-Verbose "No task sequences found matching the criteria."
             }
+            return $results
         }
         catch {
             throw $_
