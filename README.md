@@ -136,6 +136,7 @@ other functions will be described in the [Help](./Help/README.md) folder
 - [`Get-CM7TaskSequence`](./Help/Get-CM7TaskSequence.md) - Retrieve task sequence information from MECM
 - [`Get-CM7TaskSequenceDeployment`](./Help/Get-CM7TaskSequenceDeployment.md) - Retrieve task sequence deployment information from MECM
 - [`New-CM7TaskSequenceDeployment`](./Help/New-CM7TaskSequenceDeployment.md) - Create a new task sequence deployment in MECM
+- [`Remove-CM7TaskSequenceDeployment`](./Help/Remove-CM7TaskSequenceDeployment.md) - Remove a task sequence deployment from MECM
 
 ### Deployment Management
 
@@ -159,47 +160,7 @@ Invoke-Pester -Path ".\Tests\Test-Get-CM7Device.Tests.ps1"
 # Run tests for Get-CM7Collection
 Invoke-Pester -Path ".\Tests\Test-Get-CM7Collection.Tests.ps1"
 
-# Run tests for Get-CM7Deployment
-Invoke-Pester -Path ".\Tests\Test-Get-CM7Deployment.Tests.ps1"
-
-# Run tests for Get-CM7SoftwareUpdate
-Invoke-Pester -Path ".\Tests\Test-Get-CM7SoftwareUpdate.Tests.ps1"
-
-# Run tests for Get-CM7SoftwareUpdateDeployment
-Invoke-Pester -Path ".\Tests\Test-Get-CM7SoftwareUpdateDeployment.Tests.ps1"
-
-# Run tests for Get-CM7SoftwareUpdateDeploymentPackage
-Invoke-Pester -Path ".\Tests\Test-Get-CM7SoftwareUpdateDeploymentPackage.Tests.ps1"
-
-# Run tests for Get-CM7SoftwareUpdateGroup
-Invoke-Pester -Path ".\Tests\Test-Get-CM7SoftwareUpdateGroup.Tests.ps1"
-
-# Run tests for Get-CM7TaskSequence
-Invoke-Pester -Path ".\Tests\Test-Get-CM7TaskSequence.Tests.ps1"
-
-# Run tests for Get-CM7TaskSequenceDeployment
-Invoke-Pester -Path ".\Tests\Test-Get-CM7TaskSequenceDeployment.Tests.ps1"
-
-# Run tests for New-CM7SoftwareUpdateGroup
-Invoke-Pester -Path ".\Tests\Test-New-CM7SoftwareUpdateGroup.Tests.ps1"
-
-# Run tests for Add-CM7SoftwareUpdateToGroup
-Invoke-Pester -Path ".\Tests\Test-Add-CM7SoftwareUpdateToGroup.Tests.ps1"
-
-# Run tests for New-CM7SoftwareUpdateDeployment
-Invoke-Pester -Path ".\Tests\Test-New-CM7SoftwareUpdateDeployment.Tests.ps1"
-
-# Run tests for New-CM7TaskSequenceDeployment
-Invoke-Pester -Path ".\Tests\Test-New-CM7TaskSequenceDeployment.Tests.ps1"
-
-# Run tests for New-CM7Schedule
-Invoke-Pester -Path ".\Tests\Test-New-CM7Schedule.Tests.ps1"
-
-# Run tests for Get-CM7DeviceCollection
-Invoke-Pester -Path ".\Tests\Test-Get-CM7DeviceCollection.Tests.ps1"
-
-# Run tests for Get-CM7UserCollection
-Invoke-Pester -Path ".\Tests\Test-Get-CM7UserCollection.Tests.ps1"
+...
 
 # Run all tests
 Invoke-Pester -Path ".\Tests\"

@@ -5,3 +5,4 @@ old/
 Test/
 Tests/declarations.ps1
 Tests/*.json
+coverage.xml

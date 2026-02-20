@@ -1916,6 +1916,25 @@ $script:TestData = @{
         }
     }
 
+    # ========================================================================
+    # Remove-CM7TaskSequenceDeployment
+    # ========================================================================
+    'Remove-CM7TaskSequenceDeployment' = @{
+        TestDeployment = @{
+            # Test deployments will be created dynamically during tests
+            # using these parameters with New-CM7TaskSequenceDeployment
+            TaskSequencePackageId = "ABC00001"  # Replace with an existing task sequence PackageID
+            TaskSequenceName = "Your-TaskSequence-Name"  # Replace with an existing task sequence name
+            CollectionName = "Your-Test-Collection"  # Replace with an existing collection name
+        }
+        NonExistentDeployment = @{
+            AdvertisementID = "XXX99999"
+        }
+        NonExistentCollection = @{
+            CollectionName = "NonExistent-Collection-999"
+        }
+    }
+
 }
 #endregion
 

@@ -1,9 +1,9 @@
 {
   "ModuleName": "MECM7",
-  "ModuleVersion": "0.01.00041",
+  "ModuleVersion": "0.01.00042",
   "ModuleDescription": "managing MECM / SCCM through WinRM / CIM sessions",
   "ModuleAuthor": "Josua Burkard",
   "ModuleCompany": "Josua Burkard",
   "ModulePrefix": "CM7",
-  "LastChange": "added New-CM7TaskSequenceDeployment"
+  "LastChange": "added Remove-CM7TaskSequenceDeployment and tests for PS 5.1"
 }

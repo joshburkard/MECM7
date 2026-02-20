@@ -47,8 +47,28 @@
     .\Invoke-Test.ps1 -FunctionName "Invoke-CMASScript" -Tag "Unit"
     Run only Unit tests for Invoke-CMASScript.
 
+.PARAMETER PSVersion
+    Which PowerShell version(s) to run tests in.
+    'Current' runs only in the current session.
+    'Both' runs in both PowerShell 7.x and 5.1 (default).
+    '5.1' runs only in PowerShell 5.1 via subprocess.
+
+.EXAMPLE
+    .\Invoke-Test.ps1 -FunctionName "Get-CM7Collection" -PSVersion Both
+    Run tests in both PowerShell 7.x and 5.1.
+
+.EXAMPLE
+    .\Invoke-Test.ps1 -FunctionName "Get-CM7Collection" -PSVersion Current
+    Run tests only in the current PowerShell version.
+
+.EXAMPLE
+    .\Invoke-Test.ps1 -PSVersion 5.1
+    Run all functional tests only in PowerShell 5.1 (via subprocess).
+
 .NOTES
     This script requires Pester 5.2.2 or higher.
+    When using -PSVersion Both, PowerShell 5.1 tests run in a subprocess via powershell.exe.
+    Pester 5.2.2+ must be installed in both PowerShell versions for dual-version testing.
 #>
 [CmdletBinding()]
 param(
@@ -66,8 +86,131 @@ param(
     [switch]$PassThru,
 
     [Parameter()]
-    [switch]$IncludeStructuralTests
+    [switch]$IncludeStructuralTests,
+
+    [Parameter()]
+    [ValidateSet('Current', 'Both', '5.1')]
+    [string]$PSVersion = 'Both',
+
+    # Internal parameters for subprocess mode (cross-version testing)
+    [Parameter(DontShow)]
+    [switch]$SubprocessMode,
+
+    [Parameter(DontShow)]
+    [string]$ResultFile
 )
+
+#region Subprocess Mode - used for cross-version testing
+if ($SubprocessMode) {
+    # Minimal execution mode for testing in a different PowerShell version
+    # Results are exported as JSON to $ResultFile
+    if ((Get-Module -Name Pester).Version -match '^3\.\d{1}\.\d{1}') {
+        try { Remove-Module -Name Pester -ErrorAction Stop } catch {}
+    }
+    if (-not (Get-Module -Name Pester -ListAvailable | Where-Object { $_.Version -ge '5.2.2' })) {
+        @{
+            Error     = "Pester 5.2.2+ not available in PowerShell $($PSVersionTable.PSVersion)"
+            PSVersion = $PSVersionTable.PSVersion.ToString()
+        } | ConvertTo-Json -Depth 3 | Set-Content -Path $ResultFile -Encoding UTF8
+        exit 1
+    }
+    Import-Module -Name Pester -MinimumVersion 5.2.2 -ErrorAction Stop
+
+    $TestsPath = $PSScriptRoot
+    $Root = (Get-Item $TestsPath).Parent.FullName
+    $DeclarationsPath = Join-Path -Path $TestsPath -ChildPath "declarations.ps1"
+    if (Test-Path -Path $DeclarationsPath) { . $DeclarationsPath }
+
+    # Handle comma-joined tags from -File parameter passing
+    if ($Tag) {
+        $Tag = @($Tag | ForEach-Object { $_ -split ',' } | ForEach-Object { $_.Trim() } | Where-Object { $_ })
+    }
+
+    $subTestFiles = @()
+    if ($FunctionName) {
+        $subTestFile = Join-Path -Path $TestsPath -ChildPath "Test-$FunctionName.Tests.ps1"
+        if (-not (Test-Path $subTestFile)) {
+            @{
+                Error     = "Test file not found: Test-$FunctionName.Tests.ps1"
+                PSVersion = $PSVersionTable.PSVersion.ToString()
+            } | ConvertTo-Json -Depth 3 | Set-Content -Path $ResultFile -Encoding UTF8
+            exit 1
+        }
+        $subTestFiles = @($subTestFile)
+    }
+    else {
+        $subTestFiles = @(Get-ChildItem -Path $TestsPath -Filter "Test-*.Tests.ps1" -ErrorAction SilentlyContinue)
+    }
+
+    $subPesterConfig = @{
+        Run    = @{ Path = $subTestFiles; PassThru = $true }
+        Output = @{ Verbosity = 'None' }
+    }
+
+    if ($FunctionName) {
+        $subCodePath = Join-Path -Path $Root -ChildPath "Code"
+        $subPublicPath = Join-Path $subCodePath -ChildPath 'Public'
+        $subPrivatePath = Join-Path $subCodePath -ChildPath 'Private'
+        $subFuncFile = Get-ChildItem -Path $subPublicPath -Filter "$FunctionName.ps1" -ErrorAction SilentlyContinue
+        if (-not $subFuncFile) {
+            $subFuncFile = Get-ChildItem -Path $subPrivatePath -Filter "$FunctionName.ps1" -ErrorAction SilentlyContinue
+        }
+        if ($subFuncFile) {
+            $subPesterConfig.CodeCoverage = @{
+                Enabled      = $true
+                Path         = @($subFuncFile.FullName)
+                OutputFormat = 'JaCoCo'
+            }
+        }
+    }
+
+    if ($Tag) { $subPesterConfig.Filter = @{ Tag = $Tag } }
+
+    $subConfig = New-PesterConfiguration -Hashtable $subPesterConfig
+
+    try {
+        $subResult = Invoke-Pester -Configuration $subConfig
+
+        $subCoveragePercent = "-"
+        if ($subResult.CodeCoverage -and $subResult.CodeCoverage.Count -gt 0) {
+            $subCoverageStr = "$($subResult.CodeCoverage[0])"
+            if ($subCoverageStr -match '([0-9.]+)%') {
+                $subCoveragePercent = "$($matches[1])%"
+            }
+        }
+
+        $failedTestsList = @()
+        foreach ($ft in $subResult.Failed) {
+            $failedMsg = ''
+            if ($ft.ErrorRecord) { $failedMsg = $ft.ErrorRecord.Exception.Message }
+            $failedTestsList += @{
+                Name    = $ft.ExpandedName
+                Message = $failedMsg
+            }
+        }
+
+        @{
+            PSVersion       = $PSVersionTable.PSVersion.ToString()
+            TotalCount      = $subResult.TotalCount
+            PassedCount     = $subResult.PassedCount
+            FailedCount     = $subResult.FailedCount
+            SkippedCount    = $subResult.SkippedCount
+            DurationMs      = [math]::Round($subResult.Duration.TotalMilliseconds)
+            CoveragePercent = $subCoveragePercent
+            FailedTests     = $failedTestsList
+        } | ConvertTo-Json -Depth 5 | Set-Content -Path $ResultFile -Encoding UTF8
+    }
+    catch {
+        @{
+            Error     = "Test execution failed: $_"
+            PSVersion = $PSVersionTable.PSVersion.ToString()
+        } | ConvertTo-Json -Depth 3 | Set-Content -Path $ResultFile -Encoding UTF8
+        exit 1
+    }
+
+    exit 0
+}
+#endregion
 
 Clear-Host
 Write-Host "========================================" -ForegroundColor Cyan
@@ -467,6 +610,28 @@ if($IncludeStructuralTests -and $FunctionName) {
     Write-Host ""
 }
 
+# Detect PowerShell version for dual-version testing
+$isPS7 = $PSVersionTable.PSVersion.Major -ge 6
+$currentPSLabel = "PowerShell $($PSVersionTable.PSVersion.Major).$($PSVersionTable.PSVersion.Minor)"
+$runInCurrent = ($PSVersion -eq 'Current') -or ($PSVersion -eq 'Both')
+$runInPS51 = ($PSVersion -eq 'Both') -or ($PSVersion -eq '5.1')
+
+# If already in PS 5.1 and -PSVersion is '5.1', run in current session
+if (-not $isPS7 -and $PSVersion -eq '5.1') {
+    $runInCurrent = $true
+    $runInPS51 = $false
+}
+
+# If in PS 7.x and -PSVersion is '5.1', skip current session (only subprocess)
+if ($isPS7 -and $PSVersion -eq '5.1') {
+    $runInCurrent = $false
+}
+
+Write-Host "[TEST] Current session: $currentPSLabel" -ForegroundColor Cyan
+if ($runInCurrent) { Write-Host "[TEST] Will test in: $currentPSLabel" -ForegroundColor Gray }
+if ($runInPS51 -and $isPS7) { Write-Host "[TEST] Will test in: PowerShell 5.1 (subprocess)" -ForegroundColor Gray }
+Write-Host ""
+
 # Build Pester configuration
 $pesterConfig = @{
     Run = @{
@@ -511,19 +676,112 @@ $config = New-PesterConfiguration -Hashtable $pesterConfig
 
 # Run tests
 try {
-    $result = Invoke-Pester -Configuration $config
+    $currentResult = $null
+    $ps51ResultData = $null
 
-    # Calculate combined results if structural tests were run
-    $totalTests = $result.TotalCount
-    $totalPassed = $result.PassedCount
-    $totalFailed = $result.FailedCount
-    $totalSkipped = $result.SkippedCount
+    # ==================== Run in current PowerShell version ====================
+    if ($runInCurrent) {
+        Write-Host ""
+        Write-Host "========================================" -ForegroundColor Blue
+        Write-Host "Running Functional Tests in $currentPSLabel" -ForegroundColor Blue
+        Write-Host "========================================" -ForegroundColor Blue
+        Write-Host ""
 
-    if($structuralResult) {
+        $currentResult = Invoke-Pester -Configuration $config
+    }
+
+    # ==================== Run in PowerShell 5.1 (subprocess) ====================
+    if ($runInPS51 -and $isPS7) {
+        Write-Host ""
+        Write-Host "========================================" -ForegroundColor Magenta
+        Write-Host "Running Functional Tests in PowerShell 5.1" -ForegroundColor Magenta
+        Write-Host "========================================" -ForegroundColor Magenta
+        Write-Host ""
+
+        $ps51Exe = Join-Path $env:SystemRoot 'System32\WindowsPowerShell\v1.0\powershell.exe'
+        if (-not (Test-Path $ps51Exe)) {
+            Write-Warning "Windows PowerShell 5.1 not found at: $ps51Exe"
+        }
+        else {
+            $tempResultFile = [System.IO.Path]::GetTempFileName()
+            try {
+                $scriptPath = $MyInvocation.MyCommand.Path
+                if (-not $scriptPath) {
+                    $scriptPath = Join-Path $TestsPath 'Invoke-Test.ps1'
+                }
+
+                Write-Host "[TEST] Launching PowerShell 5.1 subprocess..." -ForegroundColor Gray
+                Write-Host ""
+
+                $subArgs = @(
+                    '-NoProfile'
+                    '-ExecutionPolicy'
+                    'Bypass'
+                    '-File'
+                    $scriptPath
+                    '-SubprocessMode'
+                    '-ResultFile'
+                    $tempResultFile
+                )
+                if ($FunctionName) { $subArgs += @('-FunctionName', $FunctionName) }
+                if ($Tag) { $subArgs += @('-Tag', ($Tag -join ',')) }
+
+                & $ps51Exe @subArgs 2>&1 | ForEach-Object {
+                    if ($_ -is [System.Management.Automation.ErrorRecord]) {
+                        Write-Host "  PS 5.1 ERROR: $_" -ForegroundColor Red
+                    }
+                }
+
+                if (Test-Path $tempResultFile) {
+                    $jsonContent = Get-Content -Path $tempResultFile -Raw
+                    if ($jsonContent) {
+                        $ps51ResultData = $jsonContent | ConvertFrom-Json
+                        if ($ps51ResultData.Error) {
+                            Write-Warning "PowerShell 5.1: $($ps51ResultData.Error)"
+                            $ps51ResultData = $null
+                        }
+                    }
+                }
+                else {
+                    Write-Warning "No result file produced by PowerShell 5.1 subprocess"
+                }
+            }
+            catch {
+                Write-Warning "Failed to run tests in PowerShell 5.1: $_"
+            }
+            finally {
+                if (Test-Path $tempResultFile) {
+                    Remove-Item $tempResultFile -Force -ErrorAction SilentlyContinue
+                }
+            }
+        }
+    }
+
+    # ==================== Calculate combined results ====================
+    $totalTests = 0
+    $totalPassed = 0
+    $totalFailed = 0
+    $totalSkipped = 0
+
+    if ($structuralResult) {
         $totalTests += $structuralResult.TotalCount
         $totalPassed += $structuralResult.PassedCount
         $totalFailed += $structuralResult.FailedCount
         $totalSkipped += $structuralResult.SkippedCount
+    }
+
+    if ($currentResult) {
+        $totalTests += $currentResult.TotalCount
+        $totalPassed += $currentResult.PassedCount
+        $totalFailed += $currentResult.FailedCount
+        $totalSkipped += $currentResult.SkippedCount
+    }
+
+    if ($ps51ResultData) {
+        $totalTests += $ps51ResultData.TotalCount
+        $totalPassed += $ps51ResultData.PassedCount
+        $totalFailed += $ps51ResultData.FailedCount
+        $totalSkipped += $ps51ResultData.SkippedCount
     }
 
     # Display summary
@@ -531,43 +789,64 @@ try {
     Write-Host "========================================" -ForegroundColor Cyan
     Write-Host "Test Summary" -ForegroundColor Cyan
     Write-Host "========================================" -ForegroundColor Cyan
-    if($structuralResult) {
-        Write-Host "Structural: $($structuralResult.PassedCount)/$($structuralResult.TotalCount) passed" -ForegroundColor Gray
-        Write-Host "Functional: $($result.PassedCount)/$($result.TotalCount) passed" -ForegroundColor Gray
-        Write-Host "----------------------------------------" -ForegroundColor Cyan
+
+    if ($structuralResult) {
+        Write-Host "Structural:      Passed $($structuralResult.PassedCount)/$($structuralResult.TotalCount)" -ForegroundColor Gray
     }
+
+    if ($currentResult) {
+        $currentDuration = $currentResult.Duration
+        $currentColor = if ($currentResult.FailedCount -gt 0) { 'Yellow' } else { 'Gray' }
+        Write-Host "${currentPSLabel}:  Passed $($currentResult.PassedCount)/$($currentResult.TotalCount) | Failed $($currentResult.FailedCount) | Skipped $($currentResult.SkippedCount) | Duration $currentDuration" -ForegroundColor $currentColor
+    }
+
+    if ($ps51ResultData) {
+        $ps51DurMs = $ps51ResultData.DurationMs
+        $ps51DurationStr = if ($ps51DurMs -lt 1000) { "${ps51DurMs}ms" } else { "$([math]::Round($ps51DurMs / 1000, 2))s" }
+        $ps51Color = if ($ps51ResultData.FailedCount -gt 0) { 'Yellow' } else { 'Gray' }
+        Write-Host "PowerShell 5.1:  Passed $($ps51ResultData.PassedCount)/$($ps51ResultData.TotalCount) | Failed $($ps51ResultData.FailedCount) | Skipped $($ps51ResultData.SkippedCount) | Duration $ps51DurationStr" -ForegroundColor $ps51Color
+    }
+
+    Write-Host "----------------------------------------" -ForegroundColor Cyan
     Write-Host "Total:   $totalTests" -ForegroundColor White
     Write-Host "Passed:  $totalPassed" -ForegroundColor Green
     Write-Host "Failed:  $totalFailed" -ForegroundColor $(if($totalFailed -gt 0) { 'Red' } else { 'Gray' })
     Write-Host "Skipped: $totalSkipped" -ForegroundColor Yellow
-    Write-Host "Duration: $($result.Duration)" -ForegroundColor Gray
     Write-Host "========================================" -ForegroundColor Cyan
 
-    # Check for failures in either structural or functional tests
+    # Check for failures across all test runs
     $hasFailures = $totalFailed -gt 0
 
-    if($hasFailures) {
+    if ($hasFailures) {
         Write-Host ""
         Write-Host "Failed tests:" -ForegroundColor Red
 
-        # Show structural test failures if any
-        if($structuralResult -and $structuralResult.FailedCount -gt 0) {
+        if ($structuralResult -and $structuralResult.FailedCount -gt 0) {
             Write-Host "  Structural:" -ForegroundColor Yellow
-            foreach($test in $structuralResult.Failed) {
+            foreach ($test in $structuralResult.Failed) {
                 Write-Host "    - $($test.ExpandedName)" -ForegroundColor Red
-                if($test.ErrorRecord) {
+                if ($test.ErrorRecord) {
                     Write-Host "      $($test.ErrorRecord.Exception.Message)" -ForegroundColor Gray
                 }
             }
         }
 
-        # Show functional test failures if any
-        if($result.FailedCount -gt 0) {
-            Write-Host "  Functional:" -ForegroundColor Yellow
-            foreach($test in $result.Failed) {
+        if ($currentResult -and $currentResult.FailedCount -gt 0) {
+            Write-Host "  ${currentPSLabel}:" -ForegroundColor Yellow
+            foreach ($test in $currentResult.Failed) {
                 Write-Host "    - $($test.ExpandedName)" -ForegroundColor Red
-                if($test.ErrorRecord) {
+                if ($test.ErrorRecord) {
                     Write-Host "      $($test.ErrorRecord.Exception.Message)" -ForegroundColor Gray
+                }
+            }
+        }
+
+        if ($ps51ResultData -and $ps51ResultData.FailedCount -gt 0 -and $ps51ResultData.FailedTests) {
+            Write-Host "  PowerShell 5.1:" -ForegroundColor Yellow
+            foreach ($ft in $ps51ResultData.FailedTests) {
+                Write-Host "    - $($ft.Name)" -ForegroundColor Red
+                if ($ft.Message) {
+                    Write-Host "      $($ft.Message)" -ForegroundColor Gray
                 }
             }
         }
@@ -585,162 +864,146 @@ try {
             Write-Host ""
             Write-Host "Updating Test-Coverage.md..." -ForegroundColor Cyan
 
-            # Read the coverage file
             $coverageContent = Get-Content -Path $CoverageFilePath -Raw
+            $lines = @($coverageContent -split "`n")
 
-            if ($FunctionName) {
-                # Update coverage for a single function
+            # Helper function: update or insert a row in a specific section table, then sort rows
+            function Update-CoverageSection {
+                param(
+                    [string[]]$FileLines,
+                    [string]$SectionHeader,
+                    [string]$NewRow,
+                    [string]$FuncName
+                )
 
-                # Determine status
-                $status = "🟢 Passed"
-                if ($result.FailedCount -gt 0) {
-                    $status = "🔴 Failed"
-                }
-                elseif ($result.SkippedCount -gt 0 -and $result.PassedCount -gt 0) {
-                    $status = "🟡 Partial"
-                }
-
-                # Format duration
-                $durationMs = [math]::Round($result.Duration.TotalMilliseconds)
-                $durationStr = if ($durationMs -lt 1000) { "$($durationMs)ms" } else { "$([math]::Round($result.Duration.TotalSeconds, 2))s" }
-
-                # Calculate code coverage percentage
-                $coveragePercent = "-"
-                if ($result.CodeCoverage -and $result.CodeCoverage.Count -gt 0) {
-                    # CodeCoverage returns strings like "55.1% / 75%"
-                    $coverageStr = "$($result.CodeCoverage[0])"
-                    if ($coverageStr -match '^([0-9.]+)%') {
-                        $coveragePercent = "$($matches[1])%"
+                # Find section header
+                $sectionIdx = -1
+                $escapedHeader = [regex]::Escape($SectionHeader)
+                for ($i = 0; $i -lt $FileLines.Count; $i++) {
+                    if ($FileLines[$i].TrimEnd() -match "^${escapedHeader}\s*$") {
+                        $sectionIdx = $i
+                        break
                     }
                 }
+                if ($sectionIdx -lt 0) { return $FileLines }
 
-                # Find and replace the row for this function
-                $newRow = "| $FunctionName | Test-$FunctionName.Tests.ps1 | $status | $($result.PassedCount) | $($result.FailedCount) | $($result.SkippedCount) | $coveragePercent | $durationStr |"
+                # Find table separator (|---|---|...)
+                $separatorIdx = -1
+                for ($i = $sectionIdx + 1; $i -lt $FileLines.Count; $i++) {
+                    if ($FileLines[$i] -match '^\|\s*[-:]+\s*\|') {
+                        $separatorIdx = $i
+                        break
+                    }
+                    if ($FileLines[$i] -match '^##') { break }
+                }
+                if ($separatorIdx -lt 0) { return $FileLines }
 
-                # Split content into lines for easier replacement
-                $lines = $coverageContent -split "`n"
-                $found = $false
-                for ($i = 0; $i -lt $lines.Count; $i++) {
-                    if ($lines[$i] -match "^\|\s*$([regex]::Escape($FunctionName))\s*\|") {
-                        $lines[$i] = $newRow
-                        $found = $true
+                # Collect data rows and find table boundaries
+                $dataRows = [System.Collections.ArrayList]@()
+                $tableEndIdx = $separatorIdx
+                for ($i = $separatorIdx + 1; $i -lt $FileLines.Count; $i++) {
+                    $trimmed = $FileLines[$i].TrimEnd()
+                    if ($trimmed -match '^\|.+\|$') {
+                        [void]$dataRows.Add($trimmed)
+                        $tableEndIdx = $i
+                    }
+                    elseif ($trimmed -eq '') {
+                        continue
+                    }
+                    else {
                         break
                     }
                 }
 
-                if ($found) {
-                    $coverageContent = $lines -join "`n"
+                # Update existing row or add new one
+                $escapedFn = [regex]::Escape($FuncName)
+                $rowFound = $false
+                for ($j = 0; $j -lt $dataRows.Count; $j++) {
+                    if ($dataRows[$j] -match "^\|\s*${escapedFn}\s*\|") {
+                        $dataRows[$j] = $NewRow
+                        $rowFound = $true
+                        break
+                    }
                 }
-                else {
-                    # If the function row is not found, append it to the end of the table
-                    # Find the table header separator line (like |---|---|)
-                    $separatorIndex = -1
-                    for ($i = 0; $i -lt $lines.Count; $i++) {
-                        if ($lines[$i] -match '^\|\s*[-]+\s*\|') {
-                            $separatorIndex = $i
-                            break
-                        }
-                    }
+                if (-not $rowFound) { [void]$dataRows.Add($NewRow) }
 
-                    if ($separatorIndex -ge 0) {
-                        # Find the last table row after the separator (before any non-table content)
-                        $lastTableRowIndex = $separatorIndex
-                        for ($i = $separatorIndex + 1; $i -lt $lines.Count; $i++) {
-                            if ($lines[$i] -match '^\|.+\|$') {
-                                $lastTableRowIndex = $i
-                            }
-                            elseif ($lines[$i].Trim() -eq '') {
-                                # Skip empty lines
-                                continue
-                            }
-                            else {
-                                # Hit non-table content, stop
-                                break
-                            }
-                        }
+                # Sort rows alphabetically by function name (first column)
+                $sortedRows = @($dataRows | Sort-Object {
+                    if ($_ -match '^\|\s*([^\|]+?)\s*\|') { $matches[1].Trim() } else { $_ }
+                })
 
-                        # Insert after the last table row
-                        $beforeInsert = $lines[0..$lastTableRowIndex]
-                        $afterInsert = if ($lastTableRowIndex -lt ($lines.Count - 1)) { $lines[($lastTableRowIndex + 1)..($lines.Count - 1)] } else { @() }
-                        $lines = $beforeInsert + $newRow + $afterInsert
-                    }
-                    else {
-                        # If no separator line is found, just append to the end
-                        $lines += $newRow
-                    }
-                    $coverageContent = $lines -join "`n"
+                # Reconstruct file lines
+                $newLines = @()
+                $newLines += $FileLines[0..$separatorIdx]
+                $newLines += $sortedRows
+                if ($tableEndIdx -lt ($FileLines.Count - 1)) {
+                    $newLines += $FileLines[($tableEndIdx + 1)..($FileLines.Count - 1)]
                 }
+
+                return $newLines
             }
-            else {
-                # Update coverage for all functions by parsing test results
 
-                # Extract results from each test file
-                foreach ($testFile in $result.TestResult) {
-                    # Extract function name from test file path
-                    if ($testFile.FileName -match 'Test-(.+)\.Tests\.ps1$') {
-                        $functionName = $matches[1]
+            # Helper: determine test status emoji
+            function Get-TestStatusText {
+                param([int]$PassedCount, [int]$FailedCount, [int]$SkippedCount)
+                if ($FailedCount -gt 0) { return "🔴 Failed" }
+                if ($SkippedCount -gt 0 -and $PassedCount -gt 0) { return "🟡 Partial" }
+                if ($PassedCount -gt 0) { return "🟢 Passed" }
+                return "⏳ Not Run"
+            }
 
-                        # Group tests by function to get aggregate results
-                        $functionTests = @($result.TestResult | Where-Object { $_.FileName -like "*Test-$functionName.Tests.ps1*" })
+            # Helper: format duration
+            function Format-TestDuration {
+                param([double]$Milliseconds)
+                if ($Milliseconds -lt 1000) { return "$([math]::Round($Milliseconds))ms" }
+                return "$([math]::Round($Milliseconds / 1000, 2))s"
+            }
 
-                        if ($functionTests.Count -gt 0) {
-                            $passed = @($functionTests | Where-Object { $_.Result -eq 'Passed' }).Count
-                            $failed = @($functionTests | Where-Object { $_.Result -eq 'Failed' }).Count
-                            $skipped = @($functionTests | Where-Object { $_.Result -eq 'Skipped' }).Count
+            # Determine which section headers to update based on PS version
+            $currentSectionHeader = if ($isPS7) { "## PowerShell 7.x" } else { "## PowerShell 5.1" }
 
-                            # Determine status
-                            $status = "🟢 Passed"
-                            if ($failed -gt 0) {
-                                $status = "🔴 Failed"
-                            }
-                            elseif ($skipped -gt 0 -and $passed -gt 0) {
-                                $status = "🟡 Partial"
-                            }
+            if ($FunctionName) {
+                $testFileName = "Test-$FunctionName.Tests.ps1"
 
-                            # Format duration (estimate from test duration)
-                            $totalDuration = ($functionTests | Measure-Object -Property Duration -Sum).Sum
-                            $durationMs = [math]::Round($totalDuration.TotalMilliseconds)
-                            $durationStr = if ($durationMs -lt 1000) { "$($durationMs)ms" } else { "$([math]::Round($totalDuration.TotalSeconds, 2))s" }
+                # Update current PS version table
+                if ($currentResult) {
+                    $status = Get-TestStatusText -PassedCount $currentResult.PassedCount -FailedCount $currentResult.FailedCount -SkippedCount $currentResult.SkippedCount
+                    $durationStr = Format-TestDuration -Milliseconds $currentResult.Duration.TotalMilliseconds
 
-                            # Calculate code coverage percentage
-                            $coveragePercent = "-"
-                            if ($result.CodeCoverage -and $result.CodeCoverage.Count -gt 0) {
-                                # CodeCoverage returns strings like "55.1% / 75%"
-                                $coverageStr = "$($result.CodeCoverage[0])"
-                                if ($coverageStr -match '^([0-9.]+)%') {
-                                    $coveragePercent = "$($matches[1])%"
-                                }
-                            }
-
-                            # Find and replace the row
-                            $newRow = "| $functionName | $status | $passed | $failed | $skipped | $coveragePercent | $durationStr |"
-
-                            # Split content into lines for easier replacement
-                            $lines = $coverageContent -split "`n"
-                            for ($i = 0; $i -lt $lines.Count; $i++) {
-                                if ($lines[$i] -match "^\|\s*$([regex]::Escape($functionName))\s*\|") {
-                                    $lines[$i] = $newRow
-                                    $coverageContent = $lines -join "`n"
-                                    break
-                                }
-                            }
+                    $coveragePercent = "-"
+                    if ($currentResult.CodeCoverage -and $currentResult.CodeCoverage.Count -gt 0) {
+                        $coverageStr = "$($currentResult.CodeCoverage[0])"
+                        if ($coverageStr -match '([0-9.]+)%') {
+                            $coveragePercent = "$($matches[1])%"
                         }
                     }
+
+                    $newRow = "| $FunctionName | $testFileName | $status | $($currentResult.PassedCount) | $($currentResult.FailedCount) | $($currentResult.SkippedCount) | $coveragePercent | $durationStr |"
+                    $lines = Update-CoverageSection -FileLines $lines -SectionHeader $currentSectionHeader -NewRow $newRow -FuncName $FunctionName
+                }
+
+                # Update PowerShell 5.1 table (from subprocess results)
+                if ($ps51ResultData -and -not $ps51ResultData.Error) {
+                    $status = Get-TestStatusText -PassedCount $ps51ResultData.PassedCount -FailedCount $ps51ResultData.FailedCount -SkippedCount $ps51ResultData.SkippedCount
+                    $durationStr = Format-TestDuration -Milliseconds $ps51ResultData.DurationMs
+                    $coveragePercent = if ($ps51ResultData.CoveragePercent -and $ps51ResultData.CoveragePercent -ne '-') { $ps51ResultData.CoveragePercent } else { "-" }
+
+                    $newRow = "| $FunctionName | $testFileName | $status | $($ps51ResultData.PassedCount) | $($ps51ResultData.FailedCount) | $($ps51ResultData.SkippedCount) | $coveragePercent | $durationStr |"
+                    $lines = Update-CoverageSection -FileLines $lines -SectionHeader "## PowerShell 5.1" -NewRow $newRow -FuncName $FunctionName
                 }
             }
 
             # Update the "Last Updated" timestamp
             $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
-            $lines = $coverageContent -split "`n"
             for ($i = 0; $i -lt $lines.Count; $i++) {
                 if ($lines[$i] -match "^\*\*Last Updated:\*\*") {
                     $lines[$i] = "**Last Updated:** $timestamp"
                     break
                 }
             }
-            $coverageContent = $lines -join "`n"
 
             # Write back to the file
+            $coverageContent = $lines -join "`n"
             Set-Content -Path $CoverageFilePath -Value $coverageContent
 
             Write-Host "Test-Coverage.md updated successfully!" -ForegroundColor Green
@@ -751,17 +1014,17 @@ try {
     }
 
     # Return result object if requested
-    if($PassThru) {
-        # Combine results
-        $combinedResult = $result
-        if($structuralResult) {
-            Add-Member -InputObject $combinedResult -NotePropertyName 'StructuralResult' -NotePropertyValue $structuralResult -Force
+    if ($PassThru) {
+        $combinedResult = [PSCustomObject]@{
+            CurrentVersion = $currentResult
+            PS51           = $ps51ResultData
+            Structural     = $structuralResult
         }
         return $combinedResult
     }
 
     # Exit with appropriate code
-    if($hasFailures) {
+    if ($hasFailures) {
         exit 1
     }
     else {
