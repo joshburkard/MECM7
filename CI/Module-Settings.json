@@ -1,9 +1,9 @@
 {
   "ModuleName": "MECM7",
-  "ModuleVersion": "0.01.00045",
+  "ModuleVersion": "0.01.00046",
   "ModuleDescription": "managing MECM / SCCM through WinRM / CIM sessions",
   "ModuleAuthor": "Josua Burkard",
   "ModuleCompany": "Josua Burkard",
   "ModulePrefix": "CM7",
-  "LastChange": "added New-CM7SoftwareUpdateDeploymentPackage"
+  "LastChange": "added Remove-CM7SoftwareUpdateDeploymentPackage"
 }

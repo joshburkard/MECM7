@@ -132,6 +132,8 @@ other functions will be described in the [Help](./Help/README.md) folder
 - [`New-CM7SoftwareUpdateDeployment`](./Help/New-CM7SoftwareUpdateDeployment.md) - Create a new software update deployment in MECM
  [`New-CM7SoftwareUpdateDeploymentPackage`](./Help/New-CM7SoftwareUpdateDeploymentPackage.md) - Create a new software update deployment package in MECM
 
+- [`Remove-CM7SoftwareUpdateDeploymentPackage`](./Help/Remove-CM7SoftwareUpdateDeploymentPackage.md) - Remove a software update deployment package from MECM
+
 ### Task Sequence Management
 
 - [`Get-CM7TaskSequence`](./Help/Get-CM7TaskSequence.md) - Retrieve task sequence information from MECM

@@ -43,7 +43,8 @@ function New-CM7SoftwareUpdateDeploymentPackage {
     }
 
     # Check for existing package with the same name
-    Get-CM7SoftwareUpdateDeploymentPackage -Name $Name -ErrorAction Ignore | ForEach-Object {
+    $existingPkg = Get-CM7SoftwareUpdateDeploymentPackage -Name $Name -ErrorAction Ignore
+    if ($existingPkg) {
         throw "A deployment package with the name '$Name' already exists."
     }
 

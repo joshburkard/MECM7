@@ -1929,6 +1929,21 @@ $script:TestData = @{
         }
     }
 
+    # Remove-CM7SoftwareUpdateDeploymentPackage
+    # ========================================================================
+    'Remove-CM7SoftwareUpdateDeploymentPackage' = @{
+        ByName = @{
+            Name = "Test-SUG"  # Will be created by New-CM7SoftwareUpdateDeploymentPackage in tests
+        }
+        ById = @{
+            Id = "XXX00001"  # Will be set dynamically after creation
+        }
+        NonExistent = @{
+            Name = "NonExistent-DeploymentPackage-999"
+            Id = "ZZZZZZZZ"
+        }
+    }
+
     # ========================================================================
     # Set-CM7TaskSequenceDeployment
     # ========================================================================
