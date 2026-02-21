@@ -64,22 +64,16 @@ $script:TestData = @{
             SkipCertificateCheck = $script:CM7Connection.SkipCertificateCheck
             UseSsl = $script:CM7Connection.UseSsl
         }
-        Invalid = @{
-            SiteServer = "invalid-server.invalid.local"
+        Basic = @{
+            Name = "Test-DeploymentPackage"
+            Path = "\\sd.dika.be\data\SCCM\Patches\Servers-SecurityPatches\test"
+            Description = "Test deployment package created by automated tests"
         }
-    }
-
-    # ========================================================================
-    # Get-CM7Device
-    # ========================================================================
-    'Get-CM7Device' = @{
-        ByName = @{
-            Name = "TEST-DEVICE-001"  # Replace with an existing device name
-            ExpectedCount = 1
+        InvalidPath = @{
+            Name = "Test-DeploymentPackage"
+            Path = "Z:\Invalid\Path"
+            Description = "Test deployment package created by automated tests"
         }
-        ByResourceId = @{
-            ResourceId = 16777220  # Replace with an existing device ResourceID
-            ExpectedCount = 1
         }
         ByWildcard = @{
             Name = "TEST-*"  # Wildcard pattern
