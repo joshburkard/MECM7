@@ -105,7 +105,7 @@ Describe "Get-CM7DeviceVariable Function Tests" -Tag "Integration", "Device", "V
 
             # Assert
             if ($result) {
-                $result.Count | Should -BeGreaterOrEqual $script:TestDeviceVariableData.ByDeviceName.ExpectedMinCount
+                @($result).Count | Should -BeGreaterOrEqual $script:TestDeviceVariableData.ByDeviceName.ExpectedMinCount
                 $result[0].psobject.TypeNames[0] | Should -Be 'MECM7.DeviceVariable'
             } else {
                 # It's acceptable to have no variables
@@ -136,7 +136,7 @@ Describe "Get-CM7DeviceVariable Function Tests" -Tag "Integration", "Device", "V
 
             # Assert
             if ($result) {
-                $result.Count | Should -BeGreaterOrEqual $script:TestDeviceVariableData.ByResourceId.ExpectedMinCount
+                @($result).Count | Should -BeGreaterOrEqual $script:TestDeviceVariableData.ByResourceId.ExpectedMinCount
                 $result[0].psobject.TypeNames[0] | Should -Be 'MECM7.DeviceVariable'
             } else {
                 # It's acceptable to have no variables
@@ -169,7 +169,7 @@ Describe "Get-CM7DeviceVariable Function Tests" -Tag "Integration", "Device", "V
             # Assert
             if ($result) {
                 if ($result -is [array]) {
-                    $result.Count | Should -BeGreaterOrEqual 1
+                    @($result).Count | Should -BeGreaterOrEqual 1
                     foreach ($r in $result) {
                         $r.Name | Should -BeLike $variableName
                         $r.psobject.TypeNames[0] | Should -Be 'MECM7.DeviceVariable'

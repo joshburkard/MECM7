@@ -82,7 +82,7 @@ Describe "Get-CM7MaintenanceWindow Function Tests" -Tag "Integration", "Collecti
             $result = Get-CM7MaintenanceWindow -CollectionName $collectionName
             if ($result) {
                 if ($result -is [array]) {
-                    $result.Count | Should -BeGreaterOrEqual 1
+                    @($result).Count | Should -BeGreaterOrEqual 1
                     $result[0].psobject.TypeNames[0] | Should -Be 'MECM7.MaintenanceWindow'
                 } else {
                     $result.psobject.TypeNames[0] | Should -Be 'MECM7.MaintenanceWindow'
@@ -107,7 +107,7 @@ Describe "Get-CM7MaintenanceWindow Function Tests" -Tag "Integration", "Collecti
             $result = Get-CM7MaintenanceWindow -CollectionId $collectionId
             if ($result) {
                 if ($result -is [array]) {
-                    $result.Count | Should -BeGreaterOrEqual 1
+                    @($result).Count | Should -BeGreaterOrEqual 1
                     $result[0].psobject.TypeNames[0] | Should -Be 'MECM7.MaintenanceWindow'
                 } else {
                     $result.psobject.TypeNames[0] | Should -Be 'MECM7.MaintenanceWindow'
@@ -139,7 +139,7 @@ Describe "Get-CM7MaintenanceWindow Function Tests" -Tag "Integration", "Collecti
             $result = Get-CM7MaintenanceWindow -CollectionName $collectionName -MaintenanceWindowName $targetName
             if ($result) {
                 if ($result -is [array]) {
-                    $result.Count | Should -Be 1
+                    @($result).Count | Should -Be 1
                     $result[0].Name | Should -Be $targetName
                     $result[0].psobject.TypeNames[0] | Should -Be 'MECM7.MaintenanceWindow'
                 } else {

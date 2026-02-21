@@ -101,7 +101,7 @@ Describe "Get-CM7CollectionMember Function Tests" -Tag "Integration", "Collectio
 
             # Assert
             if ($result) {
-                $result.Count | Should -BeGreaterOrEqual $script:TestCollectionMemberData.ByCollectionName.ExpectedMinCount
+                @($result).Count | Should -BeGreaterOrEqual $script:TestCollectionMemberData.ByCollectionName.ExpectedMinCount
                 $result[0].psobject.TypeNames[0] | Should -Be 'MECM7.CollectionMember'
             } else {
                 # It's acceptable to have no members
@@ -132,7 +132,7 @@ Describe "Get-CM7CollectionMember Function Tests" -Tag "Integration", "Collectio
 
             # Assert
             if ($result) {
-                $result.Count | Should -BeGreaterOrEqual $script:TestCollectionMemberData.ByCollectionId.ExpectedMinCount
+                @($result).Count | Should -BeGreaterOrEqual $script:TestCollectionMemberData.ByCollectionId.ExpectedMinCount
                 $result[0].psobject.TypeNames[0] | Should -Be 'MECM7.CollectionMember'
             } else {
                 # It's acceptable to have no members

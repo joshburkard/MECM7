@@ -91,7 +91,7 @@ Describe "Get-CM7Collection Function Tests" -Tag "Integration", "Collection" {
 
             # Assert
             $result | Should -Not -BeNullOrEmpty
-            $result.Count | Should -Be $script:TestCollectionData.ByName.ExpectedCount
+            @($result).Count | Should -Be $script:TestCollectionData.ByName.ExpectedCount
             $result.Name | Should -Be $collectionName
         }
 
@@ -132,7 +132,7 @@ Describe "Get-CM7Collection Function Tests" -Tag "Integration", "Collection" {
 
             # Assert
             $result | Should -Not -BeNullOrEmpty
-            $result.Count | Should -Be $script:TestCollectionData.ByCollectionID.ExpectedCount
+            @($result).Count | Should -Be $script:TestCollectionData.ByCollectionID.ExpectedCount
             $result.CollectionId | Should -Be $collectionId
         }
 
@@ -265,7 +265,7 @@ Describe "Get-CM7Collection Function Tests" -Tag "Integration", "Collection" {
 
             # Assert
             $result | Should -Not -BeNullOrEmpty
-            $result.Count | Should -BeGreaterOrEqual $script:TestCollectionData.All.ExpectedMinCount
+            @($result).Count | Should -BeGreaterOrEqual $script:TestCollectionData.All.ExpectedMinCount
         }
     }
 

@@ -101,7 +101,7 @@ Describe "Get-CM7CollectionDirectMembershipRule Function Tests" -Tag "Integratio
 
             # Assert
             if ($result) {
-                $result.Count | Should -BeGreaterOrEqual $script:TestDirectMembershipRuleData.ByCollectionName.ExpectedMinCount
+                @($result).Count | Should -BeGreaterOrEqual $script:TestDirectMembershipRuleData.ByCollectionName.ExpectedMinCount
                 $result[0].psobject.TypeNames[0] | Should -Be 'MECM7.CollectionDirectMember'
             } else {
                 # It's acceptable to have no direct members
@@ -132,7 +132,7 @@ Describe "Get-CM7CollectionDirectMembershipRule Function Tests" -Tag "Integratio
 
             # Assert
             if ($result) {
-                $result.Count | Should -BeGreaterOrEqual $script:TestDirectMembershipRuleData.ByCollectionId.ExpectedMinCount
+                @($result).Count | Should -BeGreaterOrEqual $script:TestDirectMembershipRuleData.ByCollectionId.ExpectedMinCount
                 $result[0].psobject.TypeNames[0] | Should -Be 'MECM7.CollectionDirectMember'
             } else {
                 # It's acceptable to have no direct members

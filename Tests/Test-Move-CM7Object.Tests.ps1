@@ -139,7 +139,7 @@ Describe "Move-CM7Object Function Tests" -Tag "Integration", "Object", "Move" {
 
             # Assert
             $result | Should -Not -BeNullOrEmpty
-            $result.Count | Should -Be $objectIds.Count
+            @($result).Count | Should -Be $objectIds.Count
         }
     }
 
@@ -201,7 +201,7 @@ Describe "Move-CM7Object Function Tests" -Tag "Integration", "Object", "Move" {
 
             # Assert
             $result | Should -Not -BeNullOrEmpty
-            $result.Count | Should -Be $objectIds.Count
+            @($result).Count | Should -Be $objectIds.Count
         }
 
         It "Should resolve FolderPath with verbose output showing WQL queries" {

@@ -96,7 +96,7 @@ Describe "Get-CM7Device Function Tests" -Tag "Integration", "Device" {
 
             # Assert
             $result | Should -Not -BeNullOrEmpty
-            $result.Count | Should -Be $script:TestDeviceData.ByName.ExpectedCount
+            @($result).Count | Should -Be $script:TestDeviceData.ByName.ExpectedCount
             $result.Name | Should -Be $deviceName
         }
 
@@ -120,7 +120,7 @@ Describe "Get-CM7Device Function Tests" -Tag "Integration", "Device" {
 
             # Assert
             $result | Should -Not -BeNullOrEmpty
-            $result.Count | Should -BeGreaterOrEqual $script:TestDeviceData.ByWildcard.ExpectedMinCount
+            @($result).Count | Should -BeGreaterOrEqual $script:TestDeviceData.ByWildcard.ExpectedMinCount
             $result | ForEach-Object {
                 $_.Name | Should -BeLike $pattern
             }
@@ -138,7 +138,7 @@ Describe "Get-CM7Device Function Tests" -Tag "Integration", "Device" {
 
             # Assert
             $result | Should -Not -BeNullOrEmpty
-            $result.Count | Should -Be $script:TestDeviceData.ByResourceId.ExpectedCount
+            @($result).Count | Should -Be $script:TestDeviceData.ByResourceId.ExpectedCount
             $result.ResourceId | Should -Be $resourceId
         }
 
@@ -165,7 +165,7 @@ Describe "Get-CM7Device Function Tests" -Tag "Integration", "Device" {
 
             # Assert
             $result | Should -Not -BeNullOrEmpty
-            $result.Count | Should -BeGreaterOrEqual $script:TestDeviceData.ByCollectionName.ExpectedMinCount
+            @($result).Count | Should -BeGreaterOrEqual $script:TestDeviceData.ByCollectionName.ExpectedMinCount
         }
 
         It "Should retrieve devices by CollectionId" {
@@ -177,7 +177,7 @@ Describe "Get-CM7Device Function Tests" -Tag "Integration", "Device" {
 
             # Assert
             $result | Should -Not -BeNullOrEmpty
-            $result.Count | Should -BeGreaterOrEqual $script:TestDeviceData.ByCollectionId.ExpectedMinCount
+            @($result).Count | Should -BeGreaterOrEqual $script:TestDeviceData.ByCollectionId.ExpectedMinCount
         }
 
         It "Should return null for non-existent collection" {
@@ -281,7 +281,7 @@ Describe "Get-CM7Device Function Tests" -Tag "Integration", "Device" {
 
             # Assert
             $result | Should -Not -BeNullOrEmpty
-            $result.Count | Should -BeGreaterOrEqual $script:TestDeviceData.All.ExpectedMinCount
+            @($result).Count | Should -BeGreaterOrEqual $script:TestDeviceData.All.ExpectedMinCount
         }
     }
 

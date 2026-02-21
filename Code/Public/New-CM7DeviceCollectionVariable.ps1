@@ -89,7 +89,6 @@ function New-CM7DeviceCollectionVariable {
 
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
-        [ValidatePattern('^\S+$', ErrorMessage = 'Variable name must not contain spaces.')]
         [string]$VariableName,
 
         [Parameter(Mandatory = $true)]
@@ -110,6 +109,11 @@ function New-CM7DeviceCollectionVariable {
         # Validate connection
         if (-not $script:CMConnection.CimSession) {
             throw "Not connected to MECM. Please run Connect-CM7 first."
+        }
+
+        # Validate variable name format (PowerShell 5.1-compatible custom message)
+        if ($VariableName -match '\s') {
+            throw "Variable name must not contain spaces."
         }
 
         # Determine the namespace

@@ -191,7 +191,7 @@ Describe "Get-CM7ScriptExecutionStatus Function Tests" -Tag "Integration", "Scri
                 ScriptName = $scriptName
                 DeviceName = $deviceName
             }
-            if ($scriptParams -and $scriptParams.Count -gt 0) {
+            if ($scriptParams -and @($scriptParams).Count -gt 0) {
                 $invokeParams.ScriptParameters = $scriptParams
             }
 
@@ -221,7 +221,7 @@ Describe "Get-CM7ScriptExecutionStatus Function Tests" -Tag "Integration", "Scri
                 ScriptName = $scriptName
                 DeviceName = $deviceName
             }
-            if ($scriptParams -and $scriptParams.Count -gt 0) {
+            if ($scriptParams -and @($scriptParams).Count -gt 0) {
                 $invokeParams.ScriptParameters = $scriptParams
             }
 
@@ -251,7 +251,7 @@ Describe "Get-CM7ScriptExecutionStatus Function Tests" -Tag "Integration", "Scri
             $result | Should -Not -BeNullOrEmpty
             $result.CompletedClients | Should -BeGreaterThan 0
             $result.Results | Should -Not -BeNullOrEmpty
-            $result.Results.Count | Should -BeGreaterThan 0
+            @($result.Results).Count | Should -BeGreaterThan 0
         }
     }
 

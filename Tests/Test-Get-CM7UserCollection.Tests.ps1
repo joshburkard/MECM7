@@ -91,7 +91,7 @@ Describe "Get-CM7UserCollection Function Tests" -Tag "Integration", "UserCollect
 
             # Assert
             $result | Should -Not -BeNullOrEmpty
-            $result.Count | Should -Be $script:TestUserCollectionData.ByName.ExpectedCount
+            @($result).Count | Should -Be $script:TestUserCollectionData.ByName.ExpectedCount
             $result.Name | Should -Be $collectionName
         }
 
@@ -132,7 +132,7 @@ Describe "Get-CM7UserCollection Function Tests" -Tag "Integration", "UserCollect
 
             # Assert
             $result | Should -Not -BeNullOrEmpty
-            $result.Count | Should -Be $script:TestUserCollectionData.ByCollectionID.ExpectedCount
+            @($result).Count | Should -Be $script:TestUserCollectionData.ByCollectionID.ExpectedCount
             $result.CollectionId | Should -Be $collectionId
         }
 
@@ -271,7 +271,7 @@ Describe "Get-CM7UserCollection Function Tests" -Tag "Integration", "UserCollect
             # Assert
             # May or may not have results depending on the environment
             if ($result) {
-                $result.Count | Should -BeGreaterOrEqual $script:TestUserCollectionData.All.ExpectedMinCount
+                @($result).Count | Should -BeGreaterOrEqual $script:TestUserCollectionData.All.ExpectedMinCount
             }
         }
     }

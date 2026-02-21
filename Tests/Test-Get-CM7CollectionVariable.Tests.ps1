@@ -105,7 +105,7 @@ Describe "Get-CM7CollectionVariable Function Tests" -Tag "Integration", "Collect
 
             # Assert
             if ($result) {
-                $result.Count | Should -BeGreaterOrEqual $script:TestCollectionVariableData.ByCollectionName.ExpectedMinCount
+                @($result).Count | Should -BeGreaterOrEqual $script:TestCollectionVariableData.ByCollectionName.ExpectedMinCount
                 $result[0].psobject.TypeNames[0] | Should -Be 'MECM7.CollectionVariable'
             } else {
                 # It's acceptable to have no variables
@@ -136,7 +136,7 @@ Describe "Get-CM7CollectionVariable Function Tests" -Tag "Integration", "Collect
 
             # Assert
             if ($result) {
-                $result.Count | Should -BeGreaterOrEqual $script:TestCollectionVariableData.ByCollectionId.ExpectedMinCount
+                @($result).Count | Should -BeGreaterOrEqual $script:TestCollectionVariableData.ByCollectionId.ExpectedMinCount
                 $result[0].psobject.TypeNames[0] | Should -Be 'MECM7.CollectionVariable'
             } else {
                 # It's acceptable to have no variables
@@ -169,7 +169,7 @@ Describe "Get-CM7CollectionVariable Function Tests" -Tag "Integration", "Collect
             # Assert
             if ($result) {
                 if ($result -is [array]) {
-                    $result.Count | Should -Be 1
+                    @($result).Count | Should -Be 1
                     $result[0].Name | Should -Be $variableName
                     $result[0].psobject.TypeNames[0] | Should -Be 'MECM7.CollectionVariable'
                 } else {

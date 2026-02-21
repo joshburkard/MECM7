@@ -89,7 +89,7 @@ function New-CM7DeviceVariable {
 
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
-        [ValidatePattern('^\S+$', ErrorMessage = 'Variable name must not contain spaces.')]
+        [ValidatePattern('^\S+$')]
         [string]$VariableName,
 
         [Parameter(Mandatory = $true)]

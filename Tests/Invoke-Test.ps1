@@ -73,6 +73,35 @@
 [CmdletBinding()]
 param(
     [Parameter(Position=0)]
+    [ArgumentCompleter({
+        param($commandName, $parameterName, $wordToComplete, $commandAst, $fakeBoundParameters)
+        # Resolve the Tests folder from the script being invoked
+        $scriptFile = $commandAst.CommandElements[0].Value
+        if ($scriptFile) {
+            $resolved = Resolve-Path $scriptFile -ErrorAction SilentlyContinue
+            if ($resolved) { $testsPath = Split-Path -Parent $resolved }
+        }
+        if (-not $testsPath) { $testsPath = $PSScriptRoot }
+        if (-not $testsPath) { $testsPath = $PWD.Path }
+        Get-ChildItem -Path $testsPath -Filter "Test-*.Tests.ps1" -ErrorAction SilentlyContinue |
+            ForEach-Object { $_.Name -replace '^Test-(.+)\.Tests\.ps1$', '$1' } |
+            Where-Object { $_ -like "$wordToComplete*" } |
+            Sort-Object |
+            ForEach-Object {
+                [System.Management.Automation.CompletionResult]::new($_, $_, 'ParameterValue', $_)
+            }
+    })]
+    [ValidateScript({
+        if ([string]::IsNullOrEmpty($_)) { return $true }
+        $testsPath = $PSScriptRoot
+        if (-not $testsPath) { $testsPath = Split-Path -Parent $PSCommandPath }
+        $testFile = Join-Path $testsPath "Test-$_.Tests.ps1"
+        if (Test-Path $testFile) { return $true }
+        $available = (Get-ChildItem -Path $testsPath -Filter "Test-*.Tests.ps1" -ErrorAction SilentlyContinue |
+            ForEach-Object { $_.Name -replace '^Test-(.+)\.Tests\.ps1$', '$1' } |
+            Sort-Object) -join ', '
+        throw "Test file 'Test-$_.Tests.ps1' not found. Available: $available"
+    })]
     [string]$FunctionName,
 
     [Parameter()]
@@ -978,7 +1007,7 @@ try {
                         }
                     }
 
-                    $newRow = "| $FunctionName | $testFileName | $status | $($currentResult.PassedCount) | $($currentResult.FailedCount) | $($currentResult.SkippedCount) | $coveragePercent | $durationStr |"
+                    $newRow = "| $FunctionName | $status | $($currentResult.PassedCount) | $($currentResult.FailedCount) | $($currentResult.SkippedCount) | $coveragePercent | $durationStr |"
                     $lines = Update-CoverageSection -FileLines $lines -SectionHeader $currentSectionHeader -NewRow $newRow -FuncName $FunctionName
                 }
 
@@ -988,7 +1017,7 @@ try {
                     $durationStr = Format-TestDuration -Milliseconds $ps51ResultData.DurationMs
                     $coveragePercent = if ($ps51ResultData.CoveragePercent -and $ps51ResultData.CoveragePercent -ne '-') { $ps51ResultData.CoveragePercent } else { "-" }
 
-                    $newRow = "| $FunctionName | $testFileName | $status | $($ps51ResultData.PassedCount) | $($ps51ResultData.FailedCount) | $($ps51ResultData.SkippedCount) | $coveragePercent | $durationStr |"
+                    $newRow = "| $FunctionName | $status | $($ps51ResultData.PassedCount) | $($ps51ResultData.FailedCount) | $($ps51ResultData.SkippedCount) | $coveragePercent | $durationStr |"
                     $lines = Update-CoverageSection -FileLines $lines -SectionHeader "## PowerShell 5.1" -NewRow $newRow -FuncName $FunctionName
                 }
             }
@@ -1003,8 +1032,8 @@ try {
             }
 
             # Write back to the file
-            $coverageContent = $lines -join "`n"
-            Set-Content -Path $CoverageFilePath -Value $coverageContent
+            $coverageContent = ($lines -join "`n").TrimEnd("`r", "`n")
+            [System.IO.File]::WriteAllText($CoverageFilePath, $coverageContent + "`n")
 
             Write-Host "Test-Coverage.md updated successfully!" -ForegroundColor Green
         }

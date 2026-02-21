@@ -91,7 +91,7 @@ Describe "Get-CM7DeviceCollection Function Tests" -Tag "Integration", "DeviceCol
 
             # Assert
             $result | Should -Not -BeNullOrEmpty
-            $result.Count | Should -Be $script:TestDeviceCollectionData.ByName.ExpectedCount
+            @($result).Count | Should -Be $script:TestDeviceCollectionData.ByName.ExpectedCount
             $result.Name | Should -Be $collectionName
         }
 
@@ -132,7 +132,7 @@ Describe "Get-CM7DeviceCollection Function Tests" -Tag "Integration", "DeviceCol
 
             # Assert
             $result | Should -Not -BeNullOrEmpty
-            $result.Count | Should -Be $script:TestDeviceCollectionData.ByCollectionID.ExpectedCount
+            @($result).Count | Should -Be $script:TestDeviceCollectionData.ByCollectionID.ExpectedCount
             $result.CollectionId | Should -Be $collectionId
         }
 
@@ -268,7 +268,7 @@ Describe "Get-CM7DeviceCollection Function Tests" -Tag "Integration", "DeviceCol
 
             # Assert
             $result | Should -Not -BeNullOrEmpty
-            $result.Count | Should -BeGreaterOrEqual $script:TestDeviceCollectionData.All.ExpectedMinCount
+            @($result).Count | Should -BeGreaterOrEqual $script:TestDeviceCollectionData.All.ExpectedMinCount
         }
     }
 
