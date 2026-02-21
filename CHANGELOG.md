@@ -42,3 +42,4 @@
 0.01.00040 | added Get-CM7TaskSequenceDeployment | 2026-02-20 | Josua Burkard
 0.01.00041 | added New-CM7TaskSequenceDeployment | 2026-02-20 | Josua Burkard
 0.01.00042 | added Remove-CM7TaskSequenceDeployment and tests for PS 5.1 | 2026-02-20 | Josua Burkard
+0.01.00044 | added Set-CM7TaskSequenceDeployment | 2026-02-21 | Josua Burkard

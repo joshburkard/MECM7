@@ -51,6 +51,7 @@ function Connect-CM7 {
         $script:CMConnection.ProviderMachineName = $connectionInfo.ProviderMachineName
         $script:CMConnection.SkipCertificateCheck = [bool]$SkipCertificateCheck
         $script:CMConnection.UseSsl = [bool]$UseSsl
+        $script:CMConnection.Credential = if ($Credential) { $Credential } else { $null }
 
         Write-Verbose "Connected to $SiteServer (SiteCode: $($script:CMConnection.SiteCode), Provider: $($script:CMConnection.ProviderMachineName))"
 
@@ -72,6 +73,7 @@ $script:CMConnection = @{
     CimSession = $null
     SiteCode = $null
     ProviderMachineName = $null
+    Credential = $null
     SkipCertificateCheck = $false
     UseSsl = $false
 }

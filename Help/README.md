@@ -43,6 +43,7 @@ This directory contains markdown documentation for all MECM7 module functions.
 | [Get-CM7TaskSequence](./Get-CM7TaskSequence.md) | Retrieves task sequence information from MECM using CIM. |
 | [Get-CM7TaskSequenceDeployment](./Get-CM7TaskSequenceDeployment.md) | Retrieves task sequence deployment information from MECM using CIM. |
 | [New-CM7TaskSequenceDeployment](./New-CM7TaskSequenceDeployment.md) | Creates a new task sequence deployment in MECM using CIM. |
+| [Set-CM7TaskSequenceDeployment](./Set-CM7TaskSequenceDeployment.md) | Configures an existing task sequence deployment in MECM using CIM. |
 | [Remove-CM7TaskSequenceDeployment](./Remove-CM7TaskSequenceDeployment.md) | Removes a task sequence deployment from MECM using CIM. |
 | [Move-CM7Object](./Move-CM7Object.md) | Moves MECM objects (collections, packages, etc.) between folders using CIM. |
 | [New-CM7Collection](./New-CM7Collection.md) | Creates a new device or user collection in MECM using CIM. |

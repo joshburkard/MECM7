@@ -1935,6 +1935,27 @@ $script:TestData = @{
         }
     }
 
+    # ========================================================================
+    # Set-CM7TaskSequenceDeployment
+    # ========================================================================
+    'Set-CM7TaskSequenceDeployment' = @{
+        TestDeployment = @{
+            TaskSequencePackageId = "ABC00001"  # Replace with an existing task sequence PackageID
+            TaskSequenceName = "Your-TaskSequence-Name"  # Replace with an existing task sequence name
+            CollectionName = "Your-Test-Collection"  # Replace with an existing collection name
+            AlternateCollections = @(
+                "Your-Test-Collection-Include",
+                "Your-Test-Collection-Exclude",
+                "Your-Test-Collection-Rules",
+                "Your-Test-Collection-Query"
+            )
+        }
+        NonExistent = @{
+            TaskSequenceDeploymentId = "XXX99999"
+            CollectionName = "NonExistent-Collection-999"
+        }
+    }
+
 }
 #endregion
 

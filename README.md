@@ -136,6 +136,7 @@ other functions will be described in the [Help](./Help/README.md) folder
 - [`Get-CM7TaskSequence`](./Help/Get-CM7TaskSequence.md) - Retrieve task sequence information from MECM
 - [`Get-CM7TaskSequenceDeployment`](./Help/Get-CM7TaskSequenceDeployment.md) - Retrieve task sequence deployment information from MECM
 - [`New-CM7TaskSequenceDeployment`](./Help/New-CM7TaskSequenceDeployment.md) - Create a new task sequence deployment in MECM
+- [`Set-CM7TaskSequenceDeployment`](./Help/Set-CM7TaskSequenceDeployment.md) - Configure an existing task sequence deployment in MECM
 - [`Remove-CM7TaskSequenceDeployment`](./Help/Remove-CM7TaskSequenceDeployment.md) - Remove a task sequence deployment from MECM
 
 ### Deployment Management
