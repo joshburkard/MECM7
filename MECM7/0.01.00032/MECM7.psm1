@@ -3820,12 +3820,12 @@ function Get-CM7SoftwareUpdateDeploymentPackage {
             Retrieves the software update deployment package with the specified package ID.
 
         .EXAMPLE
-            Get-CM7SoftwareUpdateDeploymentPackage -Name "SO Servers-SecurityPatches-2024-01"
+            Get-CM7SoftwareUpdateDeploymentPackage -Name "Test-SUG"
             Retrieves the software update deployment package with the specified name.
 
         .EXAMPLE
-            Get-CM7SoftwareUpdateDeploymentPackage -Name "SO Servers*"
-            Retrieves all software update deployment packages whose names start with "SO Servers".
+            Get-CM7SoftwareUpdateDeploymentPackage -Name "Test-SUG*"
+            Retrieves all software update deployment packages whose names start with "Test-SUG".
 
         .EXAMPLE
             Get-CM7SoftwareUpdateDeploymentPackage -Name "*SecurityPatches*"
@@ -4027,12 +4027,12 @@ function Get-CM7SoftwareUpdateGroup {
             Retrieves the software update group with the specified CI_ID.
 
         .EXAMPLE
-            Get-CM7SoftwareUpdateGroup -Name "SO Servers-SecurityPatches-2024-01"
+            Get-CM7SoftwareUpdateGroup -Name "Test-SUG"
             Retrieves the software update group with the specified name.
 
         .EXAMPLE
-            Get-CM7SoftwareUpdateGroup -Name "SO Servers*"
-            Retrieves all software update groups whose names start with "SO Servers".
+            Get-CM7SoftwareUpdateGroup -Name "Test-SUG*"
+            Retrieves all software update groups whose names start with "Test-SUG".
 
         .EXAMPLE
             Get-CM7SoftwareUpdateGroup -Name "*SecurityPatches*"
@@ -6563,7 +6563,7 @@ function New-CM7SoftwareUpdateGroup {
             Prompts you for confirmation before running the cmdlet.
 
         .EXAMPLE
-            New-CM7SoftwareUpdateGroup -Name "SO Servers-SecurityPatches-Test" -Description "Test group for security patches"
+            New-CM7SoftwareUpdateGroup -Name "Test-SUG" -Description "Test group for security patches"
             Creates an empty software update group with the specified name and description.
 
         .EXAMPLE

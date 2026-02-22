@@ -25,7 +25,7 @@ function New-CM7SoftwareUpdateDeploymentPackage {
             An optional description for the deployment package.
 
         .EXAMPLE
-            New-CM7SoftwareUpdateDeploymentPackage -SoftwareUpdateGroupName "Test-SUG" -DeploymentPackageName "Test-DeploymentPackage" -PackageSourcePath "\\sd.dika.be\data\SCCM\Patches\Servers-SecurityPatches\test" -Description "Test deployment package created by automated tests"
+            New-CM7SoftwareUpdateDeploymentPackage -SoftwareUpdateGroupName "Test-SUG" -DeploymentPackageName "Test-DeploymentPackage" -PackageSourcePath "\\mecm.yourdomain.local\Patches\Test" -Description "Test deployment package created by automated tests"
     #>
     [CmdletBinding()]
     param(

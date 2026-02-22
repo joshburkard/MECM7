@@ -1,5 +1,5 @@
 <#
-    Generated at 02/20/2026 13:00:34 by Josua Burkard
+    Generated at 02/22/2026 14:26:14 by Josua Burkard
 #>
 #region namespace MECM7
 function Invoke-CM7Connection {
@@ -1053,6 +1053,7 @@ function Connect-CM7 {
         $script:CMConnection.ProviderMachineName = $connectionInfo.ProviderMachineName
         $script:CMConnection.SkipCertificateCheck = [bool]$SkipCertificateCheck
         $script:CMConnection.UseSsl = [bool]$UseSsl
+        $script:CMConnection.Credential = if ($Credential) { $Credential } else { $null }
 
         Write-Verbose "Connected to $SiteServer (SiteCode: $($script:CMConnection.SiteCode), Provider: $($script:CMConnection.ProviderMachineName))"
 
@@ -1074,6 +1075,7 @@ $script:CMConnection = @{
     CimSession = $null
     SiteCode = $null
     ProviderMachineName = $null
+    Credential = $null
     SkipCertificateCheck = $false
     UseSsl = $false
 }
@@ -4192,7 +4194,7 @@ function Get-CM7SoftwareUpdateDeploymentPackage {
             Retrieves the software update deployment package with the specified package ID.
 
         .EXAMPLE
-            Get-CM7SoftwareUpdateDeploymentPackage -Name "Test-SUG"
+            Get-CM7SoftwareUpdateDeploymentPackage -Name "SecurityPatchesPackage"
             Retrieves the software update deployment package with the specified name.
 
         .EXAMPLE
@@ -4399,7 +4401,7 @@ function Get-CM7SoftwareUpdateGroup {
             Retrieves the software update group with the specified CI_ID.
 
         .EXAMPLE
-            Get-CM7SoftwareUpdateGroup -Name "Test-SUG"
+            Get-CM7SoftwareUpdateGroup -Name "SecurityPatchesGroup"
             Retrieves the software update group with the specified name.
 
         .EXAMPLE
@@ -6906,7 +6908,6 @@ function New-CM7DeviceCollectionVariable {
 
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
-        [ValidatePattern('^\S+$', ErrorMessage = 'Variable name must not contain spaces.')]
         [string]$VariableName,
 
         [Parameter(Mandatory = $true)]
@@ -6927,6 +6928,11 @@ function New-CM7DeviceCollectionVariable {
         # Validate connection
         if (-not $script:CMConnection.CimSession) {
             throw "Not connected to MECM. Please run Connect-CM7 first."
+        }
+
+        # Validate variable name format (PowerShell 5.1-compatible custom message)
+        if ($VariableName -match '\s') {
+            throw "Variable name must not contain spaces."
         }
 
         # Determine the namespace
@@ -7186,7 +7192,7 @@ function New-CM7DeviceVariable {
 
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
-        [ValidatePattern('^\S+$', ErrorMessage = 'Variable name must not contain spaces.')]
+        [ValidatePattern('^\S+$')]
         [string]$VariableName,
 
         [Parameter(Mandatory = $true)]
@@ -8910,6 +8916,75 @@ function New-CM7SoftwareUpdateDeployment {
         }
     }
 }
+function New-CM7SoftwareUpdateDeploymentPackage {
+    <#
+        .SYNOPSIS
+            Creates a new software update deployment package in MECM using CIM connectivity.
+
+        .DESCRIPTION
+            Creates a new software update deployment package (SMS_SoftwareUpdatePackage) in Microsoft Endpoint Configuration Manager (MECM) using CIM. This is the CIM-based equivalent of New-CMSoftwareUpdateDeploymentPackage from the ConfigurationManager module, but uses direct CIM queries.
+
+            The function performs the following actions:
+            1. Validates an active connection (Connect-CM7)
+            2. Resolves the software update group by name
+            3. Creates a new SMS_SoftwareUpdatePackage instance via CIM with the specified parameters
+            4. Returns the created package as a formatted MECM7.SoftwareUpdateDeploymentPackage object
+
+        .PARAMETER SoftwareUpdateGroupName
+            The name of the software update group to package.
+
+        .PARAMETER DeploymentPackageName
+            The name for the new deployment package.
+
+        .PARAMETER PackageSourcePath
+            The UNC path for the package source (e.g., \\server\share\path).
+
+        .PARAMETER Description
+            An optional description for the deployment package.
+
+        .EXAMPLE
+            New-CM7SoftwareUpdateDeploymentPackage -SoftwareUpdateGroupName "Test-SUG" -DeploymentPackageName "Test-DeploymentPackage" -PackageSourcePath "\\mecm.yourdomain.local\Patches\Test" -Description "Test deployment package created by automated tests"
+    #>
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory)]
+        [string]$Name,
+        [Parameter(Mandatory)]
+        [string]$Path,
+        [Parameter()]
+        [string]$Description
+    )
+
+    # Validate connection
+    if (-not $script:CMConnection.CimSession) {
+        throw "No active MECM7 connection. Run Connect-CM7 first."
+    }
+
+    # Check for existing package with the same name
+    $existingPkg = Get-CM7SoftwareUpdateDeploymentPackage -Name $Name -ErrorAction Ignore
+    if ($existingPkg) {
+        throw "A deployment package with the name '$Name' already exists."
+    }
+
+    # check if the unc path exists
+    # Test-Path does not support UNC paths, so we will use Get-Item and check for exceptions
+    if (-not ( [System.IO.Directory]::Exists($Path) )) {
+        throw "The specified package source path '$Path' does not exist or is not accessible."
+    }
+
+    $namespace = "root/SMS/site_$($script:CMConnection.SiteCode)"
+    $cimSession = $script:CMConnection.CimSession
+    $packageProps = @{
+        Name = $Name
+        Description = $Description
+        PkgSourcePath = $Path
+        PkgSourceFlag = 2 # UNC source
+    }
+    $newPackage = New-CimInstance -CimSession $cimSession -Namespace $namespace -ClassName "SMS_SoftwareUpdatesPackage" -Property $packageProps
+
+    # Return object
+    $newPackage
+}
 function New-CM7SoftwareUpdateGroup {
     <#
         .SYNOPSIS
@@ -9157,6 +9232,605 @@ function New-CM7SoftwareUpdateGroup {
                     Write-Output $output
                 } else {
                     Write-Warning "Software update group was created but could not retrieve the result. CI_ID: $groupId"
+                }
+            }
+        }
+        catch {
+            throw $_
+        }
+    }
+}
+function New-CM7TaskSequenceDeployment {
+    <#
+        .SYNOPSIS
+            Creates a new task sequence deployment in MECM using CIM.
+
+        .DESCRIPTION
+            Creates a new task sequence deployment (SMS_Advertisement) in Microsoft Endpoint
+            Configuration Manager (MECM) using CIM. A task sequence deployment assigns a task
+            sequence to a target collection, defining how and when the task sequence is run
+            on targeted clients.
+
+            This is the CIM-based equivalent of the New-CMTaskSequenceDeployment cmdlet from the
+            ConfigurationManager PowerShell module, but uses direct CIM queries over WinRM
+            instead of requiring the ConfigMgr console or PowerShell drive.
+
+            The function performs the following actions:
+            1. Validates an active connection exists (established via Connect-CM7)
+            2. Resolves the task sequence by name or PackageID
+            3. Resolves the target collection by name or ID
+            4. Computes AdvertFlags and RemoteClientFlags from the specified parameters
+            5. Creates a new SMS_Advertisement instance via CIM with ProgramName = '*'
+            6. Returns the created deployment as a formatted MECM7.TaskSequenceDeployment object
+
+        .PARAMETER TaskSequencePackageId
+            The PackageID of the task sequence to deploy (e.g., "SD100FAD").
+            Mutually exclusive with TaskSequenceName.
+
+        .PARAMETER TaskSequenceName
+            The name of the task sequence to deploy.
+            Mutually exclusive with TaskSequencePackageId.
+
+        .PARAMETER CollectionName
+            The name of the target device collection for the deployment.
+            Mutually exclusive with CollectionId.
+
+        .PARAMETER CollectionId
+            The ID of the target device collection for the deployment (e.g., "SD101C00").
+            Mutually exclusive with CollectionName.
+
+        .PARAMETER DeploymentName
+            An optional name for the deployment (AdvertisementName). If not specified,
+            defaults to "{TaskSequenceName} - {CollectionName}".
+
+        .PARAMETER Comment
+            An optional description/comment for the deployment.
+
+        .PARAMETER DeployPurpose
+            The deployment purpose. Valid values are:
+            - Available: Makes the task sequence available for users to run from Software Center (default).
+            - Required: Forces the task sequence to run by the deadline.
+
+        .PARAMETER AvailableDateTime
+            The date and time when the deployment becomes available to clients.
+            Defaults to the current date and time.
+
+        .PARAMETER DeadlineDateTime
+            The enforcement deadline date and time for Required deployments.
+            After this time, the task sequence will be forced to run.
+            For Available deployments, this sets the expiration time.
+
+        .PARAMETER UseUtcForAvailableSchedule
+            Specifies whether to use UTC/GMT times for the available schedule. Default is $false.
+
+        .PARAMETER UseUtcForExpireSchedule
+            Specifies whether to use UTC/GMT times for the expiration/deadline schedule. Default is $false.
+
+        .PARAMETER Availability
+            Controls where the task sequence is available. Valid values are:
+            - Clients: Only available to Configuration Manager clients (default)
+            - ClientsMediaAndPxe: Available to clients, media, and PXE
+            - MediaAndPxe: Available only to media and PXE
+            - MediaAndPxeHidden: Available only to media and PXE (hidden)
+
+        .PARAMETER RerunBehavior
+            Controls how the task sequence behaves if it has been previously run. Valid values are:
+            - NeverRerun: Never rerun the task sequence
+            - AlwaysRerunProgram: Always rerun the task sequence
+            - RerunIfFailedPreviousAttempt: Rerun only if the previous attempt failed (default)
+            - RerunIfSucceededOnPreviousAttempt: Rerun only if the previous attempt succeeded
+
+        .PARAMETER ShowTaskSequenceProgress
+            Shows task sequence progress to the user. Default is $false.
+
+        .PARAMETER SoftwareInstallation
+            Allows task sequence installation outside of maintenance windows. Default is $true.
+
+        .PARAMETER SystemRestart
+            Allows system restart outside of maintenance windows. Default is $true.
+
+        .PARAMETER AllowFallback
+            Allows clients to use a fallback source location for content.
+            Default is $false (do not fall back).
+
+        .PARAMETER DeploymentOption
+            Controls how content is accessed. Valid values are:
+            - DownloadAllContent: Download all content locally before starting task sequence (default)
+            - DownloadContentLocallyWhenNeededByRunningTaskSequence: Download content as needed
+            - RunFromDistributionPoint: Access content directly from the distribution point
+
+        .PARAMETER AllowSharedContent
+            Allows clients to use BranchCache to share content with other clients.
+            Default is $true.
+
+        .PARAMETER SendWakeupPacket
+            Sends a Wake On LAN packet to wake up computers before the deployment runs.
+            Default is $false.
+
+        .PARAMETER PersistOnWriteFilterDevice
+            Allows content to persist on write filter enabled devices. Default is $false.
+
+        .PARAMETER InternetOption
+            Allows the task sequence to run on internet-based clients. Default is $true.
+
+        .PARAMETER UseMeteredNetwork
+            Allows the task sequence to run over metered network connections. Default is $true.
+
+        .PARAMETER ScheduleEvent
+            For Required deployments, controls when the task sequence is scheduled to run.
+            Valid values are:
+            - AsSoonAsPossible: Run as soon as possible after the available time (default)
+            - LogOn: Run at next user logon
+            - LogOff: Run at next user logoff
+
+        .PARAMETER Force
+            Suppresses confirmation prompts.
+
+        .PARAMETER WhatIf
+            Shows what would happen if the cmdlet runs. The cmdlet is not run.
+
+        .PARAMETER Confirm
+            Prompts you for confirmation before running the cmdlet.
+
+        .EXAMPLE
+            New-CM7TaskSequenceDeployment -CollectionName "Test-Collection-Direct" -TaskSequencePackageId "SD100FAD" -AvailableDateTime (Get-Date) -Force
+            Creates an available task sequence deployment targeting the specified collection.
+
+        .EXAMPLE
+            New-CM7TaskSequenceDeployment -TaskSequenceName "Test Josh" -CollectionName "Test-Collection-Direct" -Force
+            Creates an available task sequence deployment using the task sequence name.
+
+        .EXAMPLE
+            New-CM7TaskSequenceDeployment -TaskSequencePackageId "SD100FAD" -CollectionName "Test-Collection-Direct" -DeployPurpose Required -Force
+            Creates a required (mandatory) task sequence deployment.
+
+        .EXAMPLE
+            New-CM7TaskSequenceDeployment -TaskSequencePackageId "SD100FAD" -CollectionId "SD101C00" -DeploymentName "Custom Deployment Name" -Comment "Monthly OS deployment" -Force
+            Creates a deployment using PackageID and collection ID with a custom name and comment.
+
+        .EXAMPLE
+            New-CM7TaskSequenceDeployment -TaskSequencePackageId "SD100FAD" -CollectionName "Test-Collection-Direct" -WhatIf
+            Shows what would happen without actually creating the deployment.
+
+        .EXAMPLE
+            New-CM7TaskSequenceDeployment -TaskSequencePackageId "SD100FAD" -CollectionName "Test-Collection-Direct" -DeployPurpose Required -DeadlineDateTime (Get-Date).AddDays(7) -Force
+            Creates a required deployment with a 7-day enforcement deadline.
+
+        .EXAMPLE
+            New-CM7TaskSequenceDeployment -TaskSequencePackageId "SD100FAD" -CollectionName "Test-Collection-Direct" -SoftwareInstallation $false -SystemRestart $false -Force
+            Creates a deployment that does not allow installation or restart outside of maintenance windows.
+
+        .EXAMPLE
+            New-CM7TaskSequenceDeployment -TaskSequencePackageId "SD100FAD" -CollectionName "Test-Collection-Direct" -ShowTaskSequenceProgress $true -Force
+            Creates a deployment with task sequence progress displayed to the user.
+
+        .EXAMPLE
+            New-CM7TaskSequenceDeployment -TaskSequencePackageId "SD100FAD" -CollectionName "Test-Collection-Direct" `
+                -DeployPurpose Required `
+                -AvailableDateTime (Get-Date) `
+                -DeadlineDateTime (Get-Date).AddDays(7) `
+                -SoftwareInstallation $true `
+                -SystemRestart $true `
+                -AllowFallback $false `
+                -RerunBehavior RerunIfFailedPreviousAttempt `
+                -ShowTaskSequenceProgress $true `
+                -AllowSharedContent $true `
+                -UseMeteredNetwork $true `
+                -Force
+            Creates a fully configured required task sequence deployment.
+
+        .NOTES
+            Requires an active connection established via Connect-CM7.
+
+            The SMS_Advertisement WMI class is used to represent task sequence deployments in MECM.
+            Task sequence deployments are distinguished from other deployments by ProgramName = '*'.
+
+            This function is the CIM-based equivalent of the New-CMTaskSequenceDeployment cmdlet
+            from the ConfigurationManager PowerShell module but uses direct CIM queries
+            over WinRM instead of requiring the ConfigMgr console or PowerShell drive.
+
+            AdvertFlags and RemoteClientFlags are computed from the specified parameters to match
+            the behavior of the native New-CMTaskSequenceDeployment cmdlet. The default parameter
+            values produce the same flag values as the native cmdlet with default settings:
+            AdvertFlags = 0x8b0000 (9109504), RemoteClientFlags = 0x8850 (34896).
+    #>
+    [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'Medium', DefaultParameterSetName = 'ByTSPackageIdCollectionName')]
+    param(
+        [Parameter(Mandatory = $true, ParameterSetName = 'ByTSPackageIdCollectionName')]
+        [Parameter(Mandatory = $true, ParameterSetName = 'ByTSPackageIdCollectionId')]
+        [ValidateNotNullOrEmpty()]
+        [string]$TaskSequencePackageId,
+
+        [Parameter(Mandatory = $true, ParameterSetName = 'ByTSNameCollectionName')]
+        [Parameter(Mandatory = $true, ParameterSetName = 'ByTSNameCollectionId')]
+        [ValidateNotNullOrEmpty()]
+        [string]$TaskSequenceName,
+
+        [Parameter(Mandatory = $true, ParameterSetName = 'ByTSPackageIdCollectionName')]
+        [Parameter(Mandatory = $true, ParameterSetName = 'ByTSNameCollectionName')]
+        [ValidateNotNullOrEmpty()]
+        [string]$CollectionName,
+
+        [Parameter(Mandatory = $true, ParameterSetName = 'ByTSPackageIdCollectionId')]
+        [Parameter(Mandatory = $true, ParameterSetName = 'ByTSNameCollectionId')]
+        [ValidateNotNullOrEmpty()]
+        [string]$CollectionId,
+
+        [Parameter()]
+        [string]$DeploymentName,
+
+        [Parameter()]
+        [string]$Comment = '',
+
+        [Parameter()]
+        [ValidateSet('Available', 'Required')]
+        [string]$DeployPurpose = 'Available',
+
+        [Parameter()]
+        [datetime]$AvailableDateTime,
+
+        [Parameter()]
+        [datetime]$DeadlineDateTime,
+
+        [Parameter()]
+        [Boolean]$UseUtcForAvailableSchedule = $false,
+
+        [Parameter()]
+        [Boolean]$UseUtcForExpireSchedule = $false,
+
+        [Parameter()]
+        [ValidateSet('Clients', 'ClientsMediaAndPxe', 'MediaAndPxe', 'MediaAndPxeHidden')]
+        [string]$Availability = 'Clients',
+
+        [Parameter()]
+        [ValidateSet('NeverRerun', 'AlwaysRerunProgram', 'RerunIfFailedPreviousAttempt', 'RerunIfSucceededOnPreviousAttempt')]
+        [string]$RerunBehavior = 'RerunIfFailedPreviousAttempt',
+
+        [Parameter()]
+        [Boolean]$ShowTaskSequenceProgress = $false,
+
+        [Parameter()]
+        [Boolean]$SoftwareInstallation = $true,
+
+        [Parameter()]
+        [Boolean]$SystemRestart = $true,
+
+        [Parameter()]
+        [Boolean]$AllowFallback = $false,
+
+        [Parameter()]
+        [ValidateSet('DownloadAllContent', 'DownloadContentLocallyWhenNeededByRunningTaskSequence', 'RunFromDistributionPoint')]
+        [string]$DeploymentOption = 'DownloadAllContent',
+
+        [Parameter()]
+        [Boolean]$AllowSharedContent = $true,
+
+        [Parameter()]
+        [Boolean]$SendWakeupPacket = $false,
+
+        [Parameter()]
+        [Boolean]$PersistOnWriteFilterDevice = $false,
+
+        [Parameter()]
+        [Boolean]$InternetOption = $true,
+
+        [Parameter()]
+        [Boolean]$UseMeteredNetwork = $true,
+
+        [Parameter()]
+        [ValidateSet('AsSoonAsPossible', 'LogOn', 'LogOff')]
+        [string]$ScheduleEvent = 'AsSoonAsPossible',
+
+        [Parameter()]
+        [switch]$Force
+    )
+
+    begin {
+        $function = $($MyInvocation.MyCommand.Name)
+        Write-Verbose "Running $function"
+
+        # Validate connection
+        if (-not $script:CMConnection.CimSession) {
+            throw "Not connected to MECM. Please run Connect-CM7 first."
+        }
+
+        # Determine the namespace
+        $namespace = "root/SMS/site_$($script:CMConnection.SiteCode)"
+
+        # Build common CIM parameters
+        $cimParams = @{
+            CimSession = $script:CMConnection.CimSession
+            Namespace  = $namespace
+        }
+
+        # ---- AdvertFlags bit definitions for SMS_Advertisement ----
+        $ADVERT_IMMEDIATE                      = [uint32]0x00000020  # 32 - As soon as possible
+        $ADVERT_ONSYSTEMSTARTUP                = [uint32]0x00000100  # 256
+        $ADVERT_ONUSERLOGON                    = [uint32]0x00000200  # 512
+        $ADVERT_ONUSERLOGOFF                   = [uint32]0x00000400  # 1024
+        $ADVERT_ENABLE_TS_FROM_CD_AND_PXE      = [uint32]0x00002000  # 8192
+        $ADVERT_NO_DISPLAY                     = [uint32]0x00008000  # 32768
+        $ADVERT_OVERRIDE_SERVICE_WINDOWS       = [uint32]0x00010000  # 65536
+        $ADVERT_REBOOT_OUTSIDE_SERVICE_WINDOWS = [uint32]0x00020000  # 131072
+        $ADVERT_WAKE_ON_LAN                    = [uint32]0x00040000  # 262144
+        $ADVERT_DONOT_FALLBACK                 = [uint32]0x00080000  # 524288
+        $ADVERT_ENABLE_PEER_CACHING            = [uint32]0x00100000  # 1048576
+        $ADVERT_SHOW_PROGRESS                  = [uint32]0x02000000  # 33554432
+        $ADVERT_USE_REMOTE_DP                  = [uint32]0x00800000  # 8388608
+
+        # ---- RemoteClientFlags bit definitions ----
+        $RCF_DOWNLOAD_FROM_LOCAL_DP            = [uint32]0x00000001  # 1
+        $RCF_DOWNLOAD_FROM_REMOTE_DP           = [uint32]0x00000002  # 2
+        $RCF_DONT_RUN_NO_LOCAL_DP              = [uint32]0x00000004  # 4
+        $RCF_DOWNLOAD_FROM_INTERNET            = [uint32]0x00000008  # 8
+        $RCF_ALLOW_SHARED_CONTENT              = [uint32]0x00000010  # 16
+        $RCF_ALWAYS_RERUN                      = [uint32]0x00000020  # 32
+        $RCF_RERUN_IF_FAILED                   = [uint32]0x00000040  # 64
+        $RCF_RERUN_IF_SUCCEEDED                = [uint32]0x00000080  # 128
+        $RCF_DOWNLOAD_FROM_UNPROTECTED_DP      = [uint32]0x00000100  # 256
+        $RCF_PERSIST_ON_WRITE_FILTER           = [uint32]0x00000400  # 1024
+        $RCF_ALLOW_INTERNET_CLIENTS            = [uint32]0x00000800  # 2048
+        $RCF_TS_SHOW_PROGRESS                  = [uint32]0x00004000  # 16384
+        $RCF_USE_METERED_NETWORK               = [uint32]0x00008000  # 32768
+    }
+
+    process {
+        try {
+            # ---- Resolve Task Sequence ----
+            $resolvedPackageId = $null
+            $resolvedTSName = $null
+            if ($PSBoundParameters.ContainsKey('TaskSequenceName')) {
+                $tsQuery = "SELECT PackageID, Name FROM SMS_TaskSequencePackage WHERE Name = '$TaskSequenceName'"
+                Write-Verbose "Resolving task sequence by name: $tsQuery"
+                $resolvedTS = Get-CimInstance @cimParams -Query $tsQuery
+
+                if (-not $resolvedTS) {
+                    throw "Task sequence '$TaskSequenceName' not found."
+                }
+                if (@($resolvedTS).Count -gt 1) {
+                    throw "Multiple task sequences found matching '$TaskSequenceName'. Please specify using -TaskSequencePackageId."
+                }
+                $resolvedPackageId = $resolvedTS.PackageID
+                $resolvedTSName = $resolvedTS.Name
+                Write-Verbose "Resolved task sequence: '$resolvedTSName' (PackageID: $resolvedPackageId)"
+            } else {
+                $tsQuery = "SELECT PackageID, Name FROM SMS_TaskSequencePackage WHERE PackageID = '$TaskSequencePackageId'"
+                Write-Verbose "Resolving task sequence by PackageID: $tsQuery"
+                $resolvedTS = Get-CimInstance @cimParams -Query $tsQuery
+
+                if (-not $resolvedTS) {
+                    throw "Task sequence with PackageID '$TaskSequencePackageId' not found."
+                }
+                $resolvedPackageId = $resolvedTS.PackageID
+                $resolvedTSName = $resolvedTS.Name
+                Write-Verbose "Resolved task sequence: '$resolvedTSName' (PackageID: $resolvedPackageId)"
+            }
+
+            # ---- Resolve Collection ----
+            $resolvedCollectionId = $null
+            $resolvedCollectionName = $null
+            if ($PSBoundParameters.ContainsKey('CollectionName')) {
+                $collQuery = "SELECT CollectionID, Name FROM SMS_Collection WHERE CollectionType = 2 AND Name = '$CollectionName'"
+                Write-Verbose "Resolving collection by name: $collQuery"
+                $resolvedCollection = Get-CimInstance @cimParams -Query $collQuery
+
+                if (-not $resolvedCollection) {
+                    throw "Device collection '$CollectionName' not found."
+                }
+                if (@($resolvedCollection).Count -gt 1) {
+                    throw "Multiple collections found matching '$CollectionName'. Please specify using -CollectionId."
+                }
+                $resolvedCollectionId = $resolvedCollection.CollectionID
+                $resolvedCollectionName = $resolvedCollection.Name
+                Write-Verbose "Resolved collection: '$resolvedCollectionName' (ID: $resolvedCollectionId)"
+            } else {
+                $collQuery = "SELECT CollectionID, Name FROM SMS_Collection WHERE CollectionType = 2 AND CollectionID = '$CollectionId'"
+                Write-Verbose "Resolving collection by ID: $collQuery"
+                $resolvedCollection = Get-CimInstance @cimParams -Query $collQuery
+
+                if (-not $resolvedCollection) {
+                    throw "Device collection '$CollectionId' not found."
+                }
+                $resolvedCollectionId = $resolvedCollection.CollectionID
+                $resolvedCollectionName = $resolvedCollection.Name
+                Write-Verbose "Resolved collection: '$resolvedCollectionName' (ID: $resolvedCollectionId)"
+            }
+
+            # ---- Determine deployment name ----
+            $actualDeploymentName = if ($DeploymentName) { $DeploymentName } else { "$resolvedTSName - $resolvedCollectionName" }
+            Write-Verbose "Deployment name: '$actualDeploymentName'"
+
+            # ---- Set available time ----
+            $now = Get-Date
+            $actualAvailableDateTime = if ($PSBoundParameters.ContainsKey('AvailableDateTime')) { $AvailableDateTime } else { $now }
+
+            # ---- Compute AdvertFlags ----
+            [uint32]$advertFlags = $ADVERT_USE_REMOTE_DP   # Always set for TS deployments
+
+            # Service window and restart control
+            if ($SoftwareInstallation) {
+                $advertFlags = $advertFlags -bor $ADVERT_OVERRIDE_SERVICE_WINDOWS
+            }
+            if ($SystemRestart) {
+                $advertFlags = $advertFlags -bor $ADVERT_REBOOT_OUTSIDE_SERVICE_WINDOWS
+            }
+
+            # Fallback behavior (inverted: AllowFallback=false means set DONOT_FALLBACK)
+            if (-not $AllowFallback) {
+                $advertFlags = $advertFlags -bor $ADVERT_DONOT_FALLBACK
+            }
+
+            # Wake On LAN
+            if ($SendWakeupPacket) {
+                $advertFlags = $advertFlags -bor $ADVERT_WAKE_ON_LAN
+            }
+
+            # Media/PXE availability
+            if ($Availability -in @('ClientsMediaAndPxe', 'MediaAndPxe', 'MediaAndPxeHidden')) {
+                $advertFlags = $advertFlags -bor $ADVERT_ENABLE_TS_FROM_CD_AND_PXE
+            }
+            if ($Availability -eq 'MediaAndPxeHidden') {
+                $advertFlags = $advertFlags -bor $ADVERT_NO_DISPLAY
+            }
+
+            # Show task sequence progress in AdvertFlags
+            if ($ShowTaskSequenceProgress) {
+                $advertFlags = $advertFlags -bor $ADVERT_SHOW_PROGRESS
+            }
+
+            # Schedule event (for Required deployments)
+            if ($DeployPurpose -eq 'Required') {
+                switch ($ScheduleEvent) {
+                    'AsSoonAsPossible' { $advertFlags = $advertFlags -bor $ADVERT_IMMEDIATE }
+                    'LogOn'            { $advertFlags = $advertFlags -bor $ADVERT_ONUSERLOGON }
+                    'LogOff'           { $advertFlags = $advertFlags -bor $ADVERT_ONUSERLOGOFF }
+                }
+            }
+
+            Write-Verbose "AdvertFlags == 0x$($advertFlags.ToString('X')) / $advertFlags"
+
+            # ---- Compute RemoteClientFlags ----
+            [uint32]$remoteClientFlags = 0
+
+            # Rerun behavior
+            switch ($RerunBehavior) {
+                'AlwaysRerunProgram'                  { $remoteClientFlags = $remoteClientFlags -bor $RCF_ALWAYS_RERUN }
+                'RerunIfFailedPreviousAttempt'        { $remoteClientFlags = $remoteClientFlags -bor $RCF_RERUN_IF_FAILED }
+                'RerunIfSucceededOnPreviousAttempt'   { $remoteClientFlags = $remoteClientFlags -bor $RCF_RERUN_IF_SUCCEEDED }
+                # 'NeverRerun' → no bits
+            }
+
+            # Shared content (BranchCache)
+            if ($AllowSharedContent) {
+                $remoteClientFlags = $remoteClientFlags -bor $RCF_ALLOW_SHARED_CONTENT
+            }
+
+            # Write filter persistence
+            if ($PersistOnWriteFilterDevice) {
+                $remoteClientFlags = $remoteClientFlags -bor $RCF_PERSIST_ON_WRITE_FILTER
+            }
+
+            # Internet clients
+            if ($InternetOption) {
+                $remoteClientFlags = $remoteClientFlags -bor $RCF_ALLOW_INTERNET_CLIENTS
+            }
+
+            # Show TS progress in RemoteClientFlags
+            if ($ShowTaskSequenceProgress) {
+                $remoteClientFlags = $remoteClientFlags -bor $RCF_TS_SHOW_PROGRESS
+            }
+
+            # Metered network
+            if ($UseMeteredNetwork) {
+                $remoteClientFlags = $remoteClientFlags -bor $RCF_USE_METERED_NETWORK
+            }
+
+            # DeploymentOption
+            switch ($DeploymentOption) {
+                'RunFromDistributionPoint' {
+                    $remoteClientFlags = $remoteClientFlags -bor $RCF_DONT_RUN_NO_LOCAL_DP
+                }
+                'DownloadContentLocallyWhenNeededByRunningTaskSequence' {
+                    $remoteClientFlags = $remoteClientFlags -bor $RCF_DOWNLOAD_FROM_REMOTE_DP
+                }
+                # 'DownloadAllContent' → default, no additional bits
+            }
+
+            Write-Verbose "RemoteClientFlags == 0x$($remoteClientFlags.ToString('X')) / $remoteClientFlags"
+
+            # ---- Compute DeviceFlags ----
+            [uint32]$deviceFlags = 0
+            Write-Verbose "DeviceFlags == 0x$($deviceFlags.ToString('X')) / $deviceFlags"
+
+            # ---- Create the deployment ----
+            $actionDescription = "Create task sequence deployment '$actualDeploymentName' for task sequence '$resolvedTSName' ($resolvedPackageId) targeting collection '$resolvedCollectionName' ($resolvedCollectionId) with purpose '$DeployPurpose'"
+            if ($Force -or $PSCmdlet.ShouldProcess($actualDeploymentName, $actionDescription)) {
+                Write-Verbose "Creating task sequence deployment: $actionDescription"
+
+                # Build properties for SMS_Advertisement
+                # ProgramName = '*' marks this as a task sequence deployment
+                $deploymentProperties = @{
+                    AdvertisementName  = [string]$actualDeploymentName
+                    CollectionID       = [string]$resolvedCollectionId
+                    PackageID          = [string]$resolvedPackageId
+                    ProgramName        = [string]'*'
+                    SourceSite         = [string]$script:CMConnection.SiteCode
+                    AdvertFlags        = [uint32]$advertFlags
+                    RemoteClientFlags  = [uint32]$remoteClientFlags
+                    DeviceFlags        = [uint32]$deviceFlags
+                    PresentTime        = [datetime]$actualAvailableDateTime
+                    Comment            = [string]$(if ($Comment) { $Comment } else { '' })
+                    Priority           = [uint32]2  # Medium priority
+                    PresentTimeEnabled = [bool]$true
+                    PresentTimeIsGMT   = [bool]$UseUtcForAvailableSchedule
+                }
+
+                # Set expiration/deadline time if specified
+                if ($PSBoundParameters.ContainsKey('DeadlineDateTime')) {
+                    $deploymentProperties['ExpirationTime'] = [datetime]$DeadlineDateTime
+                    $deploymentProperties['ExpirationTimeEnabled'] = [bool]$true
+                    $deploymentProperties['ExpirationTimeIsGMT'] = [bool]$UseUtcForExpireSchedule
+                }
+
+                # For Required deployments with AsSoonAsPossible, enable the assigned schedule
+                if ($DeployPurpose -eq 'Required') {
+                    $deploymentProperties['AssignedScheduleEnabled'] = [bool]$true
+                    $deploymentProperties['AssignedScheduleIsGMT'] = [bool]$UseUtcForAvailableSchedule
+                }
+
+                Write-Verbose "Deployment properties: Name='$actualDeploymentName', PackageID='$resolvedPackageId', Collection='$resolvedCollectionName', Purpose='$DeployPurpose'"
+                Write-Verbose "Creating instance of class 'SMS_Advertisement'"
+
+                # Create the task sequence deployment using New-CimInstance
+                $newDeployment = New-CimInstance @cimParams -ClassName 'SMS_Advertisement' -Property $deploymentProperties
+
+                if (-not $newDeployment) {
+                    throw "Failed to create task sequence deployment '$actualDeploymentName'. New-CimInstance returned null."
+                }
+
+                $advertisementId = $newDeployment.AdvertisementID
+                Write-Verbose "Task sequence deployment '$actualDeploymentName' created successfully with AdvertisementID: $advertisementId"
+
+                # ---- Retrieve the full deployment object to return ----
+                $resultQuery = "SELECT * FROM SMS_Advertisement WHERE AdvertisementID = '$advertisementId'"
+                Write-Verbose "Retrieving created deployment: $resultQuery"
+                $result = Get-CimInstance @cimParams -Query $resultQuery
+
+                if ($result) {
+                    # Resolve task sequence name for output
+                    $outputTsName = $resolvedTSName
+
+                    $output = [PSCustomObject]@{
+                        PSTypeName               = 'MECM7.TaskSequenceDeployment'
+                        AdvertisementID          = $result.AdvertisementID
+                        AdvertisementName        = $result.AdvertisementName
+                        CollectionID             = $result.CollectionID
+                        CollectionName           = $resolvedCollectionName
+                        PackageID                = $result.PackageID
+                        TaskSequenceName         = $outputTsName
+                        ProgramName              = $result.ProgramName
+                        SourceSite               = $result.SourceSite
+                        AdvertFlags              = [int]$result.AdvertFlags
+                        RemoteClientFlags        = [int]$result.RemoteClientFlags
+                        DeviceFlags              = [int]$result.DeviceFlags
+                        PresentTime              = $result.PresentTime
+                        ExpirationTime           = $result.ExpirationTime
+                        Comment                  = $result.Comment
+                    }
+
+                    # Set the type name
+                    $output.PSObject.TypeNames.Insert(0, 'MECM7.TaskSequenceDeployment')
+
+                    # Add all extra properties from the CIM instance
+                    $result.CimInstanceProperties | ForEach-Object {
+                        if ($_.Name -notin $output.PSObject.Properties.Name) {
+                            $output | Add-Member -MemberType NoteProperty -Name $_.Name -Value $_.Value -Force
+                        }
+                    }
+
+                    Write-Output $output
+                } else {
+                    Write-Warning "Task sequence deployment was created but could not retrieve the result. AdvertisementID: $advertisementId"
                 }
             }
         }
@@ -10876,6 +11550,1647 @@ function Remove-CM7MaintenanceWindow {
         }
         catch {
             $PSCmdlet.ThrowTerminatingError($_)
+        }
+    }
+}
+function Remove-CM7SoftwareUpdateDeploymentPackage {
+    <#
+        .SYNOPSIS
+            Removes a software update deployment package from MECM using CIM.
+
+        .DESCRIPTION
+            Removes (deletes) a software update deployment package (SMS_SoftwareUpdatesPackage)
+            from Microsoft Endpoint Configuration Manager (MECM) using CIM.
+
+            This is the CIM-based equivalent of Remove-CMSoftwareUpdateDeploymentPackage from the
+            ConfigurationManager PowerShell module, but uses direct CIM queries over WinRM.
+
+            The function performs the following actions:
+            1. Validates an active connection exists (established via Connect-CM7)
+            2. Resolves the package by name or package ID
+            3. Removes the SMS_SoftwareUpdatesPackage instance via CIM (with confirmation by default)
+
+            Key features:
+            - Remove by Name or PackageID
+            - Wildcard Support for Name
+            - Pipeline Support (future)
+            - Force Parameter: Bypass confirmation prompts for scripted scenarios
+            - WhatIf/Confirm: Full ShouldProcess support for safe operations
+
+        .PARAMETER Name
+            The name of the software update deployment package to remove. Supports wildcards.
+
+        .PARAMETER Id
+            The PackageID of the software update deployment package to remove.
+
+        .PARAMETER InputObject
+            A software update deployment package object (from Get-CM7SoftwareUpdateDeploymentPackage) to remove.
+
+        .PARAMETER Force
+            Suppresses confirmation prompts and removes the package without asking.
+
+        .PARAMETER WhatIf
+            Shows what would happen if the cmdlet runs. The cmdlet is not run.
+
+        .PARAMETER Confirm
+            Prompts you for confirmation before running the cmdlet.
+
+        .EXAMPLE
+            Remove-CM7SoftwareUpdateDeploymentPackage -Name "Test-SUG" -Force
+
+        .EXAMPLE
+            Remove-CM7SoftwareUpdateDeploymentPackage -Id "XXX00001" -Force
+
+        .EXAMPLE
+            $pkg = Get-CM7SoftwareUpdateDeploymentPackage -Name "Test-SUG"
+            Remove-CM7SoftwareUpdateDeploymentPackage -InputObject $pkg -Force
+
+        .NOTES
+            Requires an active connection established via Connect-CM7.
+    #>
+    [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'High', DefaultParameterSetName = 'ByName')]
+    param(
+        [Parameter(ParameterSetName = 'ByName', Mandatory = $true)]
+        [SupportsWildcards()]
+        [string]$Name,
+
+        [Parameter(ParameterSetName = 'ById', Mandatory = $true)]
+        [string]$Id,
+
+        [Parameter(ParameterSetName = 'ByInputObject', Mandatory = $true, ValueFromPipeline = $true)]
+        [PSObject]$InputObject,
+
+        [Parameter()]
+        [switch]$Force
+    )
+
+    begin {
+        $function = $($MyInvocation.MyCommand.Name)
+        Write-Verbose "Running $function"
+
+        if (-not $script:CMConnection.CimSession) {
+            throw "Not connected to MECM. Please run Connect-CM7 first."
+        }
+
+        $namespace = "root/SMS/site_$($script:CMConnection.SiteCode)"
+        $cimParams = @{
+            CimSession = $script:CMConnection.CimSession
+            Namespace  = $namespace
+        }
+    }
+
+    process {
+        try {
+            $pkgsToRemove = @()
+            switch ($PSCmdlet.ParameterSetName) {
+                'ByName' {
+                    $wqlName = $Name.Replace('*', '%').Replace('?', '_')
+                    $query = if ($wqlName -like '*%*' -or $wqlName -like '*_*') {
+                        "SELECT * FROM SMS_SoftwareUpdatesPackage WHERE Name LIKE '$wqlName'"
+                    } else {
+                        "SELECT * FROM SMS_SoftwareUpdatesPackage WHERE Name = '$Name'"
+                    }
+                    Write-Verbose "Querying for package(s) by name: $query"
+                    $pkgs = @(Get-CimInstance @cimParams -Query $query)
+                    if (-not $pkgs -or $pkgs.Count -eq 0) {
+                        throw "No software update deployment package(s) found matching name '$Name'."
+                    }
+                    $pkgsToRemove = $pkgs
+                }
+                'ById' {
+                    $query = "SELECT * FROM SMS_SoftwareUpdatesPackage WHERE PackageID = '$Id'"
+                    Write-Verbose "Querying for package by ID: $query"
+                    $pkg = Get-CimInstance @cimParams -Query $query
+                    if (-not $pkg) {
+                        throw "No software update deployment package found with PackageID '$Id'."
+                    }
+                    $pkgsToRemove = @($pkg)
+                }
+                'ByInputObject' {
+                    $pkgId = $InputObject.PackageID
+                    if (-not $pkgId) {
+                        throw "InputObject does not have a PackageID property."
+                    }
+                    $query = "SELECT * FROM SMS_SoftwareUpdatesPackage WHERE PackageID = '$pkgId'"
+                    Write-Verbose "Querying for package by InputObject: $query"
+                    $pkg = Get-CimInstance @cimParams -Query $query
+                    if (-not $pkg) {
+                        throw "No software update deployment package found with PackageID '$pkgId' from InputObject."
+                    }
+                    $pkgsToRemove = @($pkg)
+                }
+            }
+
+            foreach ($pkg in $pkgsToRemove) {
+                $displayName = "$($pkg.Name) ($($pkg.PackageID))"
+                $actionDescription = "Remove software update deployment package '$($pkg.Name)' ($($pkg.PackageID))"
+                if ($Force -or $PSCmdlet.ShouldProcess($displayName, $actionDescription)) {
+                    Write-Verbose "Removing package: $actionDescription"
+                    Remove-CimInstance -CimSession $script:CMConnection.CimSession -InputObject $pkg
+                    Write-Verbose "Software update deployment package '$($pkg.Name)' ($($pkg.PackageID)) removed successfully."
+                    [PSCustomObject]@{
+                        PSTypeName   = 'MECM7.RemovedSoftwareUpdateDeploymentPackage'
+                        PackageID    = $pkg.PackageID
+                        Name         = $pkg.Name
+                        Status       = 'Removed'
+                    }
+                }
+            }
+        } catch {
+            throw $_
+        }
+    }
+}
+function Remove-CM7TaskSequenceDeployment {
+    <#
+        .SYNOPSIS
+            Removes a task sequence deployment from MECM using CIM.
+
+        .DESCRIPTION
+            Removes (deletes) a task sequence deployment (SMS_Advertisement with ProgramName = '*')
+            from Microsoft Endpoint Configuration Manager (MECM) using CIM.
+
+            This is the CIM-based equivalent of the Remove-CMTaskSequenceDeployment cmdlet from the
+            ConfigurationManager PowerShell module, but uses direct CIM queries over WinRM
+            instead of requiring the ConfigMgr console or PowerShell drive.
+
+            The function performs the following actions:
+            1. Validates an active connection exists (established via Connect-CM7)
+            2. Resolves the deployment by advertisement ID, collection name, task sequence name,
+               task sequence PackageID, deployment name, or input object
+            3. Verifies the advertisement is a task sequence deployment (ProgramName = '*')
+            4. Removes the SMS_Advertisement instance via CIM (with confirmation by default)
+
+            Key features:
+            - Multiple Identification: Remove by AdvertisementID, collection name, task sequence,
+              deployment name, or pipeline input object
+            - Wildcard Support: Use * and ? in collection names, task sequence names, and
+              deployment names to match multiple deployments
+            - Pipeline Support: Accept deployment objects from Get-CM7TaskSequenceDeployment via pipeline
+            - Force Parameter: Bypass confirmation prompts for scripted scenarios
+            - WhatIf/Confirm: Full ShouldProcess support for safe operations
+
+        .PARAMETER AdvertisementID
+            The unique advertisement ID (deployment ID) of the task sequence deployment to remove.
+            This is the AdvertisementID property (string), e.g. "SD120BD2".
+
+        .PARAMETER CollectionName
+            The name of the collection targeted by the task sequence deployment(s) to remove.
+            Supports wildcard characters (* and ?). If multiple deployments match, all are removed.
+
+        .PARAMETER TaskSequenceName
+            The name of the task sequence associated with the deployment(s) to remove.
+            Supports wildcard characters (* and ?). If multiple deployments match, all are removed.
+
+        .PARAMETER TaskSequencePackageId
+            The PackageID of the task sequence associated with the deployment(s) to remove.
+            If multiple deployments match, all are removed.
+
+        .PARAMETER DeploymentName
+            The name of the deployment (AdvertisementName) to remove.
+            Supports wildcard characters (* and ?). If multiple deployments match, all are removed.
+
+        .PARAMETER InputObject
+            A task sequence deployment object (e.g., from Get-CM7TaskSequenceDeployment) to remove.
+            Must have an AdvertisementID property.
+
+        .PARAMETER Force
+            Suppresses confirmation prompts and removes the deployment without asking.
+            By default, the function prompts for confirmation before deletion.
+
+        .PARAMETER WhatIf
+            Shows what would happen if the cmdlet runs. The cmdlet is not run.
+
+        .PARAMETER Confirm
+            Prompts you for confirmation before running the cmdlet.
+
+        .EXAMPLE
+            Remove-CM7TaskSequenceDeployment -AdvertisementID "SD120BD2" -Force
+            Removes the task sequence deployment with the specified advertisement ID without confirmation.
+
+        .EXAMPLE
+            Remove-CM7TaskSequenceDeployment -CollectionName "Test-Collection-Direct" -Force
+            Removes all task sequence deployments targeting the specified collection.
+
+        .EXAMPLE
+            Remove-CM7TaskSequenceDeployment -TaskSequenceName "Test Josh" -Force
+            Removes all deployments of the task sequence named "Test Josh".
+
+        .EXAMPLE
+            Remove-CM7TaskSequenceDeployment -TaskSequencePackageId "SD100FAD" -Force
+            Removes all deployments of the task sequence with PackageID "SD100FAD".
+
+        .EXAMPLE
+            Remove-CM7TaskSequenceDeployment -DeploymentName "Test Josh - Test-Collection-Direct" -Force
+            Removes the deployment with the specified name.
+
+        .EXAMPLE
+            Get-CM7TaskSequenceDeployment -CollectionName "Test-*" | Remove-CM7TaskSequenceDeployment -Force
+            Removes all task sequence deployments targeting collections whose names start with "Test-" via pipeline.
+
+        .EXAMPLE
+            Remove-CM7TaskSequenceDeployment -DeploymentName "Test*" -WhatIf
+            Shows what would happen without actually removing the deployment(s).
+
+        .EXAMPLE
+            $deployment = Get-CM7TaskSequenceDeployment -AdvertisementID "SD120BD2"
+            Remove-CM7TaskSequenceDeployment -InputObject $deployment -Force
+            Removes a deployment using a previously retrieved deployment object.
+
+        .NOTES
+            Requires an active connection established via Connect-CM7.
+
+            The SMS_Advertisement WMI class is used to represent task sequence deployments in MECM.
+            Task sequence deployments are distinguished from other deployments by ProgramName = '*'.
+
+            This function is the CIM-based equivalent of the Remove-CMTaskSequenceDeployment cmdlet
+            from the ConfigurationManager PowerShell module but uses direct CIM queries over WinRM
+            instead of requiring the ConfigMgr console or PowerShell drive.
+    #>
+    [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'High', DefaultParameterSetName = 'ByAdvertisementID')]
+    param(
+        [Parameter(ParameterSetName = 'ByAdvertisementID', Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [string]$AdvertisementID,
+
+        [Parameter(ParameterSetName = 'ByCollectionName', Mandatory = $true)]
+        [SupportsWildcards()]
+        [ValidateNotNullOrEmpty()]
+        [string]$CollectionName,
+
+        [Parameter(ParameterSetName = 'ByTaskSequenceName', Mandatory = $true)]
+        [SupportsWildcards()]
+        [ValidateNotNullOrEmpty()]
+        [string]$TaskSequenceName,
+
+        [Parameter(ParameterSetName = 'ByTaskSequencePackageId', Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [string]$TaskSequencePackageId,
+
+        [Parameter(ParameterSetName = 'ByDeploymentName', Mandatory = $true)]
+        [SupportsWildcards()]
+        [ValidateNotNullOrEmpty()]
+        [string]$DeploymentName,
+
+        [Parameter(ParameterSetName = 'ByInputObject', Mandatory = $true, ValueFromPipeline = $true)]
+        [ValidateNotNull()]
+        [PSObject]$InputObject,
+
+        [Parameter()]
+        [switch]$Force
+    )
+
+    begin {
+        $function = $($MyInvocation.MyCommand.Name)
+        Write-Verbose "Running $function"
+
+        # Validate connection
+        if (-not $script:CMConnection.CimSession) {
+            throw "Not connected to MECM. Please run Connect-CM7 first."
+        }
+
+        # Namespace and CIM params
+        $namespace = "root/SMS/site_$($script:CMConnection.SiteCode)"
+        $cimParams = @{
+            CimSession = $script:CMConnection.CimSession
+            Namespace  = $namespace
+        }
+
+        # Lookups for resolving names
+        $collectionNameLookup = @{}
+        $tsNameLookup = @{}
+    }
+
+    process {
+        try {
+            # ---- Resolve deployments to remove ----
+            $deploymentsToRemove = @()
+
+            switch ($PSCmdlet.ParameterSetName) {
+                'ByAdvertisementID' {
+                    $query = "SELECT * FROM SMS_Advertisement WHERE AdvertisementID = '$AdvertisementID' AND ProgramName = '*'"
+                    Write-Verbose "Looking up deployment by AdvertisementID: $query"
+                    $advertisement = Get-CimInstance @cimParams -Query $query
+
+                    if (-not $advertisement) {
+                        throw "Task sequence deployment with AdvertisementID '$AdvertisementID' was not found."
+                    }
+
+                    $deploymentsToRemove = @($advertisement)
+                }
+                'ByCollectionName' {
+                    # Resolve collection name to CollectionID(s)
+                    $wqlCollName = $CollectionName.Replace('*', '%').Replace('?', '_')
+                    if ($wqlCollName -like '*%*' -or $wqlCollName -like '*_*') {
+                        $collectionQuery = "SELECT CollectionID, Name FROM SMS_Collection WHERE Name LIKE '$wqlCollName'"
+                    } else {
+                        $collectionQuery = "SELECT CollectionID, Name FROM SMS_Collection WHERE Name = '$CollectionName'"
+                    }
+
+                    Write-Verbose "Resolving collection name: $collectionQuery"
+                    $collections = Get-CimInstance @cimParams -Query $collectionQuery
+
+                    if (-not $collections) {
+                        throw "Collection '$CollectionName' was not found."
+                    }
+
+                    foreach ($coll in @($collections)) {
+                        $collectionNameLookup[$coll.CollectionID] = $coll.Name
+                    }
+
+                    $collectionIds = @($collections | ForEach-Object { $_.CollectionID })
+                    foreach ($collId in $collectionIds) {
+                        $advQuery = "SELECT * FROM SMS_Advertisement WHERE CollectionID = '$collId' AND ProgramName = '*'"
+                        Write-Verbose "Querying deployments for collection '$collId': $advQuery"
+                        $advertisements = @(Get-CimInstance @cimParams -Query $advQuery)
+                        $deploymentsToRemove += $advertisements
+                    }
+
+                    if ($deploymentsToRemove.Count -eq 0) {
+                        Write-Verbose "No task sequence deployments found for collection(s) matching '$CollectionName'."
+                        return
+                    }
+                }
+                'ByTaskSequenceName' {
+                    # Resolve task sequence name to PackageID(s)
+                    $wqlTsName = $TaskSequenceName.Replace('*', '%').Replace('?', '_')
+                    if ($wqlTsName -like '*%*' -or $wqlTsName -like '*_*') {
+                        $tsQuery = "SELECT PackageID, Name FROM SMS_TaskSequencePackage WHERE Name LIKE '$wqlTsName'"
+                    } else {
+                        $tsQuery = "SELECT PackageID, Name FROM SMS_TaskSequencePackage WHERE Name = '$TaskSequenceName'"
+                    }
+
+                    Write-Verbose "Resolving task sequence name: $tsQuery"
+                    $taskSequences = Get-CimInstance @cimParams -Query $tsQuery
+
+                    if (-not $taskSequences) {
+                        throw "No task sequences found matching '$TaskSequenceName'."
+                    }
+
+                    foreach ($ts in @($taskSequences)) {
+                        $tsNameLookup[$ts.PackageID] = $ts.Name
+                    }
+
+                    $packageIds = @($taskSequences | ForEach-Object { $_.PackageID })
+                    foreach ($pkgId in $packageIds) {
+                        $advQuery = "SELECT * FROM SMS_Advertisement WHERE PackageID = '$pkgId' AND ProgramName = '*'"
+                        Write-Verbose "Querying deployments for PackageID '$pkgId': $advQuery"
+                        $advertisements = @(Get-CimInstance @cimParams -Query $advQuery)
+                        $deploymentsToRemove += $advertisements
+                    }
+
+                    if ($deploymentsToRemove.Count -eq 0) {
+                        Write-Verbose "No task sequence deployments found for task sequence(s) matching '$TaskSequenceName'."
+                        return
+                    }
+                }
+                'ByTaskSequencePackageId' {
+                    $advQuery = "SELECT * FROM SMS_Advertisement WHERE PackageID = '$TaskSequencePackageId' AND ProgramName = '*'"
+                    Write-Verbose "Looking up deployments by TaskSequencePackageId: $advQuery"
+                    $advertisements = @(Get-CimInstance @cimParams -Query $advQuery)
+
+                    if (-not $advertisements -or $advertisements.Count -eq 0) {
+                        throw "No task sequence deployments found for PackageID '$TaskSequencePackageId'."
+                    }
+
+                    $deploymentsToRemove = $advertisements
+                }
+                'ByDeploymentName' {
+                    $wqlName = $DeploymentName.Replace('*', '%').Replace('?', '_')
+                    if ($wqlName -like '*%*' -or $wqlName -like '*_*') {
+                        $advQuery = "SELECT * FROM SMS_Advertisement WHERE AdvertisementName LIKE '$wqlName' AND ProgramName = '*'"
+                    } else {
+                        $advQuery = "SELECT * FROM SMS_Advertisement WHERE AdvertisementName = '$DeploymentName' AND ProgramName = '*'"
+                    }
+
+                    Write-Verbose "Looking up deployments by name: $advQuery"
+                    $advertisements = @(Get-CimInstance @cimParams -Query $advQuery)
+
+                    if (-not $advertisements -or $advertisements.Count -eq 0) {
+                        throw "No task sequence deployments found matching name '$DeploymentName'."
+                    }
+
+                    $deploymentsToRemove = $advertisements
+                }
+                'ByInputObject' {
+                    # Extract AdvertisementID from input object
+                    $inputAdvId = $null
+                    if ($InputObject.PSObject.Properties['AdvertisementID']) {
+                        $inputAdvId = $InputObject.AdvertisementID
+                    }
+
+                    if (-not $inputAdvId) {
+                        throw "InputObject does not have an AdvertisementID property."
+                    }
+
+                    # Re-fetch from CIM to ensure we have the actual instance
+                    $query = "SELECT * FROM SMS_Advertisement WHERE AdvertisementID = '$inputAdvId' AND ProgramName = '*'"
+                    Write-Verbose "Looking up deployment from InputObject: $query"
+                    $advertisement = Get-CimInstance @cimParams -Query $query
+
+                    if (-not $advertisement) {
+                        throw "Task sequence deployment with AdvertisementID '$inputAdvId' from InputObject was not found in MECM."
+                    }
+
+                    $deploymentsToRemove = @($advertisement)
+                }
+            }
+
+            # ---- Remove each deployment ----
+            foreach ($deployment in $deploymentsToRemove) {
+                # Resolve collection name for display
+                $resolvedCollectionName = $null
+                if ($collectionNameLookup.ContainsKey($deployment.CollectionID)) {
+                    $resolvedCollectionName = $collectionNameLookup[$deployment.CollectionID]
+                } else {
+                    $collLookupQuery = "SELECT Name FROM SMS_Collection WHERE CollectionID = '$($deployment.CollectionID)'"
+                    $collResult = Get-CimInstance @cimParams -Query $collLookupQuery
+                    if ($collResult) {
+                        $resolvedCollectionName = $collResult.Name
+                        $collectionNameLookup[$deployment.CollectionID] = $resolvedCollectionName
+                    }
+                }
+
+                # Resolve task sequence name for display
+                $resolvedTsName = $null
+                if ($tsNameLookup.ContainsKey($deployment.PackageID)) {
+                    $resolvedTsName = $tsNameLookup[$deployment.PackageID]
+                } else {
+                    $tsLookupQuery = "SELECT Name FROM SMS_TaskSequencePackage WHERE PackageID = '$($deployment.PackageID)'"
+                    $tsResult = Get-CimInstance @cimParams -Query $tsLookupQuery
+                    if ($tsResult) {
+                        $resolvedTsName = $tsResult.Name
+                        $tsNameLookup[$deployment.PackageID] = $resolvedTsName
+                    }
+                }
+
+                $displayName = "$($deployment.AdvertisementName) ($($deployment.AdvertisementID))"
+                $actionDescription = "Remove task sequence deployment '$($deployment.AdvertisementName)' ($($deployment.AdvertisementID)) for task sequence '$resolvedTsName' ($($deployment.PackageID)) targeting collection '$resolvedCollectionName' ($($deployment.CollectionID))"
+
+                if ($Force -or $PSCmdlet.ShouldProcess($displayName, $actionDescription)) {
+                    Write-Verbose "Removing deployment: $actionDescription"
+
+                    Remove-CimInstance -CimSession $script:CMConnection.CimSession -InputObject $deployment
+
+                    Write-Verbose "Task sequence deployment '$($deployment.AdvertisementName)' ($($deployment.AdvertisementID)) removed successfully."
+
+                    # Return a result object with information about the removed deployment
+                    [PSCustomObject]@{
+                        PSTypeName        = 'MECM7.RemovedTaskSequenceDeployment'
+                        AdvertisementID   = $deployment.AdvertisementID
+                        AdvertisementName = $deployment.AdvertisementName
+                        CollectionID      = $deployment.CollectionID
+                        CollectionName    = $resolvedCollectionName
+                        PackageID         = $deployment.PackageID
+                        TaskSequenceName  = $resolvedTsName
+                        Status            = 'Removed'
+                    }
+                }
+            }
+        }
+        catch {
+            throw $_
+        }
+    }
+}
+function Save-CM7SoftwareUpdate {
+    <#
+    .SYNOPSIS
+        Saves one or more software updates to update groups and deployment packages using CIM connectivity.
+
+    .DESCRIPTION
+        The Save-CM7SoftwareUpdate function allows you to save software updates to update groups and deployment packages in MECM, using CIM connectivity. You can specify updates by name, ID, object, or group. Supports download location, retry logic, and language selection.
+
+    .PARAMETER SoftwareUpdateName
+        Array of software update names to save.
+
+    .PARAMETER SoftwareUpdateId
+        Array of software update IDs to save.
+
+    .PARAMETER SoftwareUpdate
+        Software update CIM instance to save.
+
+    .PARAMETER SoftwareUpdateGroupName
+        Array of software update group names to save updates from.
+
+    .PARAMETER SoftwareUpdateGroupId
+        Array of software update group IDs to save updates from.
+
+    .PARAMETER SoftwareUpdateGroup
+        Software update group CIM instance to save updates from.
+
+    .PARAMETER DeploymentPackageName
+        Name of the software update deployment package to save updates to.
+
+    .PARAMETER Location
+        Download source location for software updates.
+
+    .PARAMETER RetryCount
+        Number of times to retry downloading the update (default: 3).
+
+    .PARAMETER RetryDelaySec
+        Number of seconds to wait before retrying (default: 2).
+
+    .PARAMETER SoftwareUpdateLanguage
+        Array of software update languages.
+
+    .PARAMETER DisableWildcardHandling
+        Treats wildcard characters as literal character values.
+
+    .PARAMETER TimeoutSec
+        Timeout in seconds for each download attempt (default: 300).
+
+    .PARAMETER ForceWildcardHandling
+        Processes wildcard characters (not recommended).
+
+    .PARAMETER DeploymentPackageID
+        ID of the software update deployment package to save updates to.
+
+    .PARAMETER DownloadOnly
+        If specified, the function will only download the update content to the specified location without adding it to a deployment package.
+
+    .EXAMPLE
+        Save-CM7SoftwareUpdate -SoftwareUpdateGroupName "Test-SoftwareUpdateGroup" -DeploymentPackageName "Test-DeploymentPackage" -Location "\\mecm.yordomain.local\Patches\test"
+
+    .EXAMPLE
+        Save-CM7SoftwareUpdate -SoftwareUpdateName "Cumulative Update for Windows 10 (KB3095020)" -DeploymentPackageName "Test-DeploymentPackage" -Location "\\mecm.yourdomain.local\Patches\test"
+    #>
+    [CmdletBinding(DefaultParameterSetName='SaveByName')]
+    param (
+        # --- Update/Group parameters ---
+        [Parameter(ParameterSetName='SaveByNamePkgName', Mandatory=$true)]
+        [Parameter(ParameterSetName='SaveByNamePkgID', Mandatory=$true)]
+        [Parameter(ParameterSetName='DownloadOnlyByName', Mandatory=$true)]
+        [string[]]$SoftwareUpdateName,
+
+        [Parameter(ParameterSetName='SaveByIdPkgName', Mandatory=$true)]
+        [Parameter(ParameterSetName='SaveByIdPkgID', Mandatory=$true)]
+        [Parameter(ParameterSetName='DownloadOnlyById', Mandatory=$true)]
+        [string[]]$SoftwareUpdateId,
+
+        [Parameter(ParameterSetName='SaveByObjectPkgName', Mandatory=$true, ValueFromPipeline=$true)]
+        [Parameter(ParameterSetName='SaveByObjectPkgID', Mandatory=$true, ValueFromPipeline=$true)]
+        [Parameter(ParameterSetName='DownloadOnlyByObject', Mandatory=$true, ValueFromPipeline=$true)]
+        [System.Management.Automation.PSObject]$SoftwareUpdate,
+
+        [Parameter(ParameterSetName='SaveByGroupNamePkgName', Mandatory=$true)]
+        [Parameter(ParameterSetName='SaveByGroupNamePkgID', Mandatory=$true)]
+        [Parameter(ParameterSetName='DownloadOnlyByGroupName', Mandatory=$true)]
+        [string[]]$SoftwareUpdateGroupName,
+
+        [Parameter(ParameterSetName='SaveByGroupIdPkgName', Mandatory=$true)]
+        [Parameter(ParameterSetName='SaveByGroupIdPkgID', Mandatory=$true)]
+        [Parameter(ParameterSetName='DownloadOnlyByGroupId', Mandatory=$true)]
+        [string[]]$SoftwareUpdateGroupId,
+
+        [Parameter(ParameterSetName='SaveByGroupObjectPkgName', Mandatory=$true, ValueFromPipeline=$true)]
+        [Parameter(ParameterSetName='SaveByGroupObjectPkgID', Mandatory=$true, ValueFromPipeline=$true)]
+        [Parameter(ParameterSetName='DownloadOnlyByGroupObject', Mandatory=$true, ValueFromPipeline=$true)]
+        [System.Management.Automation.PSObject]$SoftwareUpdateGroup,
+
+        # --- DeploymentPackageName (only for Save) ---
+        [Parameter(ParameterSetName='SaveByNamePkgName', Mandatory=$true)]
+        [Parameter(ParameterSetName='SaveByIdPkgName', Mandatory=$true)]
+        [Parameter(ParameterSetName='SaveByObjectPkgName', Mandatory=$true)]
+        [Parameter(ParameterSetName='SaveByGroupNamePkgName', Mandatory=$true)]
+        [Parameter(ParameterSetName='SaveByGroupIdPkgName', Mandatory=$true)]
+        [Parameter(ParameterSetName='SaveByGroupObjectPkgName', Mandatory=$true)]
+        [string]$DeploymentPackageName,
+
+        [Parameter(ParameterSetName='SaveByNamePkgID', Mandatory=$true)]
+        [Parameter(ParameterSetName='SaveByIdPkgID', Mandatory=$true)]
+        [Parameter(ParameterSetName='SaveByObjectPkgID', Mandatory=$true)]
+        [Parameter(ParameterSetName='SaveByGroupNamePkgID', Mandatory=$true)]
+        [Parameter(ParameterSetName='SaveByGroupIdPkgID', Mandatory=$true)]
+        [Parameter(ParameterSetName='SaveByGroupObjectPkgID', Mandatory=$true)]
+        [string]$DeploymentPackageID,
+
+        # --- DownloadOnly (only for DownloadOnly sets) ---
+        [Parameter(ParameterSetName='DownloadOnlyByName', Mandatory=$true)]
+        [Parameter(ParameterSetName='DownloadOnlyById', Mandatory=$true)]
+        [Parameter(ParameterSetName='DownloadOnlyByObject', Mandatory=$true)]
+        [Parameter(ParameterSetName='DownloadOnlyByGroupName', Mandatory=$true)]
+        [Parameter(ParameterSetName='DownloadOnlyByGroupId', Mandatory=$true)]
+        [Parameter(ParameterSetName='DownloadOnlyByGroupObject', Mandatory=$true)]
+        [switch]$DownloadOnly,
+
+        # --- Common parameters ---
+        [Parameter(ParameterSetName='DownloadOnlyByName', Mandatory=$true)]
+        [Parameter(ParameterSetName='DownloadOnlyById', Mandatory=$true)]
+        [Parameter(ParameterSetName='DownloadOnlyByObject', Mandatory=$true)]
+        [Parameter(ParameterSetName='DownloadOnlyByGroupName', Mandatory=$true)]
+        [Parameter(ParameterSetName='DownloadOnlyByGroupId', Mandatory=$true)]
+        [Parameter(ParameterSetName='DownloadOnlyByGroupObject', Mandatory=$true)]
+        [string]$Location,
+
+        [uint32]$RetryCount = 3,
+        [uint32]$RetryDelaySec = 2,
+        [string[]]$SoftwareUpdateLanguage,
+        [switch]$DisableWildcardHandling,
+        [switch]$ForceWildcardHandling,
+        [int]$TimeoutSec = 300
+    )
+
+    # Validate connection
+    if (-not $script:CMConnection.CimSession) {
+        throw "Not connected to MECM. Please run Connect-CM7 first."
+    }
+
+    #region Establish CIM session
+    $SiteCode = $script:CMConnection.SiteCode
+    $CimSession = $Script:CMConnection.CimSession
+
+    $summary = [PSCustomObject]@{
+        Status = 'Success'
+        UpdatesProcessed = 0
+        UpdatesSucceeded = 0
+        UpdatesFailed = 0
+        UpdateResults = @()
+        Errors = @()
+    }
+    try {
+        #region Resolve Software Updates
+        $Updates = @()
+        if ($PSCmdlet.ParameterSetName -in @('SaveByNamePkgName', 'SaveByNamePkgID', 'DownloadOnlyByName')) {
+            foreach ($name in $SoftwareUpdateName) {
+                $Updates += Get-CimInstance -CimSession $CimSession -Namespace "root/SMS/site_$SiteCode" -ClassName SMS_SoftwareUpdate -Filter "LocalizedDisplayName='$name'"
+            }
+        } elseif ($PSCmdlet.ParameterSetName -in @('SaveByIdPkgName', 'SaveByIdPkgID', 'DownloadOnlyById')) {
+            foreach ($id in $SoftwareUpdateId) {
+                $Updates += Get-CimInstance -CimSession $CimSession -Namespace "root/SMS/site_$SiteCode" -ClassName SMS_SoftwareUpdate -Filter "ArticleID='$id'"
+            }
+        } elseif ($PSCmdlet.ParameterSetName -in @('SaveByObjectPkgName', 'SaveByObjectPkgID', 'DownloadOnlyByObject')) {
+            # $Updates += $SoftwareUpdate
+            $Updates += Get-CimInstance -CimSession $CimSession -Namespace "root/SMS/site_$SiteCode" -Query "SELECT * FROM SMS_SoftwareUpdate WHERE CI_ID='$($SoftwareUpdate.CI_ID)'"
+        } elseif ($PSCmdlet.ParameterSetName -in @('SaveByGroupNamePkgName', 'SaveByGroupNamePkgID', 'DownloadOnlyByGroupName')) {
+            foreach ($groupName in $SoftwareUpdateGroupName) {
+
+                $group = Get-CimInstance -CimSession $CimSession -Namespace "root/SMS/site_$SiteCode" -ClassName SMS_AuthorizationList -Filter "LocalizedDisplayName='$groupName'"
+                if ($null -eq $group) {
+                    $summary.Status = 'Error'
+                    $summary.Errors += "SoftwareUpdateGroup '$groupName' not found."
+                    continue
+                }
+                # get lazy loading of updates in group
+                $group = $group | Get-CimInstance
+
+                $Updates += Get-CimInstance -CimSession $CimSession -Namespace "root/SMS/site_$SiteCode" -Query "SELECT * FROM SMS_SoftwareUpdate WHERE CI_ID IN ($( $group.Updates -join ',' ))"
+            }
+        } elseif ($PSCmdlet.ParameterSetName -in @('SaveByGroupIdPkgName', 'SaveByGroupIdPkgID', 'DownloadOnlyByGroupId')) {
+            foreach ($groupId in $SoftwareUpdateGroupId) {
+                $group = Get-CimInstance -CimSession $CimSession -Namespace "root/SMS/site_$SiteCode" -ClassName SMS_AuthorizationList -Filter "CI_ID='$groupId'"
+                if ($null -eq $group) {
+                    $summary.Status = 'Error'
+                    $summary.Errors += "SoftwareUpdateGroup CI_ID '$groupId' not found."
+                    continue
+                }
+                $Updates += Get-CimInstance -CimSession $CimSession -Namespace "root/SMS/site_$SiteCode" -Query "SELECT * FROM SMS_AuthorizationList WHERE CI_ID IN ($($group.CI_ID))"
+            }
+        } elseif ($PSCmdlet.ParameterSetName -in @('SaveByGroupObjectPkgName', 'SaveByGroupObjectPkgID', 'DownloadOnlyByGroupObject')) {
+            $group = $SoftwareUpdateGroup
+            if ($null -eq $group) {
+                $summary.Status = 'Error'
+                $summary.Errors += "SoftwareUpdateGroup object not provided."
+            } else {
+                $Updates += Get-CimInstance -CimSession $CimSession -Namespace "root/SMS/site_$SiteCode" -Query "SELECT * FROM SMS_AuthorizationList WHERE CI_ID IN ($($group.CI_ID))"
+            }
+        }
+        #endregion
+
+        #region Get Deployment Package
+        if ($DownloadOnly) {
+            # If we're only downloading, we don't actually need to validate the deployment package exists, since we're not adding content to it
+            $DeploymentPackage = $null
+        } else {
+            if ( [boolean]$DeploymentPackageName ) {
+                $DeploymentPackage = Get-CimInstance -CimSession $CimSession -Namespace "root/SMS/site_$SiteCode" -ClassName SMS_SoftwareUpdatesPackage -Filter "Name='$DeploymentPackageName'"
+            } else {
+                $DeploymentPackage = Get-CimInstance -CimSession $CimSession -Namespace "root/SMS/site_$SiteCode" -ClassName SMS_SoftwareUpdatesPackage -Filter "PackageID='$DeploymentPackageID'"
+            }
+            if (-not $DeploymentPackage) {
+                $summary.Status = 'Error'
+                $summary.Errors += "Deployment package '$DeploymentPackageName' not found."
+                return $summary
+            }
+        }
+        #endregion
+
+        # If no updates found, return summary immediately
+        if (-not $Updates -or $Updates.Count -eq 0) {
+            $summary.Status = 'Error'
+            $summary.Errors += "No software updates found for the specified criteria."
+            return $summary
+        }
+
+        #region Download Content
+        foreach ($Update in $Updates) {
+            $updateResult = [PSCustomObject]@{
+                CI_ID = $Update.CI_ID
+                Name = $Update.LocalizedDisplayName
+                Status = 'Success'
+                Errors = @()
+            }
+            $summary.UpdatesProcessed++
+            $Query = "SELECT * FROM SMS_CIToContent WHERE CI_ID='$($Update.CI_ID)'"
+            $UpdateContents = Get-CimInstance -CimSession $CimSession -Namespace "root/SMS/site_$SiteCode" -Query $Query
+
+            $ContentIDs = ($UpdateContents | Select-Object -ExpandProperty ContentID -Unique) -join ','
+            $Query = "SELECT * FROM SMS_CIContentFiles WHERE ContentID IN ($ContentIDs)"
+            $UpdateContents = Get-CimInstance -CimSession $CimSession -Namespace "root/SMS/site_$SiteCode" -Query $Query
+
+            foreach ($UpdateContent in $UpdateContents) {
+                $FileName = Split-Path -Leaf $UpdateContent.SourceURL
+                if ( [string]::IsNullOrEmpty($Location)) {
+                    $FilePath = Join-Path -Path $DeploymentPackage.PkgSourcePath -ChildPath $FileName
+                } else {
+                    $FilePath = Join-Path -Path $Location -ChildPath $FileName
+                }
+
+                $DownloadSuccess = $false
+                $DownloadAttempts = 0
+
+                do {
+                    $DownloadAttempts++
+                    try {
+                        $Directory = Split-Path -Path $FilePath -Parent
+                        if (-not ([System.IO.Directory]::Exists( $Directory ) ) ) {
+                            New-Item -Path $Directory -ItemType Directory -Force | Out-Null
+                        }
+                        $ProgressPreference = 'SilentlyContinue'
+                        Invoke-WebRequest -Uri $UpdateContent.SourceURL -OutFile $FilePath -TimeoutSec $TimeoutSec -ErrorAction Stop
+                        if ( [System.IO.File]::Exists($FilePath) -and (Get-Item -Path $FilePath).Length -gt 0) {
+                            $DownloadSuccess = $true
+                        } else {
+                            throw "Downloaded file is empty or doesn't exist"
+                        }
+                    } catch {
+                        $updateResult.Status = 'Error'
+                        $errMsg = "Download attempt $DownloadAttempts failed for $FileName : $($_.Exception.Message)"
+                        $updateResult.Errors += $errMsg
+                        $summary.Errors += $errMsg
+                        if ( [System.IO.File]::Exists($FilePath) ) {
+                            Remove-Item -Path $FilePath -Force -ErrorAction SilentlyContinue
+                        }
+                        if ($DownloadAttempts -lt $RetryCount) {
+                            Start-Sleep -Seconds $RetryDelaySec
+                        }
+                    }
+                } while (-not $DownloadSuccess -and $DownloadAttempts -lt $RetryCount)
+
+                if (-not $DownloadSuccess) {
+                    $updateResult.Status = 'Error'
+                    $errMsg = "Failed to download $FileName after $RetryCount attempts"
+                    $updateResult.Errors += $errMsg
+                    $summary.Errors += $errMsg
+                    continue
+                }
+            }
+
+            # Add ContentID to package
+
+            if ( [boolean]$DownloadOnly ) {
+                # If we're only downloading, we skip adding content to the package
+                $updateResult.Status = 'Downloaded'
+
+                $ContentIDs = $UpdateContents | Select-Object -ExpandProperty ContentID -Unique
+                $summary.UpdatesSucceeded += $ContentIDs.Count
+                continue
+            }
+            else {
+                # If we successfully downloaded the content, we can add it to the deployment package
+                $ContentIDs = $UpdateContents | Select-Object -ExpandProperty ContentID -Unique
+                foreach ($cid in $ContentIDs) {
+                    $ContentIDArray   = @([uint32]$cid)
+                    $SourcePathArray  = @([string]$DeploymentPackage.PkgSourcePath)
+                    $Arguments = @{
+                        bRefreshDPs       = $false
+                        ContentIDs        = $ContentIDArray
+                        ContentSourcePath = $SourcePathArray
+                    }
+                    $Result = Invoke-CimMethod -CimSession $CimSession -InputObject $DeploymentPackage -MethodName 'AddUpdateContent' -Arguments $Arguments
+                    if ($Result.ReturnValue -eq 0) {
+                        $summary.UpdatesSucceeded++
+                    } else {
+                        $updateResult.Status = 'Error'
+                        $errMsg = "Failed to add ContentID $cid (error $($Result.ReturnValue))"
+                        $updateResult.Errors += $errMsg
+                        $summary.Errors += $errMsg
+                        $summary.UpdatesFailed++
+                    }
+                }
+            }
+            if ($updateResult.Status -eq 'Error') {
+                $summary.UpdatesFailed++
+            }
+            $summary.UpdateResults += $updateResult
+        }
+        if ($summary.Errors.Count -gt 0) {
+            $summary.Status = 'Error'
+        }
+        return $summary
+    }
+    catch {
+        $summary.Status = 'Error'
+        $summary.Errors += "An error occurred: $($_.Exception.Message)"
+        return $summary
+    }
+    #endregion
+}
+function Set-CM7TaskSequenceDeployment {
+    <#
+        .SYNOPSIS
+            Configures an existing task sequence deployment in MECM using CIM.
+
+        .DESCRIPTION
+            Updates one or more existing task sequence deployments (SMS_Advertisement with ProgramName = '*')
+            in Microsoft Endpoint Configuration Manager (MECM) using CIM.
+
+            This is the CIM-based equivalent of the Set-CMTaskSequenceDeployment cmdlet from the
+            ConfigurationManager PowerShell module, but uses direct CIM queries over WinRM.
+
+            Supported update scenarios:
+            - Update by deployment ID
+            - Update by deployment input object (including pipeline)
+            - Update by task sequence name/package ID with optional collection targeting
+            - Update deployment flags and common scheduling/time settings
+
+            Parameters related to full schedule-token manipulation (AddSchedule/RemoveSchedule/Schedule/ClearSchedule)
+            are declared for compatibility but are currently not supported in this CIM implementation.
+
+        .PARAMETER InputObject
+            Task sequence deployment object to update. Must contain AdvertisementID.
+
+        .PARAMETER TaskSequenceDeploymentId
+            AdvertisementID (deployment ID) of the task sequence deployment to update.
+
+        .PARAMETER TaskSequenceName
+            Task sequence name used to locate deployments to update.
+
+        .PARAMETER TaskSequencePackageId
+            Task sequence package ID used to locate deployments to update.
+
+        .PARAMETER Collection
+            Collection object used to target deployments and/or set target collection.
+
+        .PARAMETER CollectionId
+            Collection ID used to target deployments and/or set target collection.
+
+        .PARAMETER CollectionName
+            Collection name used to target deployments and/or set target collection.
+
+        .PARAMETER AlertDateTime
+            Alert date time. Best-effort property mapping in CIM.
+
+        .PARAMETER AllowFallback
+            Allow fallback source location for content.
+
+        .PARAMETER AllowSharedContent
+            Allow shared content (peer cache/BranchCache equivalent behavior).
+
+        .PARAMETER AllowUsersRunIndependently
+            Allow users to run independently. Best-effort property mapping in CIM.
+
+        .PARAMETER Comment
+            Deployment comment.
+
+        .PARAMETER CreateAlertOnFailure
+            Create alert on failure. Best-effort property mapping in CIM.
+
+        .PARAMETER CreateAlertOnSuccess
+            Create alert on success. Best-effort property mapping in CIM.
+
+        .PARAMETER DeploymentAvailableDateTime
+            Deployment available date/time.
+
+        .PARAMETER DeploymentExpireDateTime
+            Deployment expiration date/time.
+
+        .PARAMETER DeploymentOption
+            Content download behavior.
+
+        .PARAMETER InternetOption
+            Allow internet clients.
+
+        .PARAMETER MakeAvailableTo
+            Controls deployment availability target (clients/media/pxe).
+
+        .PARAMETER PercentFailure
+            Failure alert threshold percentage. Best-effort property mapping in CIM.
+
+        .PARAMETER PercentSuccess
+            Success alert threshold percentage. Best-effort property mapping in CIM.
+
+        .PARAMETER PersistOnWriteFilterDevice
+            Persist content on write filter devices.
+
+        .PARAMETER RerunBehavior
+            Rerun behavior for the task sequence deployment.
+
+        .PARAMETER ClearSchedule
+            Declared for compatibility. Not supported in this CIM implementation.
+
+        .PARAMETER RemoveSchedule
+            Declared for compatibility. Not supported in this CIM implementation.
+
+        .PARAMETER AddSchedule
+            Declared for compatibility. Not supported in this CIM implementation.
+
+        .PARAMETER Schedule
+            Declared for compatibility. Not supported in this CIM implementation.
+
+        .PARAMETER ClearScheduleEvent
+            Clear all schedule event flags (AsSoonAsPossible, LogOn, LogOff).
+
+        .PARAMETER RemoveScheduleEvent
+            Remove one or more schedule events.
+
+        .PARAMETER AddScheduleEvent
+            Add one or more schedule events.
+
+        .PARAMETER ScheduleEvent
+            Set schedule event flags exactly to the specified values.
+
+        .PARAMETER SendWakeupPacket
+            Send wake-up packet before deployment.
+
+        .PARAMETER ShowTaskSequenceProgress
+            Show task sequence progress.
+
+        .PARAMETER SoftwareInstallation
+            Allow software installation outside maintenance windows.
+
+        .PARAMETER SystemRestart
+            Allow system restart outside maintenance windows.
+
+        .PARAMETER UseMeteredNetwork
+            Allow use on metered network.
+
+        .PARAMETER UseUtcForAvailableSchedule
+            Use UTC for available schedule.
+
+        .PARAMETER UseUtcForExpireSchedule
+            Use UTC for expire schedule.
+
+        .PARAMETER PassThru
+            Return updated deployment object(s).
+
+        .PARAMETER DisableWildcardHandling
+            Treat wildcard characters as literals in CollectionName filtering.
+
+        .PARAMETER ForceWildcardHandling
+            Force wildcard handling for CollectionName filtering.
+
+        .PARAMETER Force
+            Suppress confirmation prompts.
+
+        .EXAMPLE
+            Set-CM7TaskSequenceDeployment -TaskSequenceDeploymentId "SD120BD2" -Comment "Updated by automation" -ShowTaskSequenceProgress $true -PassThru
+
+        .EXAMPLE
+            Get-CM7TaskSequenceDeployment -AdvertisementID "SD120BD2" | Set-CM7TaskSequenceDeployment -UseMeteredNetwork $false -PassThru
+
+        .EXAMPLE
+            Set-CM7TaskSequenceDeployment -TaskSequencePackageId "SD100FAD" -CollectionName "Test-Collection-Direct" -AllowFallback $true -DeploymentOption RunFromDistributionPoint
+
+        .NOTES
+            Requires an active connection established via Connect-CM7.
+    #>
+    [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'High', DefaultParameterSetName = 'ByDeploymentId')]
+    param(
+        [Parameter(ParameterSetName = 'ByInputObject', Mandatory = $true, ValueFromPipeline = $true)]
+        [Alias('Deployment', 'DeploymentSummary', 'TaskSequence', 'Advertisement')]
+        [ValidateNotNull()]
+        [PSObject]$InputObject,
+
+        [Parameter(ParameterSetName = 'ByDeploymentId', Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [string]$TaskSequenceDeploymentId,
+
+        [Parameter(ParameterSetName = 'ByTaskSequenceName', Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [string]$TaskSequenceName,
+
+        [Parameter(ParameterSetName = 'ByTaskSequencePackageId', Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [string]$TaskSequencePackageId,
+
+        [Parameter()]
+        [PSObject]$Collection,
+
+        [Parameter()]
+        [ValidateNotNullOrEmpty()]
+        [string]$CollectionId,
+
+        [Parameter()]
+        [ValidateNotNullOrEmpty()]
+        [string]$CollectionName,
+
+        [Parameter()]
+        [datetime]$AlertDateTime,
+
+        [Parameter()]
+        [Boolean]$AllowFallback,
+
+        [Parameter()]
+        [Boolean]$AllowSharedContent,
+
+        [Parameter()]
+        [Boolean]$AllowUsersRunIndependently,
+
+        [Parameter()]
+        [string]$Comment,
+
+        [Parameter()]
+        [Boolean]$CreateAlertOnFailure,
+
+        [Parameter()]
+        [Boolean]$CreateAlertOnSuccess,
+
+        [Parameter()]
+        [datetime]$DeploymentAvailableDateTime,
+
+        [Parameter()]
+        [datetime]$DeploymentExpireDateTime,
+
+        [Parameter()]
+        [ValidateSet('DownloadContentLocallyWhenNeededByRunningTaskSequence', 'DownloadAllContentLocallyBeforeStartingTaskSequence', 'RunFromDistributionPoint')]
+        [string]$DeploymentOption,
+
+        [Parameter()]
+        [Boolean]$InternetOption,
+
+        [Parameter()]
+        [ValidateSet('Clients', 'ClientsMediaAndPxe', 'MediaAndPxe', 'MediaAndPxeHidden')]
+        [string]$MakeAvailableTo,
+
+        [Parameter()]
+        [ValidateRange(0, 100)]
+        [int]$PercentFailure,
+
+        [Parameter()]
+        [ValidateRange(0, 100)]
+        [int]$PercentSuccess,
+
+        [Parameter()]
+        [Boolean]$PersistOnWriteFilterDevice,
+
+        [Parameter()]
+        [ValidateSet('NeverRerunDeployedProgram', 'AlwaysRerunProgram', 'RerunIfFailedPreviousAttempt', 'RerunIfSucceededOnPreviousAttempt')]
+        [string]$RerunBehavior,
+
+        [Parameter()]
+        [switch]$ClearSchedule,
+
+        [Parameter()]
+        [PSObject[]]$RemoveSchedule,
+
+        [Parameter()]
+        [PSObject[]]$AddSchedule,
+
+        [Parameter()]
+        [PSObject[]]$Schedule,
+
+        [Parameter()]
+        [switch]$ClearScheduleEvent,
+
+        [Parameter()]
+        [ValidateSet('AsSoonAsPossible', 'LogOn', 'LogOff')]
+        [string[]]$RemoveScheduleEvent,
+
+        [Parameter()]
+        [ValidateSet('AsSoonAsPossible', 'LogOn', 'LogOff')]
+        [string[]]$AddScheduleEvent,
+
+        [Parameter()]
+        [ValidateSet('AsSoonAsPossible', 'LogOn', 'LogOff')]
+        [string[]]$ScheduleEvent,
+
+        [Parameter()]
+        [Boolean]$SendWakeupPacket,
+
+        [Parameter()]
+        [Boolean]$ShowTaskSequenceProgress,
+
+        [Parameter()]
+        [Boolean]$SoftwareInstallation,
+
+        [Parameter()]
+        [Boolean]$SystemRestart,
+
+        [Parameter()]
+        [Boolean]$UseMeteredNetwork,
+
+        [Parameter()]
+        [Boolean]$UseUtcForAvailableSchedule,
+
+        [Parameter()]
+        [Boolean]$UseUtcForExpireSchedule,
+
+        [Parameter()]
+        [switch]$PassThru,
+
+        [Parameter()]
+        [switch]$DisableWildcardHandling,
+
+        [Parameter()]
+        [switch]$ForceWildcardHandling,
+
+        [Parameter()]
+        [switch]$Force
+    )
+
+    begin {
+        $function = $($MyInvocation.MyCommand.Name)
+        Write-Verbose "Running $function"
+
+        if (-not $script:CMConnection.CimSession) {
+            throw "Not connected to MECM. Please run Connect-CM7 first."
+        }
+
+        if ($DisableWildcardHandling -and $ForceWildcardHandling) {
+            throw "DisableWildcardHandling and ForceWildcardHandling cannot be used together."
+        }
+
+        if ($ClearSchedule -or $Schedule -or $AddSchedule -or $RemoveSchedule) {
+            throw "Schedule token manipulation parameters (ClearSchedule, Schedule, AddSchedule, RemoveSchedule) are currently not supported in this CIM implementation."
+        }
+
+        $namespace = "root/SMS/site_$($script:CMConnection.SiteCode)"
+        $cimParams = @{
+            CimSession = $script:CMConnection.CimSession
+            Namespace  = $namespace
+        }
+
+        $ADVERT_IMMEDIATE                      = [uint32]0x00000020
+        $ADVERT_ONUSERLOGON                    = [uint32]0x00000200
+        $ADVERT_ONUSERLOGOFF                   = [uint32]0x00000400
+        $ADVERT_ENABLE_TS_FROM_CD_AND_PXE      = [uint32]0x00002000
+        $ADVERT_NO_DISPLAY                     = [uint32]0x00008000
+        $ADVERT_OVERRIDE_SERVICE_WINDOWS       = [uint32]0x00010000
+        $ADVERT_REBOOT_OUTSIDE_SERVICE_WINDOWS = [uint32]0x00020000
+        $ADVERT_WAKE_ON_LAN                    = [uint32]0x00040000
+        $ADVERT_DONOT_FALLBACK                 = [uint32]0x00080000
+        $ADVERT_SHOW_PROGRESS                  = [uint32]0x02000000
+
+        $RCF_DOWNLOAD_FROM_REMOTE_DP           = [uint32]0x00000002
+        $RCF_DONT_RUN_NO_LOCAL_DP              = [uint32]0x00000004
+        $RCF_ALLOW_SHARED_CONTENT              = [uint32]0x00000010
+        $RCF_ALWAYS_RERUN                      = [uint32]0x00000020
+        $RCF_RERUN_IF_FAILED                   = [uint32]0x00000040
+        $RCF_RERUN_IF_SUCCEEDED                = [uint32]0x00000080
+        $RCF_PERSIST_ON_WRITE_FILTER           = [uint32]0x00000400
+        $RCF_ALLOW_INTERNET_CLIENTS            = [uint32]0x00000800
+        $RCF_TS_SHOW_PROGRESS                  = [uint32]0x00004000
+        $RCF_USE_METERED_NETWORK               = [uint32]0x00008000
+
+        $collectionLookup = @{}
+        $deploymentIdList = New-Object System.Collections.Generic.List[string]
+    }
+
+    process {
+        try {
+            $resolvedCollections = @()
+
+            if ($Collection) {
+                $collectionObjectId = $null
+                if ($Collection.PSObject.Properties['CollectionID']) {
+                    $collectionObjectId = [string]$Collection.CollectionID
+                }
+                elseif ($Collection.PSObject.Properties['CollectionId']) {
+                    $collectionObjectId = [string]$Collection.CollectionId
+                }
+
+                if ($collectionObjectId) {
+                    $resolvedCollections = @(Get-CM7Collection -CollectionId $collectionObjectId -CollectionType Device)
+                }
+                elseif ($Collection.PSObject.Properties['Name']) {
+                    $CollectionName = [string]$Collection.Name
+                }
+                else {
+                    throw "Collection object must have CollectionID/CollectionId or Name property."
+                }
+            }
+
+            if (-not $resolvedCollections -and $CollectionId) {
+                $resolvedCollections = @(Get-CM7Collection -CollectionId $CollectionId -CollectionType Device)
+            }
+
+            if (-not $resolvedCollections -and $CollectionName) {
+                if ($DisableWildcardHandling) {
+                    $resolvedCollections = @(Get-CM7Collection -Name $CollectionName -CollectionType Device | Where-Object { $_.Name -eq $CollectionName })
+                }
+                elseif ($ForceWildcardHandling) {
+                    $collectionPattern = if ($CollectionName -match '[\*\?]') { $CollectionName } else { "*$CollectionName*" }
+                    $resolvedCollections = @(Get-CM7Collection -Name $collectionPattern -CollectionType Device)
+                }
+                else {
+                    $resolvedCollections = @(Get-CM7Collection -Name $CollectionName -CollectionType Device)
+                }
+            }
+
+            if (($Collection -or $CollectionId -or $CollectionName) -and (-not $resolvedCollections -or $resolvedCollections.Count -eq 0)) {
+                $collectionIdentifier = if ($CollectionName) { $CollectionName } elseif ($CollectionId) { $CollectionId } else { '<collection object>' }
+                throw "Device collection '$collectionIdentifier' not found."
+            }
+
+            foreach ($c in $resolvedCollections) {
+                $resolvedCollectionId = if ($c.PSObject.Properties['CollectionID']) { $c.CollectionID } else { $c.CollectionId }
+                $collectionLookup[[string]$resolvedCollectionId] = $c.Name
+            }
+
+            switch ($PSCmdlet.ParameterSetName) {
+                'ByInputObject' {
+                    $id = $null
+                    if ($InputObject.PSObject.Properties['AdvertisementID']) {
+                        $id = [string]$InputObject.AdvertisementID
+                    }
+                    if (-not $id) {
+                        throw "InputObject does not have an AdvertisementID property."
+                    }
+                    $deploymentIdList.Add($id)
+                }
+
+                'ByDeploymentId' {
+                    $deploymentIdList.Add($TaskSequenceDeploymentId)
+                }
+
+                'ByTaskSequenceName' {
+                    $tsQuery = "SELECT PackageID, Name FROM SMS_TaskSequencePackage WHERE Name = '$TaskSequenceName'"
+                    $tsRows = @(Get-CimInstance @cimParams -Query $tsQuery)
+                    if (-not $tsRows) {
+                        throw "Task sequence '$TaskSequenceName' not found."
+                    }
+                    if ($tsRows.Count -gt 1) {
+                        throw "Multiple task sequences found matching '$TaskSequenceName'. Please use -TaskSequencePackageId."
+                    }
+
+                    $resolvedPkgId = [string]$tsRows[0].PackageID
+                    $advFilter = @("ProgramName = '*'", "PackageID = '$resolvedPkgId'")
+                    if ($resolvedCollections.Count -gt 0) {
+                        $orClauses = $resolvedCollections | ForEach-Object {
+                            $resolvedCollectionId = if ($_.PSObject.Properties['CollectionID']) { $_.CollectionID } else { $_.CollectionId }
+                            "CollectionID = '$resolvedCollectionId'"
+                        }
+                        $advFilter += "(" + ($orClauses -join ' OR ') + ")"
+                    }
+
+                    $advQuery = "SELECT AdvertisementID FROM SMS_Advertisement WHERE " + ($advFilter -join ' AND ')
+                    $advRows = @(Get-CimInstance @cimParams -Query $advQuery)
+                    if (-not $advRows) {
+                        throw "No task sequence deployments found for task sequence '$TaskSequenceName'."
+                    }
+                    foreach ($r in $advRows) {
+                        $deploymentIdList.Add([string]$r.AdvertisementID)
+                    }
+                }
+
+                'ByTaskSequencePackageId' {
+                    $tsCheckQuery = "SELECT PackageID, Name FROM SMS_TaskSequencePackage WHERE PackageID = '$TaskSequencePackageId'"
+                    $tsCheck = @(Get-CimInstance @cimParams -Query $tsCheckQuery)
+                    if (-not $tsCheck) {
+                        throw "Task sequence with PackageID '$TaskSequencePackageId' not found."
+                    }
+                    $advFilter = @("ProgramName = '*'", "PackageID = '$TaskSequencePackageId'")
+                    if ($resolvedCollections.Count -gt 0) {
+                        $orClauses = $resolvedCollections | ForEach-Object {
+                            $resolvedCollectionId = if ($_.PSObject.Properties['CollectionID']) { $_.CollectionID } else { $_.CollectionId }
+                            "CollectionID = '$resolvedCollectionId'"
+                        }
+                        $advFilter += "(" + ($orClauses -join ' OR ') + ")"
+                    }
+
+                    $advQuery = "SELECT AdvertisementID FROM SMS_Advertisement WHERE " + ($advFilter -join ' AND ')
+                    $advRows = @(Get-CimInstance @cimParams -Query $advQuery)
+                    if (-not $advRows) {
+                        throw "No task sequence deployments found for PackageID '$TaskSequencePackageId'."
+                    }
+                    foreach ($r in $advRows) {
+                        $deploymentIdList.Add([string]$r.AdvertisementID)
+                    }
+                }
+            }
+
+            $targetIds = @($deploymentIdList | Select-Object -Unique)
+            if (-not $targetIds -or $targetIds.Count -eq 0) {
+                throw "No task sequence deployment targets were resolved."
+            }
+
+            foreach ($advId in $targetIds) {
+                # Explicit non-lazy property list avoids HRESULT 0x80041001 from Set-CimInstance.
+                # SMS_Advertisement lazy properties (AssignedSchedule*, PresentTimeEnabled,
+                # PresentTimeIsGMT, ExpirationTimeEnabled, ExpirationTimeIsGMT, TimeFlags) cause
+                # the provider to reject ModifyInstance when the full instance is sent back.
+                # Use SELECT * so the CimInstance contains all properties (including lazy ones) with their
+                # real values. This is required for Required deployments: the provider validates that
+                # AssignedSchedule/AssignedScheduleEnabled are non-null on any ModifyInstance call, and
+                # a partial SELECT would leave those as null, causing HRESULT 0x80041001.
+                $getAdvQuery = "SELECT * FROM SMS_Advertisement WHERE AdvertisementID = '$advId' AND ProgramName = '*'"
+                $deployment = @(Get-CimInstance @cimParams -Query $getAdvQuery)[0]
+                if (-not $deployment) {
+                    throw "Task sequence deployment with AdvertisementID '$advId' was not found."
+                }
+
+                $displayName = "$($deployment.AdvertisementName) ($($deployment.AdvertisementID))"
+                $actionDescription = "Update task sequence deployment '$($deployment.AdvertisementName)' ($($deployment.AdvertisementID))"
+
+                if (-not ($Force -or $PSCmdlet.ShouldProcess($displayName, $actionDescription))) {
+                    continue
+                }
+
+                [uint32]$advertFlags = [uint32]$deployment.AdvertFlags
+                [uint32]$remoteClientFlags = [uint32]$deployment.RemoteClientFlags
+                [uint32]$origAdvertFlags = $advertFlags
+                [uint32]$origRemoteClientFlags = $remoteClientFlags
+
+                if ($PSBoundParameters.ContainsKey('AllowFallback')) {
+                    if ($AllowFallback) {
+                        $advertFlags = $advertFlags -band (-bnot $ADVERT_DONOT_FALLBACK)
+                    } else {
+                        $advertFlags = $advertFlags -bor $ADVERT_DONOT_FALLBACK
+                    }
+                }
+
+                if ($PSBoundParameters.ContainsKey('SoftwareInstallation')) {
+                    if ($SoftwareInstallation) {
+                        $advertFlags = $advertFlags -bor $ADVERT_OVERRIDE_SERVICE_WINDOWS
+                    } else {
+                        $advertFlags = $advertFlags -band (-bnot $ADVERT_OVERRIDE_SERVICE_WINDOWS)
+                    }
+                }
+
+                if ($PSBoundParameters.ContainsKey('SystemRestart')) {
+                    if ($SystemRestart) {
+                        $advertFlags = $advertFlags -bor $ADVERT_REBOOT_OUTSIDE_SERVICE_WINDOWS
+                    } else {
+                        $advertFlags = $advertFlags -band (-bnot $ADVERT_REBOOT_OUTSIDE_SERVICE_WINDOWS)
+                    }
+                }
+
+                if ($PSBoundParameters.ContainsKey('SendWakeupPacket')) {
+                    if ($SendWakeupPacket) {
+                        $advertFlags = $advertFlags -bor $ADVERT_WAKE_ON_LAN
+                    } else {
+                        $advertFlags = $advertFlags -band (-bnot $ADVERT_WAKE_ON_LAN)
+                    }
+                }
+
+                if ($PSBoundParameters.ContainsKey('ShowTaskSequenceProgress')) {
+                    if ($ShowTaskSequenceProgress) {
+                        $advertFlags = $advertFlags -bor $ADVERT_SHOW_PROGRESS
+                        $remoteClientFlags = $remoteClientFlags -bor $RCF_TS_SHOW_PROGRESS
+                    } else {
+                        $advertFlags = $advertFlags -band (-bnot $ADVERT_SHOW_PROGRESS)
+                        $remoteClientFlags = $remoteClientFlags -band (-bnot $RCF_TS_SHOW_PROGRESS)
+                    }
+                }
+
+                if ($PSBoundParameters.ContainsKey('MakeAvailableTo')) {
+                    $advertFlags = $advertFlags -band (-bnot ($ADVERT_ENABLE_TS_FROM_CD_AND_PXE -bor $ADVERT_NO_DISPLAY))
+                    switch ($MakeAvailableTo) {
+                        'Clients' { }
+                        'ClientsMediaAndPxe' { $advertFlags = $advertFlags -bor $ADVERT_ENABLE_TS_FROM_CD_AND_PXE }
+                        'MediaAndPxe' { $advertFlags = $advertFlags -bor $ADVERT_ENABLE_TS_FROM_CD_AND_PXE }
+                        'MediaAndPxeHidden' {
+                            $advertFlags = $advertFlags -bor $ADVERT_ENABLE_TS_FROM_CD_AND_PXE
+                            $advertFlags = $advertFlags -bor $ADVERT_NO_DISPLAY
+                        }
+                    }
+                }
+
+                $eventMask = ($ADVERT_IMMEDIATE -bor $ADVERT_ONUSERLOGON -bor $ADVERT_ONUSERLOGOFF)
+                if ($ClearScheduleEvent) {
+                    $advertFlags = $advertFlags -band (-bnot $eventMask)
+                    # For Required deployments, clearing all schedule events is not allowed
+                    $isRequired = ($deployment.PSObject.Properties['Mandatory'] -and $deployment.Mandatory) -or ($deployment.PSObject.Properties['AdvertFlags'] -and ($advertFlags -band $ADVERT_IMMEDIATE))
+                    $hasSchedule = ($advertFlags -band $eventMask) -ne 0
+                    if ($isRequired -and -not $hasSchedule) {
+                        throw "Required deployments must have at least one schedule event or schedule. Clearing all schedule events is not allowed."
+                    }
+                }
+
+                if ($PSBoundParameters.ContainsKey('ScheduleEvent')) {
+                    $advertFlags = $advertFlags -band (-bnot $eventMask)
+                    foreach ($ev in $ScheduleEvent) {
+                        switch ($ev) {
+                            'AsSoonAsPossible' { $advertFlags = $advertFlags -bor $ADVERT_IMMEDIATE }
+                            'LogOn' { $advertFlags = $advertFlags -bor $ADVERT_ONUSERLOGON }
+                            'LogOff' { $advertFlags = $advertFlags -bor $ADVERT_ONUSERLOGOFF }
+                        }
+                    }
+                }
+
+                if ($PSBoundParameters.ContainsKey('AddScheduleEvent')) {
+                    foreach ($ev in $AddScheduleEvent) {
+                        switch ($ev) {
+                            'AsSoonAsPossible' { $advertFlags = $advertFlags -bor $ADVERT_IMMEDIATE }
+                            'LogOn' { $advertFlags = $advertFlags -bor $ADVERT_ONUSERLOGON }
+                            'LogOff' { $advertFlags = $advertFlags -bor $ADVERT_ONUSERLOGOFF }
+                        }
+                    }
+                }
+
+                if ($PSBoundParameters.ContainsKey('RemoveScheduleEvent')) {
+                    foreach ($ev in $RemoveScheduleEvent) {
+                        switch ($ev) {
+                            'AsSoonAsPossible' { $advertFlags = $advertFlags -band (-bnot $ADVERT_IMMEDIATE) }
+                            'LogOn' { $advertFlags = $advertFlags -band (-bnot $ADVERT_ONUSERLOGON) }
+                            'LogOff' { $advertFlags = $advertFlags -band (-bnot $ADVERT_ONUSERLOGOFF) }
+                        }
+                    }
+                }
+
+                if ($PSBoundParameters.ContainsKey('AllowSharedContent')) {
+                    if ($AllowSharedContent) {
+                        $remoteClientFlags = $remoteClientFlags -bor $RCF_ALLOW_SHARED_CONTENT
+                    } else {
+                        $remoteClientFlags = $remoteClientFlags -band (-bnot $RCF_ALLOW_SHARED_CONTENT)
+                    }
+                }
+
+                if ($PSBoundParameters.ContainsKey('PersistOnWriteFilterDevice')) {
+                    if ($PersistOnWriteFilterDevice) {
+                        $remoteClientFlags = $remoteClientFlags -bor $RCF_PERSIST_ON_WRITE_FILTER
+                    } else {
+                        $remoteClientFlags = $remoteClientFlags -band (-bnot $RCF_PERSIST_ON_WRITE_FILTER)
+                    }
+                }
+
+                if ($PSBoundParameters.ContainsKey('InternetOption')) {
+                    if ($InternetOption) {
+                        $remoteClientFlags = $remoteClientFlags -bor $RCF_ALLOW_INTERNET_CLIENTS
+                    } else {
+                        $remoteClientFlags = $remoteClientFlags -band (-bnot $RCF_ALLOW_INTERNET_CLIENTS)
+                    }
+                }
+
+                if ($PSBoundParameters.ContainsKey('UseMeteredNetwork')) {
+                    if ($UseMeteredNetwork) {
+                        $remoteClientFlags = $remoteClientFlags -bor $RCF_USE_METERED_NETWORK
+                    } else {
+                        $remoteClientFlags = $remoteClientFlags -band (-bnot $RCF_USE_METERED_NETWORK)
+                    }
+                }
+
+                if ($PSBoundParameters.ContainsKey('RerunBehavior')) {
+                    $remoteClientFlags = $remoteClientFlags -band (-bnot ($RCF_ALWAYS_RERUN -bor $RCF_RERUN_IF_FAILED -bor $RCF_RERUN_IF_SUCCEEDED))
+                    switch ($RerunBehavior) {
+                        'NeverRerunDeployedProgram' { }
+                        'AlwaysRerunProgram' { $remoteClientFlags = $remoteClientFlags -bor $RCF_ALWAYS_RERUN }
+                        'RerunIfFailedPreviousAttempt' { $remoteClientFlags = $remoteClientFlags -bor $RCF_RERUN_IF_FAILED }
+                        'RerunIfSucceededOnPreviousAttempt' { $remoteClientFlags = $remoteClientFlags -bor $RCF_RERUN_IF_SUCCEEDED }
+                    }
+                }
+
+                if ($PSBoundParameters.ContainsKey('DeploymentOption')) {
+                    $remoteClientFlags = $remoteClientFlags -band (-bnot ($RCF_DONT_RUN_NO_LOCAL_DP -bor $RCF_DOWNLOAD_FROM_REMOTE_DP))
+                    switch ($DeploymentOption) {
+                        'DownloadAllContentLocallyBeforeStartingTaskSequence' { }
+                        'DownloadContentLocallyWhenNeededByRunningTaskSequence' { $remoteClientFlags = $remoteClientFlags -bor $RCF_DOWNLOAD_FROM_REMOTE_DP }
+                        'RunFromDistributionPoint' { $remoteClientFlags = $remoteClientFlags -bor $RCF_DONT_RUN_NO_LOCAL_DP }
+                    }
+                }
+
+                $setProps = @{}
+                if ($advertFlags -ne $origAdvertFlags) {
+                    $setProps['AdvertFlags'] = [uint32]$advertFlags
+                }
+                if ($remoteClientFlags -ne $origRemoteClientFlags) {
+                    $setProps['RemoteClientFlags'] = [uint32]$remoteClientFlags
+                }
+
+                if ($PSBoundParameters.ContainsKey('Comment')) {
+                    $setProps['Comment'] = [string]$Comment
+                }
+
+                if ($PSBoundParameters.ContainsKey('DeploymentAvailableDateTime')) {
+                    # PresentTimeEnabled and PresentTimeIsGMT are lazy SMS_Advertisement properties
+                    # and cannot be set via Set-CimInstance (HRESULT 0x80041001). Only set the datetime value.
+                    $setProps['PresentTime'] = [datetime]$DeploymentAvailableDateTime
+                }
+
+                if ($PSBoundParameters.ContainsKey('DeploymentExpireDateTime')) {
+                    # ExpirationTimeEnabled and ExpirationTimeIsGMT are lazy SMS_Advertisement properties
+                    # and cannot be set via Set-CimInstance (HRESULT 0x80041001). Only set the datetime value.
+                    $setProps['ExpirationTime'] = [datetime]$DeploymentExpireDateTime
+                }
+
+                if ($resolvedCollections.Count -gt 0) {
+                    if ($resolvedCollections.Count -gt 1) {
+                        throw "CollectionName resolved to multiple collections. Please use a single collection name/id/object when updating target collection."
+                    }
+
+                    $resolvedCollectionId = if ($resolvedCollections[0].PSObject.Properties['CollectionID']) { $resolvedCollections[0].CollectionID } else { $resolvedCollections[0].CollectionId }
+                    $setProps['CollectionID'] = [string]$resolvedCollectionId
+                }
+
+                if ($PSBoundParameters.ContainsKey('AlertDateTime')) {
+                    $mapped = $false
+                    foreach ($candidate in @('AlertTime', 'AlertDateTime')) {
+                        if ($deployment.CimInstanceProperties[$candidate]) {
+                            $setProps[$candidate] = [datetime]$AlertDateTime
+                            $mapped = $true
+                            break
+                        }
+                    }
+                    if (-not $mapped) {
+                        Write-Verbose "Could not map parameter 'AlertDateTime' to a known SMS_Advertisement property in this environment."
+                    }
+                }
+
+                if ($PSBoundParameters.ContainsKey('CreateAlertOnFailure')) {
+                    $mapped = $false
+                    foreach ($candidate in @('CreateAlertOnFailure', 'RaiseMomAlertsOnFailure', 'CreateAlertBaseOnPercentFailure')) {
+                        if ($deployment.CimInstanceProperties[$candidate]) {
+                            $setProps[$candidate] = [bool]$CreateAlertOnFailure
+                            $mapped = $true
+                            break
+                        }
+                    }
+                    if (-not $mapped) {
+                        Write-Verbose "Could not map parameter 'CreateAlertOnFailure' to a known SMS_Advertisement property in this environment."
+                    }
+                }
+
+                if ($PSBoundParameters.ContainsKey('CreateAlertOnSuccess')) {
+                    $mapped = $false
+                    foreach ($candidate in @('CreateAlertOnSuccess', 'RaiseMomAlertsOnSuccess', 'CreateAlertBaseOnPercentSuccess')) {
+                        if ($deployment.CimInstanceProperties[$candidate]) {
+                            $setProps[$candidate] = [bool]$CreateAlertOnSuccess
+                            $mapped = $true
+                            break
+                        }
+                    }
+                    if (-not $mapped) {
+                        Write-Verbose "Could not map parameter 'CreateAlertOnSuccess' to a known SMS_Advertisement property in this environment."
+                    }
+                }
+
+                if ($PSBoundParameters.ContainsKey('PercentFailure')) {
+                    $mapped = $false
+                    foreach ($candidate in @('PercentFailure')) {
+                        if ($deployment.CimInstanceProperties[$candidate]) {
+                            $setProps[$candidate] = [int]$PercentFailure
+                            $mapped = $true
+                            break
+                        }
+                    }
+                    if (-not $mapped) {
+                        Write-Verbose "Could not map parameter 'PercentFailure' to a known SMS_Advertisement property in this environment."
+                    }
+                }
+
+                if ($PSBoundParameters.ContainsKey('PercentSuccess')) {
+                    $mapped = $false
+                    foreach ($candidate in @('PercentSuccess')) {
+                        if ($deployment.CimInstanceProperties[$candidate]) {
+                            $setProps[$candidate] = [int]$PercentSuccess
+                            $mapped = $true
+                            break
+                        }
+                    }
+                    if (-not $mapped) {
+                        Write-Verbose "Could not map parameter 'PercentSuccess' to a known SMS_Advertisement property in this environment."
+                    }
+                }
+
+                if ($PSBoundParameters.ContainsKey('AllowUsersRunIndependently')) {
+                    $mapped = $false
+                    foreach ($candidate in @('AllowUsersRunIndependently', 'PresentUsers')) {
+                        if ($deployment.CimInstanceProperties[$candidate]) {
+                            $setProps[$candidate] = [bool]$AllowUsersRunIndependently
+                            $mapped = $true
+                            break
+                        }
+                    }
+                    if (-not $mapped) {
+                        Write-Verbose "Could not map parameter 'AllowUsersRunIndependently' to a known SMS_Advertisement property in this environment."
+                    }
+                }
+
+                if ($setProps.Count -eq 0) {
+                    Write-Verbose "No properties to update for deployment '$($deployment.AdvertisementName)' ($($deployment.AdvertisementID))"
+                } else {
+                    Write-Verbose "Updating deployment '$($deployment.AdvertisementName)' ($($deployment.AdvertisementID)) via CIM"
+                    try {
+                        Set-CimInstance -CimSession $script:CMConnection.CimSession -InputObject $deployment -Property $setProps -ErrorAction Stop | Out-Null
+                    } catch {
+                        $errMsg = $_.Exception.Message
+                        if (-not $errMsg) { $errMsg = $_.Message }
+                        if ($ClearScheduleEvent -and $isRequired -and -not $hasSchedule -and $errMsg -match "HRESULT 0x80041001|Generic failure") {
+                            throw "Required deployments must have at least one schedule event or schedule. Clearing all schedule events is not allowed."
+                        } else {
+                            throw $_
+                        }
+                    }
+                }
+
+                if ($PassThru) {
+                    Get-CM7TaskSequenceDeployment -AdvertisementID $deployment.AdvertisementID
+                }
+            }
+        }
+        catch {
+            throw $_
         }
     }
 }

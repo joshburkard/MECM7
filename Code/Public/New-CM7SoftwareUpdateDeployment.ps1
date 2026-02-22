@@ -110,15 +110,15 @@ function New-CM7SoftwareUpdateDeployment {
             Prompts you for confirmation before running the cmdlet.
 
         .EXAMPLE
-            New-CM7SoftwareUpdateDeployment -SoftwareUpdateGroupName "SO Servers-SecurityPatches-2024-01" -CollectionName "Test-Collection-Direct" -Force
+            New-CM7SoftwareUpdateDeployment -SoftwareUpdateGroupName "Test-SUG" -CollectionName "Test-Collection-Direct" -Force
             Creates a required software update deployment targeting the specified collection.
 
         .EXAMPLE
-            New-CM7SoftwareUpdateDeployment -SoftwareUpdateGroupName "SO Servers-SecurityPatches-2024-01" -CollectionName "Test-Collection-Direct" -DeploymentType Available -Force
+            New-CM7SoftwareUpdateDeployment -SoftwareUpdateGroupName "Test-SUG" -CollectionName "Test-Collection-Direct" -DeploymentType Available -Force
             Creates an available (optional) software update deployment.
 
         .EXAMPLE
-            New-CM7SoftwareUpdateDeployment -SoftwareUpdateGroupName "SO Servers-SecurityPatches-2024-01" -CollectionName "Test-Collection-Direct" -DeadlineDateTime (Get-Date).AddDays(7) -Force
+            New-CM7SoftwareUpdateDeployment -SoftwareUpdateGroupName "Test-SUG" -CollectionName "Test-Collection-Direct" -DeadlineDateTime (Get-Date).AddDays(7) -Force
             Creates a required deployment with a 7-day enforcement deadline.
 
         .EXAMPLE
@@ -126,7 +126,7 @@ function New-CM7SoftwareUpdateDeployment {
             Creates a deployment using CI_ID and collection ID with a custom name and description.
 
         .EXAMPLE
-            New-CM7SoftwareUpdateDeployment -SoftwareUpdateGroupName "SO Servers-SecurityPatches-2024-01" -CollectionName "Test-Collection-Direct" -WhatIf
+            New-CM7SoftwareUpdateDeployment -SoftwareUpdateGroupName "Test-SUG" -CollectionName "Test-Collection-Direct" -WhatIf
             Shows what would happen without actually creating the deployment.
 
         .NOTES

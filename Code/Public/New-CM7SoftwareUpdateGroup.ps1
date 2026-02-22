@@ -51,7 +51,7 @@ function New-CM7SoftwareUpdateGroup {
             Prompts you for confirmation before running the cmdlet.
 
         .EXAMPLE
-            New-CM7SoftwareUpdateGroup -Name "SO Servers-SecurityPatches-Test" -Description "Test group for security patches"
+            New-CM7SoftwareUpdateGroup -Name "Test-SUG" -Description "Test group for security patches"
             Creates an empty software update group with the specified name and description.
 
         .EXAMPLE

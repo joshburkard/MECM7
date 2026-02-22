@@ -34,12 +34,12 @@ function Get-CM7SoftwareUpdateDeploymentPackage {
             Retrieves the software update deployment package with the specified package ID.
 
         .EXAMPLE
-            Get-CM7SoftwareUpdateDeploymentPackage -Name "SO Servers-SecurityPatches-2024-01"
+            Get-CM7SoftwareUpdateDeploymentPackage -Name "SecurityPatchesPackage"
             Retrieves the software update deployment package with the specified name.
 
         .EXAMPLE
-            Get-CM7SoftwareUpdateDeploymentPackage -Name "SO Servers*"
-            Retrieves all software update deployment packages whose names start with "SO Servers".
+            Get-CM7SoftwareUpdateDeploymentPackage -Name "Test-SUG*"
+            Retrieves all software update deployment packages whose names start with "Test-SUG".
 
         .EXAMPLE
             Get-CM7SoftwareUpdateDeploymentPackage -Name "*SecurityPatches*"

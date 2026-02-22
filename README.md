@@ -130,8 +130,7 @@ other functions will be described in the [Help](./Help/README.md) folder
 - [`New-CM7SoftwareUpdateGroup`](./Help/New-CM7SoftwareUpdateGroup.md) - Create a new software update group in MECM
 - [`Add-CM7SoftwareUpdateToGroup`](./Help/Add-CM7SoftwareUpdateToGroup.md) - Add software updates to a software update group in MECM
 - [`New-CM7SoftwareUpdateDeployment`](./Help/New-CM7SoftwareUpdateDeployment.md) - Create a new software update deployment in MECM
- [`New-CM7SoftwareUpdateDeploymentPackage`](./Help/New-CM7SoftwareUpdateDeploymentPackage.md) - Create a new software update deployment package in MECM
-
+- [`New-CM7SoftwareUpdateDeploymentPackage`](./Help/New-CM7SoftwareUpdateDeploymentPackage.md) - Create a new software update deployment package in MECM
 - [`Remove-CM7SoftwareUpdateDeploymentPackage`](./Help/Remove-CM7SoftwareUpdateDeploymentPackage.md) - Remove a software update deployment package from MECM
 
 ### Task Sequence Management

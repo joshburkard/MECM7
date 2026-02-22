@@ -471,8 +471,14 @@ if($IncludeStructuralTests -and $FunctionName) {
                         $parameterKeys = @( $ScriptCommand.Parameters.Keys | Where-Object { $_ -notin $DefaultParams } | Sort-Object )
 
                         It "Should have help text for parameter '<_>'" -ForEach @( $parameterKeys ) {
-                            $helpParamNames = @($DetailedHelp.parameters.parameter).name
-                            $_ -in $helpParamNames | Should -Be $true
+                            # Robustly parse the comment-based help block for .PARAMETER documentation
+                            $functionSource = $Ast.Extent.Text
+                            $paramName = $_
+                            $paramPattern = "\.PARAMETER\s+$paramName([\r\n]+.+?)+(?=\r\n\.|\r\n\#|\r\n\S|$)"
+                            $paramRegex = [regex]::new($paramPattern, [System.Text.RegularExpressions.RegexOptions]::IgnoreCase -bor [System.Text.RegularExpressions.RegexOptions]::Singleline)
+                            $match = $paramRegex.Match($functionSource)
+                            $hasDoc = $match.Success -and ($match.Value -match "\S{3,}") # Require at least 3 non-whitespace chars
+                            $hasDoc | Should -Be $true -Because "Parameter '$paramName' must have .PARAMETER documentation in the comment-based help block."
                         }
 
                         It "Should have type declaration for parameter '<_>'" -ForEach @( $parameterKeys ) {
@@ -486,6 +492,12 @@ if($IncludeStructuralTests -and $FunctionName) {
                             # Escape regex special characters in type names (e.g., [] in array types)
                             $VariableTypeEscaped = [regex]::Escape($VariableType)
                             $VariableTypeFullEscaped = [regex]::Escape($VariableTypeFull)
+
+                            if ( ( $Declaration -notmatch $VariableTypeEscaped ) -and ( $Declaration -notmatch $VariableTypeFullEscaped ) ) {
+                                Write-Host "`nParameter '$currentParam' declaration:" -ForegroundColor Red
+                                Write-Host "  $Declaration" -ForegroundColor Yellow
+                                Write-Host "Expected type: $VariableType or $VariableTypeFull" -ForegroundColor Cyan
+                            }
 
                             ( $Declaration -match $VariableTypeEscaped ) -or ( $Declaration -match $VariableTypeFullEscaped ) | Should -Be $true
                         }

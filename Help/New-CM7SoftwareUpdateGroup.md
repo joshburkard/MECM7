@@ -40,7 +40,7 @@ Specifies the name of the new software update group (LocalizedDisplayName). Must
 - **Accept wildcard characters**: No
 
 Examples:
-- `"SO Servers-SecurityPatches-2026-02"` - Descriptive name for patching
+- `"Test-SUG"` - Descriptive name for patching
 - `"Monthly Cumulative Updates"` - Group for monthly updates
 
 ### -Description
@@ -131,7 +131,7 @@ Prompts you for confirmation before running the cmdlet.
 ### EXAMPLE 1: Create an empty software update group
 
 ```powershell
-New-CM7SoftwareUpdateGroup -Name "SO Servers-SecurityPatches-2026-02" -Force
+New-CM7SoftwareUpdateGroup -Name "Test-SUG" -Force
 ```
 
 Creates a new empty software update group. Updates can be added later.
@@ -139,7 +139,7 @@ Creates a new empty software update group. Updates can be added later.
 ### EXAMPLE 2: Create a software update group with a description
 
 ```powershell
-New-CM7SoftwareUpdateGroup -Name "SO Servers-SecurityPatches-2026-02" -Description "Security patches for servers - February 2026" -Force
+New-CM7SoftwareUpdateGroup -Name "Test-SUG" -Description "Security patches for servers - February 2026" -Force
 ```
 
 Creates a new software update group with a descriptive text.
@@ -205,8 +205,8 @@ Creates a software update group with verbose output showing the WQL queries and 
 ### EXAMPLE 10: Create a group from an existing group's updates
 
 ```powershell
-$sourceGroup = Get-CM7SoftwareUpdateGroup -Name "SO Servers-SecurityPatches-2025-12"
-$newGroup = New-CM7SoftwareUpdateGroup -Name "SO Servers-SecurityPatches-2026-01" -UpdateId $sourceGroup.Updates -Description "Cloned from 2025-12" -Force
+$sourceGroup = Get-CM7SoftwareUpdateGroup -Name "Test-SUG"
+$newGroup = New-CM7SoftwareUpdateGroup -Name "Test-SUG" -UpdateId $sourceGroup.Updates -Description "Cloned from 2025-12" -Force
 ```
 
 Clones the update list from an existing software update group into a new one.

@@ -38,6 +38,7 @@ This directory contains markdown documentation for all MECM7 module functions.
 | [Get-CM7SoftwareUpdateDeploymentPackage](./Get-CM7SoftwareUpdateDeploymentPackage.md) | Retrieves software update deployment package information from MECM using CIM. |
 | [Get-CM7SoftwareUpdateGroup](./Get-CM7SoftwareUpdateGroup.md) | Retrieves software update group information from MECM using CIM. |
 | [New-CM7SoftwareUpdateGroup](./New-CM7SoftwareUpdateGroup.md) | Creates a new software update group in MECM using CIM. |
+| [Save-CM7SoftwareUpdate](./Save-CM7SoftwareUpdate.md) | Saves software updates to update groups and deployment packages using CIM connectivity. |
 | [Add-CM7SoftwareUpdateToGroup](./Add-CM7SoftwareUpdateToGroup.md) | Adds one or more software updates to a software update group in MECM using CIM. |
 | [New-CM7SoftwareUpdateDeployment](./New-CM7SoftwareUpdateDeployment.md) | Creates a new software update deployment in MECM using CIM. |
 | [New-CM7SoftwareUpdateDeploymentPackage](./New-CM7SoftwareUpdateDeploymentPackage.md) | Creates a new software update deployment package in MECM using CIM. |

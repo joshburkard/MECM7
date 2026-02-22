@@ -17,6 +17,13 @@ $script:CM7Connection = @{
     UseSsl                  = $false                  # Set to $true to use HTTPS for WinRM
 }
 
+ # Save-CM7SoftwareUpdate sample values
+$TestSoftwareUpdateGroupName = 'Sample-UpdateGroup'
+$TestDeploymentPackageName = 'Sample-DeploymentPackage'
+$TestLocation = '\\server\share\path'
+$TestSoftwareUpdateName = @('Sample Update KB123456')
+$TestSoftwareUpdateLanguage = @('English')
+
 # this array is used by the test framework to automatically redact sensitive values from test output and logs
 $SensitiveValues = @(
     $UserName,
@@ -24,6 +31,9 @@ $SensitiveValues = @(
     $script:CM7Connection.Credential,
     $script:CM7Connection.SiteServer,
     $script:CM7Connection.SiteCode
+    $TestSoftwareUpdateGroupName,
+    $TestDeploymentPackageName,
+    $TestLocation
 )
 
 # Credential options:
@@ -66,7 +76,7 @@ $script:TestData = @{
         }
         Basic = @{
             Name = "Test-DeploymentPackage"
-            Path = "\\sd.dika.be\data\SCCM\Patches\Servers-SecurityPatches\test"
+            Path = "\\mecm.yourdomain.local\Patches\Test"
             Description = "Test deployment package created by automated tests"
         }
         InvalidPath = @{

@@ -53,8 +53,8 @@ Specifies the name (LocalizedDisplayName) of the software update group. Supports
 - **Accept wildcard characters**: Yes
 
 Examples:
-- `"SO Servers-SecurityPatches"` - Exact match
-- `"SO Servers*"` - All groups whose names start with "SO Servers"
+- `"Servers-SecurityPatches"` - Exact match
+- `"Servers*"` - All groups whose names start with "Test-SUG"
 - `"*SecurityPatches*"` - All groups containing "SecurityPatches" in the name
 
 ### -Fast
@@ -102,7 +102,7 @@ Retrieves the specific software update group with the given CI_ID.
 ### EXAMPLE 3: Get software update groups by name
 
 ```powershell
-Get-CM7SoftwareUpdateGroup -Name "SO Servers-SecurityPatches"
+Get-CM7SoftwareUpdateGroup -Name "Test-SUG"
 ```
 
 Retrieves the software update group with the specified name.
@@ -110,10 +110,10 @@ Retrieves the software update group with the specified name.
 ### EXAMPLE 4: Get software update groups using wildcard name
 
 ```powershell
-Get-CM7SoftwareUpdateGroup -Name "SO Servers*"
+Get-CM7SoftwareUpdateGroup -Name "Test-SUG*"
 ```
 
-Retrieves all software update groups whose names start with "SO Servers".
+Retrieves all software update groups whose names start with "Test-SUG".
 
 ### EXAMPLE 5: Get software update groups containing a keyword
 
@@ -164,7 +164,7 @@ Finds all software update groups that are currently deployed.
 ### EXAMPLE 10: Get software update groups with verbose output
 
 ```powershell
-Get-CM7SoftwareUpdateGroup -Name "SO Servers-SecurityPatches" -Verbose
+Get-CM7SoftwareUpdateGroup -Name "Test-SUG" -Verbose
 ```
 
 Retrieves software update groups with verbose output showing the WQL queries being executed.
@@ -182,7 +182,7 @@ Finds all software update groups that contain superseded updates.
 ### EXAMPLE 12: Get the list of update CI_IDs in a software update group
 
 ```powershell
-$group = Get-CM7SoftwareUpdateGroup -Name "SO Servers-SecurityPatches"
+$group = Get-CM7SoftwareUpdateGroup -Name "Test-SUG"
 $group.Updates
 ```
 
@@ -221,7 +221,7 @@ Example object:
 PSTypeName                      : MECM7.SoftwareUpdateGroup
 CI_ID                           : 12345
 CI_UniqueID                     : ScopeId_XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX/AuthList_XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX
-LocalizedDisplayName            : SO Servers-SecurityPatches
+LocalizedDisplayName            : Test-SUG
 LocalizedDescription            : Security patches for servers - January 2024
 IsDeployed                      : True
 IsExpired                       : False
@@ -260,10 +260,10 @@ SELECT * FROM SMS_AuthorizationList
 SELECT * FROM SMS_AuthorizationList WHERE CI_ID = 12345
 
 -- Get by exact name
-SELECT * FROM SMS_AuthorizationList WHERE LocalizedDisplayName = 'SO Servers-SecurityPatches'
+SELECT * FROM SMS_AuthorizationList WHERE LocalizedDisplayName = 'Test-SUG'
 
 -- Get by wildcard name
-SELECT * FROM SMS_AuthorizationList WHERE LocalizedDisplayName LIKE 'SO Servers%'
+SELECT * FROM SMS_AuthorizationList WHERE LocalizedDisplayName LIKE '%SUG%'
 
 -- Fast mode (limited properties)
 SELECT CI_ID, CI_UniqueID, LocalizedDisplayName, LocalizedDescription, IsDeployed, IsExpired, IsSuperseded, NumberOfUpdates, DateCreated, DateLastModified, LocalizedCategoryInstanceNames FROM SMS_AuthorizationList

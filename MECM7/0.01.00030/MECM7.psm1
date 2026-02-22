@@ -3820,12 +3820,12 @@ function Get-CM7SoftwareUpdateDeploymentPackage {
             Retrieves the software update deployment package with the specified package ID.
 
         .EXAMPLE
-            Get-CM7SoftwareUpdateDeploymentPackage -Name "SO Servers-SecurityPatches-2024-01"
+            Get-CM7SoftwareUpdateDeploymentPackage -Name "Test-SUG"
             Retrieves the software update deployment package with the specified name.
 
         .EXAMPLE
-            Get-CM7SoftwareUpdateDeploymentPackage -Name "SO Servers*"
-            Retrieves all software update deployment packages whose names start with "SO Servers".
+            Get-CM7SoftwareUpdateDeploymentPackage -Name "Test-SUG*"
+            Retrieves all software update deployment packages whose names start with "Test-SUG".
 
         .EXAMPLE
             Get-CM7SoftwareUpdateDeploymentPackage -Name "*SecurityPatches*"
@@ -4027,12 +4027,12 @@ function Get-CM7SoftwareUpdateGroup {
             Retrieves the software update group with the specified CI_ID.
 
         .EXAMPLE
-            Get-CM7SoftwareUpdateGroup -Name "SO Servers-SecurityPatches-2024-01"
+            Get-CM7SoftwareUpdateGroup -Name "Test-SUG"
             Retrieves the software update group with the specified name.
 
         .EXAMPLE
-            Get-CM7SoftwareUpdateGroup -Name "SO Servers*"
-            Retrieves all software update groups whose names start with "SO Servers".
+            Get-CM7SoftwareUpdateGroup -Name "Test-SUG*"
+            Retrieves all software update groups whose names start with "Test-SUG".
 
         .EXAMPLE
             Get-CM7SoftwareUpdateGroup -Name "*SecurityPatches*"

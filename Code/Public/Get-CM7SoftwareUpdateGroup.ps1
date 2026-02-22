@@ -34,12 +34,12 @@ function Get-CM7SoftwareUpdateGroup {
             Retrieves the software update group with the specified CI_ID.
 
         .EXAMPLE
-            Get-CM7SoftwareUpdateGroup -Name "SO Servers-SecurityPatches-2024-01"
+            Get-CM7SoftwareUpdateGroup -Name "SecurityPatchesGroup"
             Retrieves the software update group with the specified name.
 
         .EXAMPLE
-            Get-CM7SoftwareUpdateGroup -Name "SO Servers*"
-            Retrieves all software update groups whose names start with "SO Servers".
+            Get-CM7SoftwareUpdateGroup -Name "Test-SUG*"
+            Retrieves all software update groups whose names start with "Test-SUG".
 
         .EXAMPLE
             Get-CM7SoftwareUpdateGroup -Name "*SecurityPatches*"

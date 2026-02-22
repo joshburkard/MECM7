@@ -44,7 +44,7 @@ Mutually exclusive with `-SoftwareUpdateGroupId`.
 - **Accept pipeline input**: False
 - **Accept wildcard characters**: No
 
-Example: `"SO Servers-SecurityPatches-2024-01"`
+Example: `"Test-SUG"`
 
 ### -SoftwareUpdateGroupId
 
@@ -325,7 +325,7 @@ Prompts you for confirmation before running the cmdlet.
 ### EXAMPLE 1: Create a basic required deployment
 
 ```powershell
-New-CM7SoftwareUpdateDeployment -SoftwareUpdateGroupName "SO Servers-SecurityPatches-2024-01" -CollectionName "Test-Collection-Direct" -Force
+New-CM7SoftwareUpdateDeployment -SoftwareUpdateGroupName "Test-SUG" -CollectionName "Test-Collection-Direct" -Force
 ```
 
 Creates a required software update deployment targeting the specified collection using the software update group name.
@@ -333,7 +333,7 @@ Creates a required software update deployment targeting the specified collection
 ### EXAMPLE 2: Create an available (optional) deployment
 
 ```powershell
-New-CM7SoftwareUpdateDeployment -SoftwareUpdateGroupName "SO Servers-SecurityPatches-2024-01" -CollectionName "Test-Collection-Direct" -DeploymentType Available -Force
+New-CM7SoftwareUpdateDeployment -SoftwareUpdateGroupName "Test-SUG" -CollectionName "Test-Collection-Direct" -DeploymentType Available -Force
 ```
 
 Creates an available deployment that users can optionally install from Software Center.
@@ -341,7 +341,7 @@ Creates an available deployment that users can optionally install from Software 
 ### EXAMPLE 3: Create a deployment with a 7-day enforcement deadline
 
 ```powershell
-New-CM7SoftwareUpdateDeployment -SoftwareUpdateGroupName "SO Servers-SecurityPatches-2024-01" -CollectionName "Test-Collection-Direct" -DeadlineDateTime (Get-Date).AddDays(7) -Force
+New-CM7SoftwareUpdateDeployment -SoftwareUpdateGroupName "Test-SUG" -CollectionName "Test-Collection-Direct" -DeadlineDateTime (Get-Date).AddDays(7) -Force
 ```
 
 Creates a required deployment with an enforcement deadline 7 days from now.
@@ -357,7 +357,7 @@ Creates a deployment using the software update group CI_ID and collection ID wit
 ### EXAMPLE 5: Create a deployment with restart suppression
 
 ```powershell
-New-CM7SoftwareUpdateDeployment -SoftwareUpdateGroupName "SO Servers-SecurityPatches-2024-01" -CollectionName "Test-Collection-Direct" -RestartServer $false -RestartWorkstation $false -Force
+New-CM7SoftwareUpdateDeployment -SoftwareUpdateGroupName "Test-SUG" -CollectionName "Test-Collection-Direct" -RestartServer $false -RestartWorkstation $false -Force
 ```
 
 Creates a deployment that suppresses restarts on both servers and workstations.
@@ -365,7 +365,7 @@ Creates a deployment that suppresses restarts on both servers and workstations.
 ### EXAMPLE 6: Create a deployment with service window overrides
 
 ```powershell
-New-CM7SoftwareUpdateDeployment -SoftwareUpdateGroupName "SO Servers-SecurityPatches-2024-01" -CollectionName "Test-Collection-Direct" -SoftwareInstallation $true -AllowRestart $true -Force
+New-CM7SoftwareUpdateDeployment -SoftwareUpdateGroupName "Test-SUG" -CollectionName "Test-Collection-Direct" -SoftwareInstallation $true -AllowRestart $true -Force
 ```
 
 Creates a deployment that allows installation and restart outside of maintenance windows.
@@ -373,7 +373,7 @@ Creates a deployment that allows installation and restart outside of maintenance
 ### EXAMPLE 7: Create a deployment with hidden notifications
 
 ```powershell
-New-CM7SoftwareUpdateDeployment -SoftwareUpdateGroupName "SO Servers-SecurityPatches-2024-01" -CollectionName "Test-Collection-Direct" -UserNotification HideAll -Force
+New-CM7SoftwareUpdateDeployment -SoftwareUpdateGroupName "Test-SUG" -CollectionName "Test-Collection-Direct" -UserNotification HideAll -Force
 ```
 
 Creates a deployment that hides all user notifications.
@@ -381,7 +381,7 @@ Creates a deployment that hides all user notifications.
 ### EXAMPLE 8: Preview deployment creation with WhatIf
 
 ```powershell
-New-CM7SoftwareUpdateDeployment -SoftwareUpdateGroupName "SO Servers-SecurityPatches-2024-01" -CollectionName "Test-Collection-Direct" -WhatIf
+New-CM7SoftwareUpdateDeployment -SoftwareUpdateGroupName "Test-SUG" -CollectionName "Test-Collection-Direct" -WhatIf
 ```
 
 Shows what would happen without actually creating the deployment.
@@ -389,7 +389,7 @@ Shows what would happen without actually creating the deployment.
 ### EXAMPLE 9: Create a deployment and inspect the result
 
 ```powershell
-$deployment = New-CM7SoftwareUpdateDeployment -SoftwareUpdateGroupName "SO Servers-SecurityPatches-2024-01" -CollectionName "Test-Collection-Direct" -Force
+$deployment = New-CM7SoftwareUpdateDeployment -SoftwareUpdateGroupName "Test-SUG" -CollectionName "Test-Collection-Direct" -Force
 Write-Host "Created: $($deployment.AssignmentName) (ID: $($deployment.AssignmentID), Collection: $($deployment.CollectionName))"
 ```
 
@@ -398,7 +398,7 @@ Creates a deployment and captures the result for further processing.
 ### EXAMPLE 10: Create a deployment with verbose output
 
 ```powershell
-New-CM7SoftwareUpdateDeployment -SoftwareUpdateGroupName "SO Servers-SecurityPatches-2024-01" -CollectionName "Test-Collection-Direct" -Force -Verbose
+New-CM7SoftwareUpdateDeployment -SoftwareUpdateGroupName "Test-SUG" -CollectionName "Test-Collection-Direct" -Force -Verbose
 ```
 
 Creates a deployment with verbose output showing the WQL queries and operations being performed.
@@ -407,7 +407,7 @@ Creates a deployment with verbose output showing the WQL queries and operations 
 
 ```powershell
 New-CM7SoftwareUpdateDeployment `
-    -SoftwareUpdateGroupName "SO Servers-SecurityPatches-2024-01" `
+    -SoftwareUpdateGroupName "Test-SUG" `
     -CollectionName "Test-Collection-Direct" `
     -DeploymentName "Patching - February 2026" `
     -Description "Monthly security patching for servers" `
@@ -458,7 +458,7 @@ Example object:
 ```powershell
 PSTypeName                    : MECM7.SoftwareUpdateDeployment
 AssignmentID                  : 16777350
-AssignmentName                : SO Servers-SecurityPatches-2024-01
+AssignmentName                : Test-SUG
 TargetCollectionID            : CM101C00
 CollectionName                : Test-Collection-Direct
 AssignmentDescription         : Monthly security patching

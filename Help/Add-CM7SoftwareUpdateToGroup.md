@@ -42,7 +42,6 @@ Specifies the name (LocalizedDisplayName) of the software update group to add up
 
 Examples:
 - `"Test-SUG"` - Target a specific software update group
-- `"SO Servers-SecurityPatches-2026-02"` - Target a descriptive named group
 
 ### -SoftwareUpdateGroupId
 
@@ -171,7 +170,7 @@ Adds software updates by their CI_ID values to the specified software update gro
 ### EXAMPLE 4: Add updates matching a name pattern
 
 ```powershell
-Add-CM7SoftwareUpdateToGroup -SoftwareUpdateGroupName "SO Servers-SecurityPatches-2026-02" -SoftwareUpdateName "*Cumulative*" -Force
+Add-CM7SoftwareUpdateToGroup -SoftwareUpdateGroupName "Test-SUG" -SoftwareUpdateName "*Cumulative*" -Force
 ```
 
 Adds all software updates whose names contain "Cumulative" to the specified group.
@@ -220,8 +219,8 @@ Adds updates with verbose output showing WQL queries, resolved CI_IDs, and opera
 ### EXAMPLE 10: Clone updates from one group to another
 
 ```powershell
-$sourceGroup = Get-CM7SoftwareUpdateGroup -Name "SO Servers-SecurityPatches-2025-12"
-Add-CM7SoftwareUpdateToGroup -SoftwareUpdateGroupName "SO Servers-SecurityPatches-2026-01" -UpdateId $sourceGroup.Updates -Force
+$sourceGroup = Get-CM7SoftwareUpdateGroup -Name "Test-SUG"
+Add-CM7SoftwareUpdateToGroup -SoftwareUpdateGroupName "Test-SUG" -UpdateId $sourceGroup.Updates -Force
 ```
 
 Copies all software updates from one group into another. Duplicates are automatically skipped.
