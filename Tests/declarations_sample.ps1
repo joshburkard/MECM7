@@ -23,6 +23,8 @@ $TestDeploymentPackageName = 'Sample-DeploymentPackage'
 $TestLocation = '\\server\share\path'
 $TestSoftwareUpdateName = @('Sample Update KB123456')
 $TestSoftwareUpdateLanguage = @('English')
+# Sync-CM7SoftwareUpdate sample values
+$TestSyncFullSync = $true
 
 # this array is used by the test framework to automatically redact sensitive values from test output and logs
 $SensitiveValues = @(
@@ -2031,7 +2033,7 @@ $script:TestNonExistentCollectionName = $script:TestData['Get-CM7Collection'].No
 $script:TestScriptGuid = $script:TestData['Get-CM7Script'].ByGuid.ScriptGuid
 $script:TestScriptName = $script:TestData['Get-CM7Script'].ByName.ScriptName
 
-$script:TestClientOperationID = $script:TestData['Get-CM7ScriptExecutionStatus'].ByClientOperationId.ClientOperationId
+$script:TestClientOperationId = $script:TestData['Get-CM7ScriptExecutionStatus'].ByClientOperationId.ClientOperationId
 $script:TestTargetResourceID = $script:TestData['Invoke-CM7Script'].ByScriptGuidAndResourceId.ResourceId
 
 $script:ExpectedDeviceCount = $script:TestData['Get-CM7Device'].ByName.ExpectedCount

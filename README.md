@@ -77,9 +77,8 @@ other functions will be described in the [Help](./Help/README.md) folder
 
 ### Connection Management
 
-- [`Connect-CM7`](./Help/Connect-CM7.md) - Establish a connection to MECM through WinRM/CIM
 
-### Device Management
+ - [`Sync-CM7SoftwareUpdate`](./Help/Sync-CM7SoftwareUpdate.md) - Synchronizes software updates metadata in MECM using CIM connectivity.
 
 - [`Get-CM7Device`](./Help/Get-CM7Device.md) - Retrieve device information from MECM
 

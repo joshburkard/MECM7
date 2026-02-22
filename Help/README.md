@@ -50,6 +50,7 @@ This directory contains markdown documentation for all MECM7 module functions.
 | [Remove-CM7TaskSequenceDeployment](./Remove-CM7TaskSequenceDeployment.md) | Removes a task sequence deployment from MECM using CIM. |
 | [Move-CM7Object](./Move-CM7Object.md) | Moves MECM objects (collections, packages, etc.) between folders using CIM. |
 | [New-CM7Collection](./New-CM7Collection.md) | Creates a new device or user collection in MECM using CIM. |
+| [Sync-CM7SoftwareUpdate](./Sync-CM7SoftwareUpdate.md) | Synchronizes software updates metadata in MECM using CIM connectivity. |
 | [Remove-CM7Collection](./Remove-CM7Collection.md) | Removes a device or user collection from MECM using CIM. |
 
 ## Using Help

@@ -24,17 +24,15 @@ BeforeAll {
 Describe 'Save-CM7SoftwareUpdate' {
     Context 'Connection Required' {
         It 'should throw when Connect-CM7 has not been called' {
-            # Save the current connection state
-            $savedConnection = $script:CMConnection
-
-            # Clear the connection to simulate not being connected
-            $script:CMConnection = $null
+            # Arrange - Backup and clear connection
+            $backupConnection = $script:CMConnection.Clone()
+            $script:CMConnection.CimSession = $null
 
             # Test that the function throws
             { Save-CM7SoftwareUpdate -SoftwareUpdateGroupName "TestGroup" -DeploymentPackageName "TestPackage" } | Should -Throw
 
-            # Restore the connection for other tests
-            $script:CMConnection = $savedConnection
+            # Restore connection
+            $script:CMConnection = $backupConnection
         }
     }
     Context 'By SoftwareUpdateGroupName' {
