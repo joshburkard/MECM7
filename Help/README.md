@@ -44,6 +44,7 @@ This directory contains markdown documentation for all MECM7 module functions.
 | [New-CM7SoftwareUpdateDeploymentPackage](./New-CM7SoftwareUpdateDeploymentPackage.md) | Creates a new software update deployment package in MECM using CIM. |
 | [Remove-CM7SoftwareUpdateDeploymentPackage](./Remove-CM7SoftwareUpdateDeploymentPackage.md) | Removes a software update deployment package from MECM using CIM. |
 | [Remove-CM7SoftwareUpdateDeployment](./Remove-CM7SoftwareUpdateDeployment.md) | Removes a software update deployment from a collection using CIM connectivity. |
+| [Remove-CM7SoftwareUpdateGroup](./Remove-CM7SoftwareUpdateGroup.md) | Removes a software update group from MECM using CIM connectivity. |
 | [Get-CM7TaskSequence](./Get-CM7TaskSequence.md) | Retrieves task sequence information from MECM using CIM. |
 | [Get-CM7TaskSequenceDeployment](./Get-CM7TaskSequenceDeployment.md) | Retrieves task sequence deployment information from MECM using CIM. |
 | [New-CM7TaskSequenceDeployment](./New-CM7TaskSequenceDeployment.md) | Creates a new task sequence deployment in MECM using CIM. |
