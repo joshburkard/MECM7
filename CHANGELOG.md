@@ -48,3 +48,4 @@
 0.01.00047 | Save-CM7SoftwareUpdate | 2026-02-22 | Josua Burkard
 0.01.00048 | Sync-CM7SoftwareUpdate | 2026-02-22 | Josua Burkard
 0.01.00049 | added Remove-CM7SoftwareUpdateDeployment | 2026-02-26 | Josua Burkard
+0.01.00050 | adjusted Get-CM7SoftwareUpdateDeployment | 2026-02-26 | Josua Burkard

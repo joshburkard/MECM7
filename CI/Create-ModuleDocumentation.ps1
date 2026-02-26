@@ -181,7 +181,7 @@ function Get-DynamicParameterDetails {
         $isMandatory = $match.Groups[2].Value.ToLower() -in @('$true', 'true')
 
         # Extract the getter function for this parameter
-        $getterPattern = "(?ms)Name\s*=\s*""$paramName"".*?GetterFunction\s*=\s*""([^"]+)"""
+        $getterPattern = '(?ms)Name\s*=\s*"' + $paramName + '".*?GetterFunction\s*=\s*"([^"]+)"'
         $getterMatch = [regex]::Match($blockText, $getterPattern)
         $getterFunction = if ($getterMatch.Success) { $getterMatch.Groups[1].Value } else { "" }
 
@@ -429,6 +429,7 @@ function New-FunctionMarkdown {
 
     # Add Synopsis
     $contentLines += "## SYNOPSIS"
+    $contentLines += ""
     if ($HelpSections -and $HelpSections.ContainsKey("SYNOPSIS")) {
         $formatted = Format-TextForMarkdown -Text $HelpSections["SYNOPSIS"]
         $contentLines += $formatted
@@ -439,6 +440,7 @@ function New-FunctionMarkdown {
 
     # Add Description - strip out parameter lists from description
     $contentLines += "## DESCRIPTION"
+    $contentLines += ""
     if ($HelpSections -and $HelpSections.ContainsKey("DESCRIPTION")) {
         $descriptionText = Get-DescriptionText -DescriptionText $HelpSections["DESCRIPTION"]
         $formatted = Format-TextForMarkdown -Text $descriptionText
@@ -476,6 +478,7 @@ function New-FunctionMarkdown {
 
         foreach ($parameter in $parameters) {
             $contentLines += "### $($parameter.Name)"
+            $contentLines += ""
 
             # Parameter description
             if ($parameter.Description.Text -is [array]) {
@@ -501,6 +504,7 @@ function New-FunctionMarkdown {
     if ($DynamicParameters -and $DynamicParameters.Count -gt 0) {
         foreach ($dynamicParam in $DynamicParameters) {
             $contentLines += "### $($dynamicParam.Name)"
+            $contentLines += ""
             $contentLines += $dynamicParam.Description
             $contentLines += ""
             $contentLines += "- Type: String"
@@ -525,9 +529,10 @@ function New-FunctionMarkdown {
         $contentLines += "## EXAMPLES"
         $contentLines += ""
 
-        foreach ($exampleKey in ( $HelpSections.Keys | Where-Object { $_ -match 'EXAMPLE' } ) ) {
+        foreach ($exampleKey in ( $HelpSections.Keys | Where-Object { $_ -match 'EXAMPLE' } | Sort-Object ) ) {
             $exampleNumber = [int]( $exampleKey.Split('-')[1] )
             $contentLines += "### Example $($exampleNumber + 1)"
+            $contentLines += ""
 
             # Use six backticks to ensure markdown doesn't interpret any content inside
             $contentLines += "``````powershell"
@@ -561,8 +566,9 @@ function New-FunctionMarkdown {
         }
 
         $exampleIndex = 1
-        foreach ($example in $examples) {
+        foreach ($example in ( $examples | Sort-Object Title ) ) {
             $contentLines += "### Example $exampleIndex"
+            $contentLines += ""
 
             # Use six backticks to ensure markdown doesn't interpret any content inside
             $contentLines += "``````powershell"

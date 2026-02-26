@@ -2,7 +2,7 @@
 
 This file tracks the test coverage status for all functions in the MECM7 module.
 
-**Last Updated:** 2026-02-26 19:17:20
+**Last Updated:** 2026-02-26 20:33:18
 
 ## PowerShell 7.x
 
@@ -25,7 +25,7 @@ This file tracks the test coverage status for all functions in the MECM7 module.
 | Get-CM7MaintenanceWindow | 🟢 Passed | 19 | 0 | 0 | 90.36% | 6.26s |
 | Get-CM7ScriptExecutionStatus | 🟢 Passed | 20 | 0 | 0 | 93.75% | 21.15s |
 | Get-CM7SoftwareUpdate | 🟢 Passed | 21 | 0 | 0 | 61.24% | 49.78s |
-| Get-CM7SoftwareUpdateDeployment | 🟢 Passed | 20 | 0 | 0 | 96.08% | 143.74s |
+| Get-CM7SoftwareUpdateDeployment | 🟢 Passed | 20 | 0 | 0 | 83.47% | 117.11s |
 | Get-CM7SoftwareUpdateDeploymentPackage | 🟢 Passed | 18 | 0 | 0 | 91.36% | 5.12s |
 | Get-CM7SoftwareUpdateGroup | 🟢 Passed | 18 | 0 | 0 | 94.64% | 32.05s |
 | Get-CM7TaskSequence | 🟢 Passed | 18 | 0 | 0 | 89.89% | 230.3s |

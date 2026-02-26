@@ -23,6 +23,15 @@ function Get-CM7SoftwareUpdateDeployment {
             The name of the collection targeted by the software update deployment.
             Supports wildcard characters (* and ?).
 
+        .PARAMETER CollectionID
+            The CollectionID of the collection targeted by the software update deployment.
+
+        .PARAMETER SoftwareUpdateGroupName
+            The name of the software update group associated with the deployment. Supports wildcard characters (* and ?).
+
+        .PARAMETER SoftwareUpdateGroupID
+            The CI_ID of the software update group associated with the deployment.
+
         .PARAMETER Fast
             Returns limited properties for faster queries. Only returns essential properties like
             AssignmentID, AssignmentName, TargetCollectionID, AssignmentDescription, StartTime,
@@ -59,21 +68,25 @@ function Get-CM7SoftwareUpdateDeployment {
         .NOTES
             Requires an active connection established via Connect-CM7.
     #>
-    [CmdletBinding(DefaultParameterSetName = 'All')]
+    [CmdletBinding(DefaultParameterSetName = 'SugNameCollectionName')]
     param(
-        [Parameter(ParameterSetName = 'ByAssignmentId', Mandatory = $true)]
-        [ValidateNotNullOrEmpty()]
+        [Parameter(Mandatory = $false)]
         [int]$AssignmentId,
 
-        [Parameter(ParameterSetName = 'ByName', Mandatory = $true)]
-        [SupportsWildcards()]
-        [ValidateNotNullOrEmpty()]
+        [Parameter(Mandatory = $false)]
         [string]$Name,
 
-        [Parameter(ParameterSetName = 'ByCollectionName', Mandatory = $true)]
-        [SupportsWildcards()]
-        [ValidateNotNullOrEmpty()]
+        [Parameter(Mandatory = $false)]
+        [string]$SoftwareUpdateGroupName,
+
+        [Parameter(Mandatory = $false)]
+        [string]$SoftwareUpdateGroupID,
+
+        [Parameter(Mandatory = $false)]
         [string]$CollectionName,
+
+        [Parameter(Mandatory = $false)]
+        [string]$CollectionID,
 
         [Parameter()]
         [switch]$Fast
@@ -113,6 +126,70 @@ function Get-CM7SoftwareUpdateDeployment {
             # Build WQL filter based on parameters
             $filters = @()
 
+            if ($AssignmentId) {
+                $filters += "AssignmentID = $AssignmentId"
+            } elseif ($Name) {
+                $wqlName = $Name.Replace('*', '%').Replace('?', '_')
+                if ($wqlName -like '*%*' -or $wqlName -like '*_*') {
+                    $filters += "AssignmentName LIKE '$wqlName'"
+                } else {
+                    $filters += "AssignmentName = '$Name'"
+                }
+            }
+            if ( $CollectionName) {
+                $wqlCollName = $CollectionName.Replace('*', '%').Replace('?', '_')
+                if ($wqlCollName -like '*%*' -or $wqlCollName -like '*_*') {
+                    $collectionQuery = "SELECT CollectionID, Name FROM SMS_Collection WHERE Name LIKE '$wqlCollName'"
+                } else {
+                    $collectionQuery = "SELECT CollectionID, Name FROM SMS_Collection WHERE Name = '$CollectionName'"
+                }
+
+                Write-Verbose "Resolving collection name: $collectionQuery"
+                $collections = Get-CimInstance @cimParams -Query $collectionQuery
+
+                if (-not $collections) {
+                    Write-Verbose "No collections found matching '$CollectionName'."
+                    return
+                }
+
+                $collectionIds = @($collections | ForEach-Object { $_.CollectionID })
+                if ($collectionIds.Count -eq 1) {
+                    $filters += "TargetCollectionID = '$($collectionIds[0])'"
+                } else {
+                    $orClauses = $collectionIds | ForEach-Object { "TargetCollectionID = '$_'" }
+                    $filters += "(" + ($orClauses -join " OR ") + ")"
+                }
+            }
+            if ($CollectionID) {
+                $filters += "TargetCollectionID = '$CollectionID'"
+            }
+            if ($SoftwareUpdateGroupName -or $SoftwareUpdateGroupID) {
+                # Resolve Software Update Group first
+                if ($SoftwareUpdateGroupID) {
+                    $groupQuery = "SELECT CI_ID, LocalizedDisplayName FROM SMS_AuthorizationList WHERE CI_ID = $SoftwareUpdateGroupID"
+                } else {
+                    $groupQuery = "SELECT CI_ID, LocalizedDisplayName FROM SMS_AuthorizationList WHERE LocalizedDisplayName = '$SoftwareUpdateGroupName'"
+                }
+                Write-Verbose "Resolving software update group: $groupQuery"
+                $resolvedGroup = Get-CimInstance @cimParams -Query $groupQuery
+
+                if (-not $resolvedGroup) {
+                    throw "Software update group '$SoftwareUpdateGroupName' not found."
+                }
+                $groupCIID = [int]$resolvedGroup.CI_ID
+                $SoftwareUpdateGroupName = $resolvedGroup.LocalizedDisplayName
+
+                $assignmentID = ( Get-CimInstance @cimParams -Query "SELECT AssignmentID FROM SMS_DeploymentSummary WHERE CI_ID = $groupCIID" ).AssignmentID
+
+
+                # Add filter for group
+                $filters += "AssignmentID = '$assignmentID'"
+            }
+            if ($CollectionID) {
+                $filters += "TargetCollectionID = '$CollectionID'"
+            }
+
+            <#
             switch ($PSCmdlet.ParameterSetName) {
                 'ByAssignmentId' {
                     $filters += "AssignmentID = $AssignmentId"
@@ -152,6 +229,7 @@ function Get-CM7SoftwareUpdateDeployment {
                     }
                 }
             }
+            #>
 
             # Build the query
             if ($Fast) {
