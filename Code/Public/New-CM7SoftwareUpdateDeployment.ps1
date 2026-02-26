@@ -346,8 +346,16 @@ function New-CM7SoftwareUpdateDeployment {
             }
 
             # ---- Determine deployment name ----
-            $actualDeploymentName = if ($DeploymentName) { $DeploymentName } else { $groupDisplayName }
+            $actualDeploymentName = if ($DeploymentName) { $DeploymentName } else { "$groupDisplayName - $resolvedCollectionName" }
             Write-Verbose "Deployment name: '$actualDeploymentName'"
+
+            # check if deployment name already exists for this SUG and collection
+            $existingDeploymentQuery = "SELECT AssignmentID FROM SMS_UpdateGroupAssignment WHERE AssignmentName = '$actualDeploymentName'"
+            Write-Verbose "Checking for existing deployment with name: $existingDeploymentQuery"
+            $existingDeployment = Get-CimInstance @cimParams -Query $existingDeploymentQuery
+            if ($existingDeployment) {
+                throw "A deployment with the name '$actualDeploymentName' already exists. Please choose a different name or remove the existing deployment first."
+            }
 
             # ---- Set available and deadline times ----
             $now = Get-Date

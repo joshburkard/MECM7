@@ -2,7 +2,7 @@
 
 This file tracks the test coverage status for all functions in the MECM7 module.
 
-**Last Updated:** 2026-02-22 16:14:02
+**Last Updated:** 2026-02-26 19:17:20
 
 ## PowerShell 7.x
 
@@ -48,6 +48,7 @@ This file tracks the test coverage status for all functions in the MECM7 module.
 | Remove-CM7DeviceCollectionVariable | 🟢 Passed | 16 | 0 | 0 | 93.07% | 23.6s |
 | Remove-CM7DeviceVariable | 🟢 Passed | 16 | 0 | 0 | 92.93% | 13.38s |
 | Remove-CM7MaintenanceWindow | 🟢 Passed | 24 | 0 | 0 | 93.88% | 18.78s |
+| Remove-CM7SoftwareUpdateDeployment | 🟢 Passed | 7 | 0 | 0 | 93.02% | 10.94s |
 | Remove-CM7SoftwareUpdateDeploymentPackage | 🟢 Passed | 5 | 0 | 0 | 93.1% | 4.77s |
 | Remove-CM7TaskSequenceDeployment | 🟢 Passed | 17 | 0 | 0 | 74.1% | 15.55s |
 | Save-CM7SoftwareUpdate | 🟢 Passed | 12 | 0 | 0 | 79.73% | 298.16s |
@@ -100,6 +101,7 @@ This file tracks the test coverage status for all functions in the MECM7 module.
 | Remove-CM7DeviceCollectionVariable | 🟢 Passed | 16 | 0 | 0 | 93.07% | 14.06s |
 | Remove-CM7DeviceVariable | 🟢 Passed | 16 | 0 | 0 | 92.93% | 12.89s |
 | Remove-CM7MaintenanceWindow | 🟢 Passed | 24 | 0 | 0 | 93.88% | 22.15s |
+| Remove-CM7SoftwareUpdateDeployment | 🟢 Passed | 7 | 0 | 0 | 92.68% | 14.99s |
 | Remove-CM7SoftwareUpdateDeploymentPackage | 🟢 Passed | 5 | 0 | 0 | 93.1% | 6.15s |
 | Remove-CM7TaskSequenceDeployment | 🟢 Passed | 17 | 0 | 0 | 74.1% | 17.09s |
 | Save-CM7SoftwareUpdate | 🟢 Passed | 12 | 0 | 0 | 78.38% | 169.98s |

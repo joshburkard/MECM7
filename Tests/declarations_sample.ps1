@@ -1957,6 +1957,22 @@ $script:TestData = @{
     }
 
     # ========================================================================
+    # Remove-CM7SoftwareUpdateDeployment
+    # ========================================================================
+    'Remove-CM7SoftwareUpdateDeployment' = @{
+        Existing = @{
+            SoftwareUpdateGroupName = "Test-SUG"  # Existing software update group with a deployment
+            SoftwareUpdateGroupId = 0  # Replace with actual ID of the above group
+            CollectionName = "Test-Collection-Direct"
+            CollectionID = "ABC00001"
+        }
+        NonExistent = @{
+            SoftwareUpdateGroupName = 'NonExistent-SUG-999'
+            CollectionName = 'NonExistent-Collection-999'
+        }
+    }
+
+    # ========================================================================
     # Set-CM7TaskSequenceDeployment
     # ========================================================================
     'Set-CM7TaskSequenceDeployment' = @{

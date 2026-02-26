@@ -80,7 +80,9 @@ other functions will be described in the [Help](./Help/README.md) folder
 
  - [`Sync-CM7SoftwareUpdate`](./Help/Sync-CM7SoftwareUpdate.md) - Synchronizes software updates metadata in MECM using CIM connectivity.
 
-- [`Get-CM7Device`](./Help/Get-CM7Device.md) - Retrieve device information from MECM
+### Software Update Deployment Management
+
+- `Remove-CM7SoftwareUpdateDeployment`: Removes a software update deployment from a collection using CIM connectivity. See Help/Remove-CM7SoftwareUpdateDeployment.md for details.
 
 ### Collection Management
 

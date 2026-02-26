@@ -60,7 +60,7 @@ function Save-CM7SoftwareUpdate {
     .EXAMPLE
         Save-CM7SoftwareUpdate -SoftwareUpdateName "Cumulative Update for Windows 10 (KB3095020)" -DeploymentPackageName "Test-DeploymentPackage" -Location "\\mecm.yourdomain.local\Patches\test"
     #>
-    [CmdletBinding(DefaultParameterSetName='SaveByName')]
+    [CmdletBinding(DefaultParameterSetName='SaveByNamePkgName')]
     param (
         # --- Update/Group parameters ---
         [Parameter(ParameterSetName='SaveByNamePkgName', Mandatory=$true)]
