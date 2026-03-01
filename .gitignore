@@ -6,3 +6,4 @@ Test/
 Tests/declarations.ps1
 Tests/*.json
 coverage.xml
+_Private/

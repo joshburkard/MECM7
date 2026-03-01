@@ -14,16 +14,67 @@
     Folder where the Markdown documentation will be created
 
 .EXAMPLE
-    .\modules\DevOps.TCMDB\CI\Create-ModuleDocumentation.ps1 -ModulePath '.\modules\DevOps.TCMDB\Code\Public\' -OutputFolder '.\modules\DevOps.TCMDB\Help\'
+    .\modules\Heimdal\CI\Create-ModuleDocumentation.ps1 -ModulePath '.\modules\Heimdal\Code\Public\' -OutputFolder '.\modules\Heimdal\Help\'
 
 .EXAMPLE
-    .\Scripts\CMDB-Module\CI\Create-ModuleDocumentation.ps1 -ModulePath '.\Scripts\CMDB-Module\Code\Public\' -OutputFolder '.\Scripts\CMDB-Module\Help\' -FunctionName New-CMDBAsset
+    .\Scripts\Heimdal\CI\Create-ModuleDocumentation.ps1 -ModulePath '.\Scripts\Heimdal\Code\Public\' -OutputFolder '.\Scripts\Heimdal\Help\' -FunctionName New-CMDBAsset
 
 .NOTES
     Author: Josua Burkard
     Date: 13/05/2025
     Version: 1.0.4
 #>
+Param(
+    [Parameter(Mandatory = $false)]
+    [string]$ModulePath,
+
+    [Parameter(Mandatory = $false)]
+    [string]$OutputFolder,
+
+    [Parameter(Mandatory = $false)]
+    [ArgumentCompleter({
+        param($commandName, $parameterName, $wordToComplete, $commandAst, $fakeBoundParameters)
+        # Resolve the Tests folder from the script being invoked
+        $scriptFile = $commandAst.CommandElements[0].Value
+        if ($scriptFile) {
+            $resolved = Resolve-Path $scriptFile -ErrorAction SilentlyContinue
+            if ($resolved) { $ciPath = Split-Path -Parent $resolved }
+        }
+        if (-not $ciPath) { $ciPath = $PSScriptRoot }
+        if (-not $ciPath) { $ciPath = $PWD.Path }
+        $rootPath = ([System.IO.DirectoryInfo]$ciPath).Parent.FullName
+        $codePath = Join-Path -Path $rootPath -ChildPath "Code"
+        Get-ChildItem -Path $codePath -Filter "*.ps1" -Recurse -ErrorAction SilentlyContinue |
+            ForEach-Object { $_.Name -replace '^(.+)\.ps1$', '$1' } |
+            Where-Object { $_ -like "$wordToComplete*" } |
+            Sort-Object |
+            ForEach-Object {
+                [System.Management.Automation.CompletionResult]::new($_, $_, 'ParameterValue', $_)
+            }
+    })]
+    [ValidateScript({
+        if ([string]::IsNullOrEmpty($_)) { return $true }
+        $ciPath = $PSScriptRoot
+        if (-not $ciPath) { $ciPath = Split-Path -Parent $PSCommandPath }
+        $rootPath = ([System.IO.DirectoryInfo]$ciPath).Parent.FullName
+        $codePath = Join-Path -Path $rootPath -ChildPath "Code"
+        $publicPath = Join-Path -Path $codePath -ChildPath "Public"
+        $privatePath = Join-Path -Path $codePath -ChildPath "Private"
+
+        $publicFile = Join-Path -Path $publicPath -ChildPath "$_.ps1"
+        $privateFile = Join-Path -Path $privatePath -ChildPath "$_.ps1"
+
+        if ( ( Test-Path $publicFile ) -or ( Test-Path $privateFile ) ) { return $true }
+
+        $available = (Get-ChildItem -Path $codePath -Filter "*.ps1" -Recurse -ErrorAction SilentlyContinue |
+            ForEach-Object { $_.Name -replace '^(.+)\.ps1$', '$1' } |
+            Sort-Object) -join ', '
+        throw "Test file '$_.ps1' not found. Available: $available"
+    })]
+    [string]$FunctionName
+)
+
+# get current file path based on execution context
 
 switch ( $ExecutionContext.Host.Name ) {
     "ConsoleHost" { Write-Verbose "Runbook is executed from PowerShell Console"; if ( [boolean]$MyInvocation.ScriptName ) { if ( ( $MyInvocation.ScriptName ).EndsWith( ".psm1" ) ) { $CurrentFile = [System.IO.FileInfo]$Script:MyInvocation.ScriptName } else { $CurrentFile = [System.IO.FileInfo]$MyInvocation.ScriptName } } elseif ( [boolean]$MyInvocation.MyCommand ) { if ( [boolean]$MyInvocation.MyCommand.Source ) { if ( ( $MyInvocation.MyCommand.Source ).EndsWith( ".psm1" ) ) { $CurrentFile = [System.IO.FileInfo]$MyInvocation.MyCommand.Source } else { $CurrentFile = [System.IO.FileInfo]$MyInvocation.MyCommand.Source } } else { $CurrentFile = [System.IO.FileInfo]$MyInvocation.MyCommand.Path } } }
@@ -31,719 +82,734 @@ switch ( $ExecutionContext.Host.Name ) {
     "Windows PowerShell ISE Host" { Write-Verbose 'Runbook is executed from ISE'; Write-Verbose "  CurrentFile"; $CurrentFile = [System.IO.FileInfo]( $psISE.CurrentFile.FullPath ) }
 }
 
-$ModulePath = Join-Path -Path $CurrentFile.Directory.Parent.FullName -ChildPath "Code"
-$OutputFolder = Join-Path -Path $CurrentFile.Directory.Parent.FullName -ChildPath "Help"
+if ($PSCommandPath) {
+    $CurrentFile = [System.IO.FileInfo]$PSCommandPath
+}
+
+if ( -not [boolean]$ModulePath ) {
+    $ModulePath = Join-Path -Path $CurrentFile.Directory.Parent.FullName -ChildPath "Code\Public"
+}
+if ( -not [boolean]$OutputFolder ) {
+    $OutputFolder = Join-Path -Path $CurrentFile.Directory.Parent.FullName -ChildPath "Help"
+}
 
 #region functions
-# Ensure output folder exists
-if (-not (Test-Path -Path $OutputFolder)) {
-    New-Item -Path $OutputFolder -ItemType Directory -Force | Out-Null
-    Write-Verbose "Created output folder: $OutputFolder"
-}
-
-# Normalize line endings function
-function Set-LineEndings {
-    param (
-        [string]$Text
-    )
-
-    # First convert all CRLF to LF
-    $Text = $Text -replace "`r`n", "`n"
-
-    # Then convert any remaining CR to LF
-    $Text = $Text -replace "`r", "`n"
-
-    return $Text
-}
-
-# Convert text to markdown format with proper line breaks
-function Format-TextForMarkdown {
-    param (
-        [string]$Text
-    )
-
-    if ([string]::IsNullOrEmpty($Text)) {
-        return ""
+    # Ensure output folder exists
+    if (-not (Test-Path -Path $OutputFolder)) {
+        New-Item -Path $OutputFolder -ItemType Directory -Force | Out-Null
+        Write-Verbose "Created output folder: $OutputFolder"
     }
 
-    # Normalize line endings first
-    $Text = Set-LineEndings -Text $Text
+    # Normalize line endings function
+    function Set-LineEndings {
+        param (
+            [string]$Text
+        )
 
-    # Split the text into lines
-    $lines = $Text -split "`n"
+        # First convert all CRLF to LF
+        $Text = $Text -replace "`r`n", "`n"
 
-    # Process lines for markdown - a single line break in source becomes a space,
-    # two consecutive line breaks become a paragraph break
-    $result = @()
-    $emptyLineCount = 0
+        # Then convert any remaining CR to LF
+        $Text = $Text -replace "`r", "`n"
 
-    foreach ($line in $lines) {
-        $trimmedLine = $line.Trim()
+        return $Text
+    }
 
-        if ([string]::IsNullOrWhiteSpace($trimmedLine)) {
-            # Count empty lines
-            $emptyLineCount++
+    # Convert text to markdown format with proper line breaks
+    function Format-TextForMarkdown {
+        param (
+            [string]$Text
+        )
 
-            # If we have two or more consecutive empty lines, add a paragraph break
-            if ($emptyLineCount -eq 1) {
-                $result += ""
+        if ([string]::IsNullOrEmpty($Text)) {
+            return ""
+        }
+
+        # Normalize line endings first
+        $Text = Set-LineEndings -Text $Text
+
+        # Split the text into lines
+        $lines = $Text -split "`n"
+
+        # Process lines for markdown - a single line break in source becomes a space,
+        # two consecutive line breaks become a paragraph break
+        $result = @()
+        $emptyLineCount = 0
+
+        foreach ($line in $lines) {
+            $trimmedLine = $line.Trim()
+
+            if ([string]::IsNullOrWhiteSpace($trimmedLine)) {
+                # Count empty lines
+                $emptyLineCount++
+
+                # If we have two or more consecutive empty lines, add a paragraph break
+                if ($emptyLineCount -eq 1) {
+                    $result += ""
+                }
+            }
+            else {
+                # Reset empty line counter and add the non-empty line
+                $emptyLineCount = 0
+                $result += $trimmedLine
             }
         }
-        else {
-            # Reset empty line counter and add the non-empty line
-            $emptyLineCount = 0
-            $result += $trimmedLine
+
+        return $result
+    }
+
+    # Function to extract only the text from the description block, excluding parameter info
+    function Get-DescriptionText {
+        param (
+            [string]$DescriptionText
+        )
+
+        if ([string]::IsNullOrEmpty($DescriptionText)) {
+            return ""
         }
+
+        # Pattern to find common parameter list formats in description
+        $paramListPattern = "(?ms)(?:This function (has|uses) (?:the following |)parameters:.*)|(?:(?:the function|it) uses (?:dynamic |)parameters(?: for| like).*)"
+
+        # If the pattern is found, get only the text before it
+        if ($DescriptionText -match $paramListPattern) {
+            return ($DescriptionText -split $Matches[0])[0].Trim()
+        }
+
+        return $DescriptionText
     }
 
-    return $result
-}
+    # Function to extract function details using AST (Abstract Syntax Tree)
+    function Get-FunctionDetails {
+        param (
+            [string]$ModuleContent
+        )
 
-# Function to extract only the text from the description block, excluding parameter info
-function Get-DescriptionText {
-    param (
-        [string]$DescriptionText
-    )
+        $ast = [System.Management.Automation.Language.Parser]::ParseInput($ModuleContent, [ref]$null, [ref]$null)
+        $functions = $ast.FindAll({ $args[0] -is [System.Management.Automation.Language.FunctionDefinitionAst] }, $true)
 
-    if ([string]::IsNullOrEmpty($DescriptionText)) {
-        return ""
+        return $functions
     }
 
-    # Pattern to find common parameter list formats in description
-    $paramListPattern = "(?ms)(?:This function (has|uses) (?:the following |)parameters:.*)|(?:(?:the function|it) uses (?:dynamic |)parameters(?: for| like).*)"
+    # Function to extract DynamicParam block from a function
+    function Get-DynamicParamBlock {
+        param (
+            [System.Management.Automation.Language.FunctionDefinitionAst]$Function
+        )
 
-    # If the pattern is found, get only the text before it
-    if ($DescriptionText -match $paramListPattern) {
-        return ($DescriptionText -split $Matches[0])[0].Trim()
+        # Find the DynamicParam block within the function
+        $functionBody = $Function.Body
+        if (-not $functionBody) {
+            return $null
+        }
+
+        # Look for named blocks in the function body
+        $namedBlocks = $functionBody.FindAll({
+            $args[0] -is [System.Management.Automation.Language.NamedBlockAst]
+        }, $false)
+
+        # Find the DynamicParam block
+        $dynamicParamBlock = $namedBlocks | Where-Object { $_.BlockKind -eq 'DynamicParam' }
+
+        return $dynamicParamBlock
     }
 
-    return $DescriptionText
-}
+    # Function to extract dynamic parameter details from a DynamicParam block
+    function Get-DynamicParameterDetails {
+        param (
+            [System.Management.Automation.Language.NamedBlockAst]$DynamicParamBlock,
+            [string]$FunctionText,
+            [hashtable]$HelpSections
+        )
 
-# Function to extract function details using AST (Abstract Syntax Tree)
-function Get-FunctionDetails {
-    param (
-        [string]$ModuleContent
-    )
+        if (-not $DynamicParamBlock) {
+            return @()
+        }
 
-    $ast = [System.Management.Automation.Language.Parser]::ParseInput($ModuleContent, [ref]$null, [ref]$null)
-    $functions = $ast.FindAll({ $args[0] -is [System.Management.Automation.Language.FunctionDefinitionAst] }, $true)
+        $dynamicParameters = @()
 
-    return $functions
-}
+        # Extract the text of the DynamicParam block for additional processing
+        $blockText = $DynamicParamBlock.Extent.Text
 
-# Function to extract DynamicParam block from a function
-function Get-DynamicParamBlock {
-    param (
-        [System.Management.Automation.Language.FunctionDefinitionAst]$Function
-    )
+        # Look for parameter configuration patterns like @{ Name = "ParameterName" ... }
+        $paramConfigPattern = '(?ms)Name\s*=\s*"([^"]+)".*?Mandatory\s*=\s*(\$(?:true|false)|true|false)'
+        $paramMatches = [regex]::Matches($blockText, $paramConfigPattern)
 
-    # Find the DynamicParam block within the function
-    $functionBody = $Function.Body
-    if (-not $functionBody) {
+        foreach ($match in $paramMatches) {
+            $paramName = $match.Groups[1].Value
+            $isMandatory = $match.Groups[2].Value.ToLower() -in @('$true', 'true')
+
+            # Extract the getter function for this parameter
+            $getterPattern = '(?ms)Name\s*=\s*"' + $paramName + '".*?GetterFunction\s*=\s*"([^"]+)"'
+            $getterMatch = [regex]::Match($blockText, $getterPattern)
+            $getterFunction = if ($getterMatch.Success) { $getterMatch.Groups[1].Value } else { "" }
+
+            # Try to find a description for this parameter from the parameter sections
+            $description = ""
+            if ($HelpSections -and $HelpSections.ContainsKey("PARAMETER")) {
+                $paramPattern = "(?ms)-$paramName\s*(.*?)(?=-\w|\s*$)"
+                $paramMatch = [regex]::Match($HelpSections["PARAMETER"], $paramPattern)
+                if ($paramMatch.Success) {
+                    $description = $paramMatch.Groups[1].Value.Trim()
+                }
+            }
+
+            # If not found in parameter section, look for it in the full function help
+            if ([string]::IsNullOrWhiteSpace($description)) {
+                $descriptionPattern = "(?ms)\.PARAMETER\s+$paramName\s*(.*?)(?=\.PARAMETER|\.[A-Z][A-Za-z]+|\s*$)"
+                $descriptionMatch = [regex]::Match($FunctionText, $descriptionPattern)
+                $description = if ($descriptionMatch.Success) {
+                    $descriptionMatch.Groups[1].Value.Trim()
+                } else {
+                    "Dynamic parameter. Tab completion shows available values."
+                }
+            }
+
+            $dynamicParameters += @{
+                Name = $paramName
+                Description = $description
+                IsMandatory = $isMandatory
+                GetterFunction = $getterFunction
+            }
+        }
+
+        return $dynamicParameters
+    }
+
+    # Function to extract raw help block content from file
+    function Get-RawHelpBlock {
+        param (
+            [System.Management.Automation.Language.FunctionDefinitionAst]$Function,
+            [string]$FileContent
+        )
+
+        $funcName = $Function.Name
+
+        # Normalize line endings in the file content
+        $FileContent = Set-LineEndings -Text $FileContent
+
+        # Look for help block before the function definition
+        $beforePattern = "(?ms)<#(.*?)#>\s*function\s+$funcName\b"
+        $beforeMatch = [regex]::Match($FileContent, $beforePattern)
+
+        if ($beforeMatch.Success) {
+            Write-Verbose "Found help block before function $funcName"
+            return $beforeMatch.Groups[1].Value
+        }
+
+        # Look for help block inside the function
+        $insidePattern = "(?ms)function\s+$funcName.*?{.*?<#(.*?)#>"
+        $insideMatch = [regex]::Match($FileContent, $insidePattern)
+
+        if ($insideMatch.Success) {
+            Write-Verbose "Found help block inside function $funcName"
+            return $insideMatch.Groups[1].Value
+        }
+
+        Write-Verbose "No help block found for function $funcName"
         return $null
     }
 
-    # Look for named blocks in the function body
-    $namedBlocks = $functionBody.FindAll({
-        $args[0] -is [System.Management.Automation.Language.NamedBlockAst]
-    }, $false)
+    # Extract help sections directly from raw help text
+    function Get-HelpSections {
+        param (
+            [string]$HelpBlock
+        )
 
-    # Find the DynamicParam block
-    $dynamicParamBlock = $namedBlocks | Where-Object { $_.BlockKind -eq 'DynamicParam' }
-
-    return $dynamicParamBlock
-}
-
-# Function to extract dynamic parameter details from a DynamicParam block
-function Get-DynamicParameterDetails {
-    param (
-        [System.Management.Automation.Language.NamedBlockAst]$DynamicParamBlock,
-        [string]$FunctionText,
-        [hashtable]$HelpSections
-    )
-
-    if (-not $DynamicParamBlock) {
-        return @()
-    }
-
-    $dynamicParameters = @()
-
-    # Extract the text of the DynamicParam block for additional processing
-    $blockText = $DynamicParamBlock.Extent.Text
-
-    # Look for parameter configuration patterns like @{ Name = "ParameterName" ... }
-    $paramConfigPattern = '(?ms)Name\s*=\s*"([^"]+)".*?Mandatory\s*=\s*(\$(?:true|false)|true|false)'
-    $paramMatches = [regex]::Matches($blockText, $paramConfigPattern)
-
-    foreach ($match in $paramMatches) {
-        $paramName = $match.Groups[1].Value
-        $isMandatory = $match.Groups[2].Value.ToLower() -in @('$true', 'true')
-
-        # Extract the getter function for this parameter
-        $getterPattern = '(?ms)Name\s*=\s*"' + $paramName + '".*?GetterFunction\s*=\s*"([^"]+)"'
-        $getterMatch = [regex]::Match($blockText, $getterPattern)
-        $getterFunction = if ($getterMatch.Success) { $getterMatch.Groups[1].Value } else { "" }
-
-        # Try to find a description for this parameter from the parameter sections
-        $description = ""
-        if ($HelpSections -and $HelpSections.ContainsKey("PARAMETER")) {
-            $paramPattern = "(?ms)-$paramName\s*(.*?)(?=-\w|\s*$)"
-            $paramMatch = [regex]::Match($HelpSections["PARAMETER"], $paramPattern)
-            if ($paramMatch.Success) {
-                $description = $paramMatch.Groups[1].Value.Trim()
-            }
+        if (-not $HelpBlock) {
+            return @{}
         }
 
-        # If not found in parameter section, look for it in the full function help
-        if ([string]::IsNullOrWhiteSpace($description)) {
-            $descriptionPattern = "(?ms)\.PARAMETER\s+$paramName\s*(.*?)(?=\.PARAMETER|\.[A-Z][A-Za-z]+|\s*$)"
-            $descriptionMatch = [regex]::Match($FunctionText, $descriptionPattern)
-            $description = if ($descriptionMatch.Success) {
-                $descriptionMatch.Groups[1].Value.Trim()
+        # Normalize line endings
+        $HelpBlock = Set-LineEndings -Text $HelpBlock
+
+        $sections = @{}
+
+        # Find all section headers in the help block
+        # $sectionHeaderPattern = "(?m)^\s*\.([A-Z][A-Za-z]+)\s*$"
+        $sectionHeaderPattern = "(?m)^\s*\.([A-Z][A-Za-z]+.*\n)"
+        $sectionHeaders = [regex]::Matches($HelpBlock, $sectionHeaderPattern) | ForEach-Object { $_.Groups[1].Value }
+
+        Write-Verbose "Found these section headers: $($sectionHeaders -join ', ')"
+
+        # Process each section - get pairs of section headers to determine section boundaries
+        $headerPositions = @{}
+        $exampleHeaders = 0
+        foreach ($match in [regex]::Matches($HelpBlock, $sectionHeaderPattern)) {
+            $headerName = $match.Groups[1].Value.Trim()
+            if ($headerName -ne 'EXAMPLE') {
+                $headerPositions[$headerName] = $match.Index
             } else {
-                "Dynamic parameter. Tab completion shows available values."
+                $headerPositions["${headerName}-${exampleHeaders}"] = $match.Index
+                $exampleHeaders++
             }
         }
 
-        $dynamicParameters += @{
-            Name = $paramName
-            Description = $description
-            IsMandatory = $isMandatory
-            GetterFunction = $getterFunction
+        # Sort headers by their position in the document
+        $sortedHeaders = $headerPositions.GetEnumerator() | Sort-Object Value | ForEach-Object { $_.Key }
+
+        Write-Verbose "Headers in order: $($sortedHeaders -join ', ')"
+
+        # Extract content between each header and the next one
+        for ($i = 0; $i -lt $sortedHeaders.Count; $i++) {
+            $currentHeader = $sortedHeaders[$i].Trim()
+            $currentPos = $headerPositions[$currentHeader]
+            $sectionStart = $HelpBlock.IndexOf("`n", $currentPos + 1) + 1
+
+            if ($sectionStart -le 0) {
+                # Skip if we can't find the start of the section
+                continue
+            }
+
+            if ($i -lt $sortedHeaders.Count - 1) {
+                $nextHeader = $sortedHeaders[$i + 1]
+                $nextPos = $headerPositions[$nextHeader]
+                $sectionEnd = $HelpBlock.LastIndexOf("`n", $nextPos)
+                if ($sectionEnd -le $sectionStart) {
+                    $sectionEnd = $nextPos
+                }
+            }
+            else {
+                # Last section - goes to the end of the help block
+                $sectionEnd = $HelpBlock.Length
+            }
+
+            $sectionLength = $sectionEnd - $sectionStart
+            if ($sectionLength -gt 0) {
+                $content = $HelpBlock.Substring($sectionStart, $sectionLength).Trim()
+                $sections[$currentHeader] = $content
+
+                Write-Verbose "${currentHeader} section found with length: $($content.Length)"
+                if ($content.Length -gt 0) {
+                    $snippetLength = [Math]::Min(50, $content.Length)
+                    Write-Verbose "${currentHeader} start: '$($content.Substring(0, $snippetLength))...'"
+                }
+            }
         }
+
+        # Handle examples as a special case with multiple .EXAMPLE sections
+        if ($sectionHeaders -contains "EXAMPLE") {
+            $examples = @()
+            $examplePatterns = [regex]::Matches($HelpBlock, "(?ms)\.EXAMPLE\s*(.*?)(?=\.EXAMPLE|\.(?!EXAMPLE)[A-Z][A-Za-z]+|\s*$)")
+
+            Write-Verbose "Found $($examplePatterns.Count) examples"
+
+            $index = 1
+            foreach ($match in $examplePatterns) {
+                $content = $match.Groups[1].Value.Trim()
+                $examples += @{
+                    Index = $index
+                    Content = $content
+                }
+
+                Write-Verbose "Example $index content length: $($content.Length) characters"
+                if ($content.Length -gt 0) {
+                    $snippetLength = [Math]::Min(50, $content.Length)
+                    Write-Verbose "Example $index start: '$($content.Substring(0, $snippetLength))...'"
+                }
+
+                $index++
+            }
+
+            $sections["EXAMPLES"] = $examples
+        }
+
+        # Extract all parameter descriptions from the help block
+        if ($sectionHeaders -contains "PARAMETER") {
+            $parameterSection = ""
+            $paramMatches = [regex]::Matches($HelpBlock, "(?ms)\.PARAMETER\s+(\w+)\s*(.*?)(?=\.PARAMETER|\.[A-Z][A-Za-z]+|\s*$)")
+
+            foreach ($match in $paramMatches) {
+                $paramName = $match.Groups[1].Value.Trim()
+                $paramDesc = $match.Groups[2].Value.Trim()
+                $parameterSection += "-$paramName $paramDesc`n`n"
+            }
+
+            $sections["PARAMETER"] = $parameterSection
+        }
+
+        return $sections
     }
 
-    return $dynamicParameters
-}
+    # Function to extract comment-based help using PowerShell's Get-Help cmdlet
+    function Get-CommentBasedHelp {
+        param (
+            [System.Management.Automation.Language.FunctionDefinitionAst]$Function
+        )
 
-# Function to extract raw help block content from file
-function Get-RawHelpBlock {
-    param (
-        [System.Management.Automation.Language.FunctionDefinitionAst]$Function,
-        [string]$FileContent
-    )
+        $funcName = $Function.Name
 
-    $funcName = $Function.Name
+        # Create a temporary script to use Get-Help
+        $tempScriptPath = [System.IO.Path]::GetTempFileName() + ".ps1"
+        $Function.Extent.Text | Out-File -FilePath $tempScriptPath -Encoding utf8
 
-    # Normalize line endings in the file content
-    $FileContent = Set-LineEndings -Text $FileContent
+        # Import the temporary script
+        . $tempScriptPath
 
-    # Look for help block before the function definition
-    $beforePattern = "(?ms)<#(.*?)#>\s*function\s+$funcName\b"
-    $beforeMatch = [regex]::Match($FileContent, $beforePattern)
+        # Get the help for the function
+        $help = Get-Help -Name $funcName -Full
 
-    if ($beforeMatch.Success) {
-        Write-Verbose "Found help block before function $funcName"
-        return $beforeMatch.Groups[1].Value
+        # Delete the temporary script
+        Remove-Item -Path $tempScriptPath -Force
+
+        return $help
     }
 
-    # Look for help block inside the function
-    $insidePattern = "(?ms)function\s+$funcName.*?{.*?<#(.*?)#>"
-    $insideMatch = [regex]::Match($FileContent, $insidePattern)
+    # Function to generate markdown documentation for a function
+    function New-FunctionMarkdown {
+        param (
+            [Parameter(Mandatory = $true)]
+            [object]$Help,
 
-    if ($insideMatch.Success) {
-        Write-Verbose "Found help block inside function $funcName"
-        return $insideMatch.Groups[1].Value
-    }
+            [Parameter(Mandatory = $true)]
+            [string]$OutputFolder,
 
-    Write-Verbose "No help block found for function $funcName"
-    return $null
-}
+            [Parameter(Mandatory = $false)]
+            [hashtable]$HelpSections,
 
-# Extract help sections directly from raw help text
-function Get-HelpSections {
-    param (
-        [string]$HelpBlock
-    )
+            [Parameter(Mandatory = $false)]
+            [object[]]$DynamicParameters,
 
-    if (-not $HelpBlock) {
-        return @{}
-    }
+            [Parameter(Mandatory = $false)]
+            [switch]$HasDynamicParams
+        )
 
-    # Normalize line endings
-    $HelpBlock = Set-LineEndings -Text $HelpBlock
+        $funcName = $Help.Name
+        $outputPath = Join-Path -Path $OutputFolder -ChildPath "$funcName.md"
 
-    $sections = @{}
+        Write-Verbose "Generating documentation for $funcName"
 
-    # Find all section headers in the help block
-    # $sectionHeaderPattern = "(?m)^\s*\.([A-Z][A-Za-z]+)\s*$"
-    $sectionHeaderPattern = "(?m)^\s*\.([A-Z][A-Za-z]+.*\n)"
-    $sectionHeaders = [regex]::Matches($HelpBlock, $sectionHeaderPattern) | ForEach-Object { $_.Groups[1].Value }
+        # Initialize content array
+        $contentLines = @()
 
-    Write-Verbose "Found these section headers: $($sectionHeaders -join ', ')"
+        # Add function name heading
+        $contentLines += "# $funcName"
+        $contentLines += ""
 
-    # Process each section - get pairs of section headers to determine section boundaries
-    $headerPositions = @{}
-    $exampleHeaders = 0
-    foreach ($match in [regex]::Matches($HelpBlock, $sectionHeaderPattern)) {
-        $headerName = $match.Groups[1].Value.Trim()
-        if ($headerName -ne 'EXAMPLE') {
-            $headerPositions[$headerName] = $match.Index
+        # Add Synopsis
+        $contentLines += "## SYNOPSIS"
+        $contentLines += ""
+        if ($HelpSections -and $HelpSections.ContainsKey("SYNOPSIS")) {
+            $formatted = Format-TextForMarkdown -Text $HelpSections["SYNOPSIS"]
+            $contentLines += $formatted
         } else {
-            $headerPositions["${headerName}-${exampleHeaders}"] = $match.Index
-            $exampleHeaders++
+            $contentLines += $Help.Synopsis
         }
-    }
+        $contentLines += ""
 
-    # Sort headers by their position in the document
-    $sortedHeaders = $headerPositions.GetEnumerator() | Sort-Object Value | ForEach-Object { $_.Key }
-
-    Write-Verbose "Headers in order: $($sortedHeaders -join ', ')"
-
-    # Extract content between each header and the next one
-    for ($i = 0; $i -lt $sortedHeaders.Count; $i++) {
-        $currentHeader = $sortedHeaders[$i].Trim()
-        $currentPos = $headerPositions[$currentHeader]
-        $sectionStart = $HelpBlock.IndexOf("`n", $currentPos + 1) + 1
-
-        if ($sectionStart -le 0) {
-            # Skip if we can't find the start of the section
-            continue
+        # Add Description - strip out parameter lists from description
+        $contentLines += "## DESCRIPTION"
+        $contentLines += ""
+        if ($HelpSections -and $HelpSections.ContainsKey("DESCRIPTION")) {
+            $descriptionText = Get-DescriptionText -DescriptionText $HelpSections["DESCRIPTION"]
+            $formatted = Format-TextForMarkdown -Text $descriptionText
+            $contentLines += $formatted
         }
-
-        if ($i -lt $sortedHeaders.Count - 1) {
-            $nextHeader = $sortedHeaders[$i + 1]
-            $nextPos = $headerPositions[$nextHeader]
-            $sectionEnd = $HelpBlock.LastIndexOf("`n", $nextPos)
-            if ($sectionEnd -le $sectionStart) {
-                $sectionEnd = $nextPos
+        elseif ($Help.Description -is [string]) {
+            $contentLines += $Help.Description
+        }
+        elseif ($Help.Description.Text) {
+            if ($Help.Description.Text -is [array]) {
+                $descriptionText = $Help.Description.Text -join "`n"
+                $cleanedText = Get-DescriptionText -DescriptionText $descriptionText
+                $contentLines += $cleanedText
+            } else {
+                $cleanedText = Get-DescriptionText -DescriptionText $Help.Description.Text
+                $contentLines += $cleanedText
             }
         }
         else {
-            # Last section - goes to the end of the help block
-            $sectionEnd = $HelpBlock.Length
+            $contentLines += "No description available."
         }
-
-        $sectionLength = $sectionEnd - $sectionStart
-        if ($sectionLength -gt 0) {
-            $content = $HelpBlock.Substring($sectionStart, $sectionLength).Trim()
-            $sections[$currentHeader] = $content
-
-            Write-Verbose "${currentHeader} section found with length: $($content.Length)"
-            if ($content.Length -gt 0) {
-                $snippetLength = [Math]::Min(50, $content.Length)
-                Write-Verbose "${currentHeader} start: '$($content.Substring(0, $snippetLength))...'"
-            }
-        }
-    }
-
-    # Handle examples as a special case with multiple .EXAMPLE sections
-    if ($sectionHeaders -contains "EXAMPLE") {
-        $examples = @()
-        $examplePatterns = [regex]::Matches($HelpBlock, "(?ms)\.EXAMPLE\s*(.*?)(?=\.EXAMPLE|\.(?!EXAMPLE)[A-Z][A-Za-z]+|\s*$)")
-
-        Write-Verbose "Found $($examplePatterns.Count) examples"
-
-        $index = 1
-        foreach ($match in $examplePatterns) {
-            $content = $match.Groups[1].Value.Trim()
-            $examples += @{
-                Index = $index
-                Content = $content
-            }
-
-            Write-Verbose "Example $index content length: $($content.Length) characters"
-            if ($content.Length -gt 0) {
-                $snippetLength = [Math]::Min(50, $content.Length)
-                Write-Verbose "Example $index start: '$($content.Substring(0, $snippetLength))...'"
-            }
-
-            $index++
-        }
-
-        $sections["EXAMPLES"] = $examples
-    }
-
-    # Extract all parameter descriptions from the help block
-    if ($sectionHeaders -contains "PARAMETER") {
-        $parameterSection = ""
-        $paramMatches = [regex]::Matches($HelpBlock, "(?ms)\.PARAMETER\s+(\w+)\s*(.*?)(?=\.PARAMETER|\.[A-Z][A-Za-z]+|\s*$)")
-
-        foreach ($match in $paramMatches) {
-            $paramName = $match.Groups[1].Value.Trim()
-            $paramDesc = $match.Groups[2].Value.Trim()
-            $parameterSection += "-$paramName $paramDesc`n`n"
-        }
-
-        $sections["PARAMETER"] = $parameterSection
-    }
-
-    return $sections
-}
-
-# Function to extract comment-based help using PowerShell's Get-Help cmdlet
-function Get-CommentBasedHelp {
-    param (
-        [System.Management.Automation.Language.FunctionDefinitionAst]$Function
-    )
-
-    $funcName = $Function.Name
-
-    # Create a temporary script to use Get-Help
-    $tempScriptPath = [System.IO.Path]::GetTempFileName() + ".ps1"
-    $Function.Extent.Text | Out-File -FilePath $tempScriptPath -Encoding utf8
-
-    # Import the temporary script
-    . $tempScriptPath
-
-    # Get the help for the function
-    $help = Get-Help -Name $funcName -Full
-
-    # Delete the temporary script
-    Remove-Item -Path $tempScriptPath -Force
-
-    return $help
-}
-
-# Function to generate markdown documentation for a function
-function New-FunctionMarkdown {
-    param (
-        [Parameter(Mandatory = $true)]
-        [object]$Help,
-
-        [Parameter(Mandatory = $true)]
-        [string]$OutputFolder,
-
-        [Parameter(Mandatory = $false)]
-        [hashtable]$HelpSections,
-
-        [Parameter(Mandatory = $false)]
-        [object[]]$DynamicParameters,
-
-        [Parameter(Mandatory = $false)]
-        [switch]$HasDynamicParams
-    )
-
-    $funcName = $Help.Name
-    $outputPath = Join-Path -Path $OutputFolder -ChildPath "$funcName.md"
-
-    Write-Verbose "Generating documentation for $funcName"
-
-    # Initialize content array
-    $contentLines = @()
-
-    # Add function name heading
-    $contentLines += "# $funcName"
-    $contentLines += ""
-
-    # Add Synopsis
-    $contentLines += "## SYNOPSIS"
-    $contentLines += ""
-    if ($HelpSections -and $HelpSections.ContainsKey("SYNOPSIS")) {
-        $formatted = Format-TextForMarkdown -Text $HelpSections["SYNOPSIS"]
-        $contentLines += $formatted
-    } else {
-        $contentLines += $Help.Synopsis
-    }
-    $contentLines += ""
-
-    # Add Description - strip out parameter lists from description
-    $contentLines += "## DESCRIPTION"
-    $contentLines += ""
-    if ($HelpSections -and $HelpSections.ContainsKey("DESCRIPTION")) {
-        $descriptionText = Get-DescriptionText -DescriptionText $HelpSections["DESCRIPTION"]
-        $formatted = Format-TextForMarkdown -Text $descriptionText
-        $contentLines += $formatted
-    }
-    elseif ($Help.Description -is [string]) {
-        $contentLines += $Help.Description
-    }
-    elseif ($Help.Description.Text) {
-        if ($Help.Description.Text -is [array]) {
-            $descriptionText = $Help.Description.Text -join "`n"
-            $cleanedText = Get-DescriptionText -DescriptionText $descriptionText
-            $contentLines += $cleanedText
-        } else {
-            $cleanedText = Get-DescriptionText -DescriptionText $Help.Description.Text
-            $contentLines += $cleanedText
-        }
-    }
-    else {
-        $contentLines += "No description available."
-    }
-    $contentLines += ""
-
-    # Add parameters section
-    $contentLines += "## PARAMETERS"
-    $contentLines += ""
-
-    # Add regular parameters first
-    if ($Help.Parameters.Parameter) {
-        # Convert to array if it's a single parameter
-        $parameters = $Help.Parameters.Parameter
-        if (-not ($parameters -is [array])) {
-            $parameters = @($parameters)
-        }
-
-        foreach ($parameter in $parameters) {
-            $contentLines += "### $($parameter.Name)"
-            $contentLines += ""
-
-            # Parameter description
-            if ($parameter.Description.Text -is [array]) {
-                $contentLines += $parameter.Description.Text
-            } else {
-                $contentLines += $parameter.Description.Text
-            }
-            $contentLines += ""
-
-            # Parameter details
-            $contentLines += "- Type: $($parameter.Type.Name)"
-            $contentLines += "- Required: $($parameter.Required)"
-            if ($parameter.DefaultValue) {
-                $contentLines += "- Default value: $($parameter.DefaultValue)"
-            }
-            $contentLines += "- Accept pipeline input: $($parameter.PipelineInput)"
-            $contentLines += "- Accept wildcard characters: $($parameter.Globbing)"
-            $contentLines += ""
-        }
-    }
-
-    # Add dynamic parameters
-    if ($DynamicParameters -and $DynamicParameters.Count -gt 0) {
-        foreach ($dynamicParam in $DynamicParameters) {
-            $contentLines += "### $($dynamicParam.Name)"
-            $contentLines += ""
-            $contentLines += $dynamicParam.Description
-            $contentLines += ""
-            $contentLines += "- Type: String"
-            $contentLines += "- Required: $($dynamicParam.IsMandatory)"
-            if ($dynamicParam.GetterFunction) {
-                $contentLines += "- Values retrieved from: $($dynamicParam.GetterFunction)"
-            }
-            $contentLines += "- Dynamic parameter with tab completion"
-            $contentLines += ""
-        }
-    }
-    elseif ($HasDynamicParams) {
-        $contentLines += "### Dynamic Parameters"
-        $contentLines += ""
-        $contentLines += "This function uses dynamic parameters, which are only available under certain conditions."
-        $contentLines += "Refer to the function description for details on available dynamic parameters."
-        $contentLines += ""
-    }
-
-    # Add examples - use direct examples from help sections if available
-    if ($HelpSections -and [boolean]( $HelpSections.Keys | Where-Object { $_ -match 'EXAMPLE' } ) ) {
-        $contentLines += "## EXAMPLES"
         $contentLines += ""
 
-        foreach ($exampleKey in ( $HelpSections.Keys | Where-Object { $_ -match 'EXAMPLE' } | Sort-Object ) ) {
-            $exampleNumber = [int]( $exampleKey.Split('-')[1] )
-            $contentLines += "### Example $($exampleNumber + 1)"
-            $contentLines += ""
-
-            # Use six backticks to ensure markdown doesn't interpret any content inside
-            $contentLines += "``````powershell"
-
-            $ExampleContent = $HelpSections."${exampleKey}".Split("`r`n")
-            $leadingSpaces = 0
-            foreach ($line in $ExampleContent) {
-                if ( $line -notmatch '\.EXAMPLE' ) {
-                    if ( $leadingSpaces -eq 0 ) {
-                        $leadingSpaces = $line.Length - $line.TrimStart().Length
-                    }
-                    if ($line.Length -gt $leadingSpaces) {
-                        $contentLines += $line.Substring($leadingSpaces)
-                    }
-                }
-            }
-            # $contentLines += $HelpSections."${exampleKey}"
-            $contentLines += "``````"
-            $contentLines += ""
-        }
-    }
-    # Fall back to examples from Get-Help if no direct examples
-    elseif ($Help.Examples -and $Help.Examples.Example) {
-        $contentLines += "## EXAMPLES"
+        # Add parameters section
+        $contentLines += "## PARAMETERS"
         $contentLines += ""
 
-        # Handle if there's only one example (not in an array)
-        $examples = $Help.Examples.Example
-        if (-not ($examples -is [array])) {
-            $examples = @($examples)
-        }
+        # Add regular parameters first
+        if ($Help.Parameters.Parameter) {
+            # Convert to array if it's a single parameter
+            $parameters = $Help.Parameters.Parameter
+            if (-not ($parameters -is [array])) {
+                $parameters = @($parameters)
+            }
 
-        $exampleIndex = 1
-        foreach ($example in ( $examples | Sort-Object Title ) ) {
-            $contentLines += "### Example $exampleIndex"
-            $contentLines += ""
+            foreach ($parameter in $parameters) {
+                $contentLines += "### $($parameter.Name)"
+                $contentLines += ""
 
-            # Use six backticks to ensure markdown doesn't interpret any content inside
-            $contentLines += "``````powershell"
-            $contentLines += $example.Code
-            $contentLines += "``````"
-
-            # Add remarks if available
-            if ($example.Remarks) {
-                if ($example.Remarks.Text -is [array]) {
-                    $remarkText = ($example.Remarks.Text -join "`n").Trim()
-                    if ($remarkText) {
-                        $contentLines += ""
-                        $contentLines += $remarkText
-                    }
+                # Parameter description
+                if ($parameter.Description.Text -is [array]) {
+                    $contentLines += $parameter.Description.Text
                 } else {
-                    $remarkText = $example.Remarks.Text.Trim()
-                    if ($remarkText) {
-                        $contentLines += ""
-                        $contentLines += $remarkText
+                    $contentLines += $parameter.Description.Text
+                }
+                $contentLines += ""
+
+                # Parameter details
+                $contentLines += "- Type: $($parameter.Type.Name)"
+                $contentLines += "- Required: $($parameter.Required)"
+                if ($parameter.DefaultValue) {
+                    $contentLines += "- Default value: $($parameter.DefaultValue)"
+                }
+                $contentLines += "- Accept pipeline input: $($parameter.PipelineInput)"
+                $contentLines += "- Accept wildcard characters: $($parameter.Globbing)"
+                $contentLines += ""
+            }
+        }
+
+        # Add dynamic parameters
+        if ($DynamicParameters -and $DynamicParameters.Count -gt 0) {
+            foreach ($dynamicParam in $DynamicParameters) {
+                $contentLines += "### $($dynamicParam.Name)"
+                $contentLines += ""
+                $contentLines += $dynamicParam.Description
+                $contentLines += ""
+                $contentLines += "- Type: String"
+                $contentLines += "- Required: $($dynamicParam.IsMandatory)"
+                if ($dynamicParam.GetterFunction) {
+                    $contentLines += "- Values retrieved from: $($dynamicParam.GetterFunction)"
+                }
+                $contentLines += "- Dynamic parameter with tab completion"
+                $contentLines += ""
+            }
+        }
+        elseif ($HasDynamicParams) {
+            $contentLines += "### Dynamic Parameters"
+            $contentLines += ""
+            $contentLines += "This function uses dynamic parameters, which are only available under certain conditions."
+            $contentLines += "Refer to the function description for details on available dynamic parameters."
+            $contentLines += ""
+        }
+
+        # Add examples - use direct examples from help sections if available
+        if ($HelpSections -and [boolean]( $HelpSections.Keys | Where-Object { $_ -match 'EXAMPLE' } ) ) {
+            $contentLines += "## EXAMPLES"
+            $contentLines += ""
+
+            foreach ($exampleKey in ( $HelpSections.Keys | Where-Object { $_ -match 'EXAMPLE' } | Sort-Object ) ) {
+                $exampleNumber = [int]( $exampleKey.Split('-')[1] )
+                $contentLines += "### Example $($exampleNumber + 1)"
+                $contentLines += ""
+
+                # Use six backticks to ensure markdown doesn't interpret any content inside
+                $contentLines += "``````powershell"
+
+                $ExampleContent = $HelpSections."${exampleKey}".Split("`r`n")
+                $leadingSpaces = 0
+                foreach ($line in $ExampleContent) {
+                    if ( $line -notmatch '\.EXAMPLE' ) {
+                        if ( $leadingSpaces -eq 0 ) {
+                            $leadingSpaces = $line.Length - $line.TrimStart().Length
+                        }
+                        if ($line.Length -gt $leadingSpaces) {
+                            $contentLines += $line.Substring($leadingSpaces)
+                        }
                     }
                 }
+                # $contentLines += $HelpSections."${exampleKey}"
+                $contentLines += "``````"
+                $contentLines += ""
             }
-
+        }
+        # Fall back to examples from Get-Help if no direct examples
+        elseif ($Help.Examples -and $Help.Examples.Example) {
+            $contentLines += "## EXAMPLES"
             $contentLines += ""
-            $exampleIndex++
+
+            # Handle if there's only one example (not in an array)
+            $examples = $Help.Examples.Example
+            if (-not ($examples -is [array])) {
+                $examples = @($examples)
+            }
+
+            $exampleIndex = 1
+            foreach ($example in ( $examples | Sort-Object Title ) ) {
+                $contentLines += "### Example $exampleIndex"
+                $contentLines += ""
+
+                # Use six backticks to ensure markdown doesn't interpret any content inside
+                $contentLines += "``````powershell"
+                $contentLines += $example.Code
+                $contentLines += "``````"
+
+                # Add remarks if available
+                if ($example.Remarks) {
+                    if ($example.Remarks.Text -is [array]) {
+                        $remarkText = ($example.Remarks.Text -join "`n").Trim()
+                        if ($remarkText) {
+                            $contentLines += ""
+                            $contentLines += $remarkText
+                        }
+                    } else {
+                        $remarkText = $example.Remarks.Text.Trim()
+                        if ($remarkText) {
+                            $contentLines += ""
+                            $contentLines += $remarkText
+                        }
+                    }
+                }
+
+                $contentLines += ""
+                $exampleIndex++
+            }
         }
-    }
 
-    # Add notes if available
-    if ($HelpSections -and $HelpSections.ContainsKey("NOTES")) {
-        $contentLines += "## NOTES"
-        $formatted = Format-TextForMarkdown -Text $HelpSections["NOTES"]
-        $contentLines += $formatted
-        $contentLines += ""
-    }
-    elseif ($Help.AlertSet -and $Help.AlertSet.Alert) {
-        $contentLines += "## NOTES"
-
-        if ($Help.AlertSet.Alert.Text -is [array]) {
-            $contentLines += $Help.AlertSet.Alert.Text
-        } else {
-            $contentLines += $Help.AlertSet.Alert.Text
+        # Add notes if available
+        if ($HelpSections -and $HelpSections.ContainsKey("NOTES")) {
+            $contentLines += "## NOTES"
+            $contentLines += ""
+            $formatted = Format-TextForMarkdown -Text $HelpSections["NOTES"]
+            $contentLines += $formatted
+            $contentLines += ""
         }
-        $contentLines += ""
-    }
+        elseif ($Help.AlertSet -and $Help.AlertSet.Alert) {
+            $contentLines += "## NOTES"
+            $contentLines += ""
 
-    # Join the content lines with Windows-style CRLF line endings
-    $content = $contentLines -join "`r`n"
-
-    # Write the markdown content to the file (using UTF-8 without BOM)
-    [System.IO.File]::WriteAllText($outputPath, $content, [System.Text.UTF8Encoding]::new($false))
-
-    Write-Verbose "Documentation for $funcName created at $outputPath"
-
-    return $outputPath
-}
-
-# Function to create a table of contents file
-function New-TableOfContents {
-    param (
-        [string[]]$FunctionNames,
-        [string]$OutputFolder,
-        [string]$ModuleName
-    )
-
-    $tocPath = Join-Path -Path $OutputFolder -ChildPath "README.md"
-
-    # Build TOC content
-    $contentLines = @()
-    $contentLines += "# $ModuleName Module Documentation"
-    $contentLines += ""
-    $contentLines += "This documentation provides details on the functions available in the $ModuleName PowerShell module."
-    $contentLines += ""
-    $contentLines += "## Functions"
-    $contentLines += ""
-    $contentLines += "| Function Name | Synopsis |"
-    $contentLines += "|---------------|----------|"
-
-    foreach ($funcName in ($FunctionNames | Sort-Object)) {
-        # Try to get the function help
-        $tempFunctionPath = Join-Path -Path $OutputFolder -ChildPath "$funcName.md"
-        if (Test-Path -Path $tempFunctionPath) {
-            $content = [System.IO.File]::ReadAllText($tempFunctionPath, [System.Text.Encoding]::UTF8)
-
-            # Extract synopsis using regex
-            $synopsisMatch = [regex]::Match($content, '## SYNOPSIS\s*(.*?)(?=\s*##|\s*$)', [System.Text.RegularExpressions.RegexOptions]::Singleline)
-            $synopsis = if ($synopsisMatch.Success) {
-                ($synopsisMatch.Groups[1].Value -replace '\s+', ' ').Trim()
+            if ($Help.AlertSet.Alert.Text -is [array]) {
+                $contentLines += $Help.AlertSet.Alert.Text
             } else {
-                "No synopsis available"
+                $contentLines += $Help.AlertSet.Alert.Text
             }
-
-            $contentLines += "| [$funcName](./$funcName.md) | $synopsis |"
+            $contentLines += ""
         }
+
+        # Join the content lines with Windows-style CRLF line endings
+        $content = $contentLines -join "`r`n"
+
+        # Write the markdown content to the file (using UTF-8 without BOM)
+        [System.IO.File]::WriteAllText($outputPath, $content, [System.Text.UTF8Encoding]::new($false))
+
+        Write-Verbose "Documentation for $funcName created at $outputPath"
+
+        return $outputPath
     }
 
-    # Join the content lines with Unix-style LF line endings
-    $content = $contentLines -join "`n"
+    # Function to create a table of contents file
+    function New-TableOfContents {
+        param (
+            [string[]]$FunctionNames,
+            [string]$OutputFolder,
+            [string]$ModuleName
+        )
 
-    # Write the TOC content to the file (using UTF-8 without BOM)
-    [System.IO.File]::WriteAllText($tocPath, $content, [System.Text.UTF8Encoding]::new($false))
+        $tocPath = Join-Path -Path $OutputFolder -ChildPath "README.md"
 
-    Write-Verbose "Table of contents created at $tocPath"
+        # Build TOC content
+        $contentLines = @()
+        $contentLines += "# $ModuleName Module Documentation"
+        $contentLines += ""
+        $contentLines += "This documentation provides details on the functions available in the $ModuleName PowerShell module."
+        $contentLines += ""
+        $contentLines += "## Functions"
+        $contentLines += ""
+        $contentLines += "| Function Name | Synopsis |"
+        $contentLines += "| -------------- | -------- |"
 
-    return $tocPath
-}
+        foreach ($funcName in ($FunctionNames | Sort-Object)) {
+            # Try to get the function help
+            $tempFunctionPath = Join-Path -Path $OutputFolder -ChildPath "$funcName.md"
+            if (Test-Path -Path $tempFunctionPath) {
+                $content = [System.IO.File]::ReadAllText($tempFunctionPath, [System.Text.Encoding]::UTF8)
 
-# Process individual PS1 files within a directory
-function Process-ModuleFiles {
-    param (
-        [string]$DirectoryPath,
-        [string]$OutputFolder
-    )
-
-    # Get all PS1 files in the directory
-    $ps1Files = Get-ChildItem -Path $DirectoryPath -Filter "*.ps1" -Recurse
-
-    $functionNames = @()
-
-    foreach ($file in $ps1Files) {
-        Write-Verbose "Processing file: $($file.FullName)"
-
-        # Get the file content with proper encoding
-        $fileContent = [System.IO.File]::ReadAllText($file.FullName, [System.Text.Encoding]::UTF8)
-
-        # Get all functions in the file
-        $ast = [System.Management.Automation.Language.Parser]::ParseInput($fileContent, [ref]$null, [ref]$null)
-        $functions = $ast.FindAll({ $args[0] -is [System.Management.Automation.Language.FunctionDefinitionAst] }, $true)
-
-        foreach ($function in $functions) {
-            try {
-                $funcName = $function.Name
-                $functionNames += $funcName
-
-                Write-Verbose "Processing function: $funcName"
-
-                # Get raw help block
-                $helpBlock = Get-RawHelpBlock -Function $function -FileContent $fileContent
-
-                # Extract sections from help block
-                $helpSections = $null
-                if ($helpBlock) {
-                    $helpSections = Get-HelpSections -HelpBlock $helpBlock
-                    Write-Verbose "Extracted $($helpSections.Keys.Count) help sections for $funcName"
+                # Extract synopsis using regex
+                $synopsisMatch = [regex]::Match($content, '## SYNOPSIS\s*(.*?)(?=\s*##|\s*$)', [System.Text.RegularExpressions.RegexOptions]::Singleline)
+                $synopsis = if ($synopsisMatch.Success) {
+                    ($synopsisMatch.Groups[1].Value -replace '\s+', ' ').Trim()
+                } else {
+                    "No synopsis available"
                 }
 
-                # Check for DynamicParam block and extract details
-                $dynamicParamBlock = Get-DynamicParamBlock -Function $function
-                $hasDynamicParams = $null -ne $dynamicParamBlock
-                $dynamicParameters = $null
-
-                if ($hasDynamicParams) {
-                    Write-Verbose "Function $funcName has a DynamicParam block"
-                    $dynamicParameters = Get-DynamicParameterDetails -DynamicParamBlock $dynamicParamBlock -FunctionText $fileContent -HelpSections $helpSections
-                    Write-Verbose "Found $($dynamicParameters.Count) dynamic parameters in function $funcName"
-                }
-
-                # Get PowerShell help
-                $help = Get-CommentBasedHelp -Function $function
-
-                # Generate markdown documentation
-                $docPath = New-FunctionMarkdown -Help $help -OutputFolder $OutputFolder -HelpSections $helpSections `
-                           -DynamicParameters $dynamicParameters -HasDynamicParams:$hasDynamicParams
-
-                Write-Verbose "Created documentation for $funcName at $docPath"
-            }
-            catch {
-                Write-Warning "Error processing function $($function.Name): $_"
-                # Continue with the next function
+                $contentLines += "| [$funcName](./$funcName.md) | $synopsis |"
             }
         }
+
+        # Join the content lines with Unix-style LF line endings
+        $content = $contentLines -join "`n"
+
+        # Write the TOC content to the file (using UTF-8 without BOM)
+        [System.IO.File]::WriteAllText($tocPath, $content, [System.Text.UTF8Encoding]::new($false))
+
+        Write-Verbose "Table of contents created at $tocPath"
+
+        return $tocPath
     }
 
-    return $functionNames
-}
+    # Process individual PS1 files within a directory
+    function Process-ModuleFiles {
+        param (
+            [string]$DirectoryPath,
+            [string]$OutputFolder,
+            [string]$FunctionName
+        )
+
+        # Get all PS1 files in the directory
+        $ps1Files = Get-ChildItem -Path $DirectoryPath -Filter "*.ps1" -Recurse
+
+        if ($FunctionName) {
+            $ps1Files = $ps1Files | Where-Object { $_.BaseName -eq $FunctionName }
+        }
+
+        $functionNames = @()
+
+        foreach ($file in $ps1Files) {
+            Write-Verbose "Processing file: $($file.FullName)"
+
+            # Get the file content with proper encoding
+            $fileContent = [System.IO.File]::ReadAllText($file.FullName, [System.Text.Encoding]::UTF8)
+
+            # Get all functions in the file
+            $ast = [System.Management.Automation.Language.Parser]::ParseInput($fileContent, [ref]$null, [ref]$null)
+            $functions = $ast.FindAll({ $args[0] -is [System.Management.Automation.Language.FunctionDefinitionAst] }, $true)
+
+            foreach ($function in $functions) {
+                try {
+                    $funcName = $function.Name
+                    $functionNames += $funcName
+
+                    Write-Verbose "Processing function: $funcName"
+
+                    # Get raw help block
+                    $helpBlock = Get-RawHelpBlock -Function $function -FileContent $fileContent
+
+                    # Extract sections from help block
+                    $helpSections = $null
+                    if ($helpBlock) {
+                        $helpSections = Get-HelpSections -HelpBlock $helpBlock
+                        Write-Verbose "Extracted $($helpSections.Keys.Count) help sections for $funcName"
+                    }
+
+                    # Check for DynamicParam block and extract details
+                    $dynamicParamBlock = Get-DynamicParamBlock -Function $function
+                    $hasDynamicParams = $null -ne $dynamicParamBlock
+                    $dynamicParameters = $null
+
+                    if ($hasDynamicParams) {
+                        Write-Verbose "Function $funcName has a DynamicParam block"
+                        $dynamicParameters = Get-DynamicParameterDetails -DynamicParamBlock $dynamicParamBlock -FunctionText $fileContent -HelpSections $helpSections
+                        Write-Verbose "Found $($dynamicParameters.Count) dynamic parameters in function $funcName"
+                    }
+
+                    # Get PowerShell help
+                    $help = Get-CommentBasedHelp -Function $function
+
+                    # Generate markdown documentation
+                    $docPath = New-FunctionMarkdown -Help $help -OutputFolder $OutputFolder -HelpSections $helpSections `
+                            -DynamicParameters $dynamicParameters -HasDynamicParams:$hasDynamicParams
+
+                    Write-Verbose "Created documentation for $funcName at $docPath"
+                }
+                catch {
+                    Write-Warning "Error processing function $($function.Name): $_"
+                    # Continue with the next function
+                }
+            }
+        }
+
+        return $functionNames
+    }
 #endregion functions
 
 # Main script execution
@@ -773,9 +839,11 @@ try {
         $functionNames = @()
 
         $filteredFunctions = $functions
+        <#
         if ( [boolean]$FunctionName ) {
             $filteredFunctions = $filteredFunctions | Where-Object { $_.Name -eq $FunctionName}
         }
+        #>
 
         foreach ($function in $filteredFunctions ) {
             try {
@@ -826,18 +894,28 @@ try {
         Write-Verbose "Processing module directory: $moduleName"
 
         # Process all PS1 files in the directory
-        $functionNames = Process-ModuleFiles -DirectoryPath $ModulePath -OutputFolder $OutputFolder
+        $InvokeParams = @{
+            DirectoryPath = $ModulePath
+            OutputFolder = $OutputFolder
+        }
+        if ( $FunctionName ) {
+            $InvokeParams.FunctionName = $FunctionName
+        }
+        $functionNames = Process-ModuleFiles @InvokeParams
     } else {
         throw "Invalid module path: $ModulePath"
     }
 
+    $AllFunctionNames = Get-ChildItem -Path $ModulePath -Filter "*.ps1" -Recurse | Select-Object -ExpandProperty BaseName
     # Create table of contents
-    $tocPath = New-TableOfContents -FunctionNames $functionNames -OutputFolder $OutputFolder -ModuleName $moduleName
+    $tocPath = New-TableOfContents -FunctionNames $AllFunctionNames -OutputFolder $OutputFolder -ModuleName $moduleName
 
     Write-Output "Documentation generation complete. Documentation is available at: $OutputFolder"
     Write-Output "Table of contents available at: $tocPath"
 }
 catch {
     Write-Error "An error occurred: $_"
+    write-error "Documentation generation failed."
+    write-error "error happened in line: $($_.InvocationInfo.Line)"
     exit 1
 }

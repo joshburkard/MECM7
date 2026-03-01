@@ -2,12 +2,12 @@
 
 This file tracks the test coverage status for all functions in the MECM7 module.
 
-**Last Updated:** 2026-02-26 21:03:41
+**Last Updated:** 2026-03-01 10:02:01
 
 ## PowerShell 7.x
 
 | Function | Status | Passed | Failed | Skipped | Coverage % | Duration |
-|----------|--------|--------|--------|---------|------------|----------|
+| -------- | ------ | ------ | ------ | ------- | ---------- | -------- |
 | Add-CM7CollectionMembershipRule | 🟢 Passed | 31 | 0 | 0 | 92.86% | 62.19s |
 | Add-CM7SoftwareUpdateToGroup | 🟡 Partial | 16 | 0 | 2 | 94.52% | 14.5s |
 | Connect-CM7 | 🟡 Partial | 25 | 0 | 2 | 100% | 8.9s |
@@ -21,6 +21,7 @@ This file tracks the test coverage status for all functions in the MECM7 module.
 | Get-CM7Deployment | 🟢 Passed | 18 | 0 | 0 | 97.3% | 16.2s |
 | Get-CM7Device | 🟢 Passed | 19 | 0 | 0 | 93.33% | 18.43s |
 | Get-CM7DeviceCollection | 🟢 Passed | 18 | 0 | 0 | 100% | 56.2s |
+| Get-CM7DeviceCollectionDirectMembershipRule | 🟢 Passed | 19 | 0 | 0 | 85.53% | 4.44s |
 | Get-CM7DeviceVariable | 🟡 Partial | 18 | 0 | 2 | 87.72% | 7.36s |
 | Get-CM7MaintenanceWindow | 🟢 Passed | 19 | 0 | 0 | 90.36% | 6.26s |
 | Get-CM7ScriptExecutionStatus | 🟢 Passed | 20 | 0 | 0 | 93.75% | 21.15s |
@@ -31,6 +32,7 @@ This file tracks the test coverage status for all functions in the MECM7 module.
 | Get-CM7TaskSequence | 🟢 Passed | 18 | 0 | 0 | 89.89% | 230.3s |
 | Get-CM7TaskSequenceDeployment | 🟢 Passed | 25 | 0 | 0 | 85.98% | 597.41s |
 | Get-CM7UserCollection | 🟢 Passed | 18 | 0 | 0 | 100% | 7.06s |
+| Get-CM7UserCollectionDirectMembershipRule | 🟢 Passed | 19 | 0 | 0 | 85.53% | 4.75s |
 | Invoke-CM7ClientNotification | 🟢 Passed | 24 | 0 | 0 | 91.4% | 5.1s |
 | Invoke-CM7CollectionUpdate | 🟢 Passed | 20 | 0 | 0 | 87.27% | 6.92s |
 | Invoke-CM7Connection | 🟡 Partial | 18 | 0 | 1 | 81.58% | 5.53s |
@@ -59,7 +61,7 @@ This file tracks the test coverage status for all functions in the MECM7 module.
 ## PowerShell 5.1
 
 | Function | Status | Passed | Failed | Skipped | Coverage % | Duration |
-|----------|--------|--------|--------|---------|------------|----------|
+| -------- | ------ | ------ | ------ | ------- | ---------- | -------- |
 | Add-CM7CollectionMembershipRule | 🟢 Passed | 31 | 0 | 0 | 92.86% | 67.47s |
 | Add-CM7SoftwareUpdateToGroup | 🟡 Partial | 16 | 0 | 2 | 65.75% | 32.67s |
 | Connect-CM7 | 🟡 Partial | 25 | 0 | 2 | 100% | 13.67s |
@@ -73,6 +75,7 @@ This file tracks the test coverage status for all functions in the MECM7 module.
 | Get-CM7Deployment | 🟢 Passed | 18 | 0 | 0 | 97.3% | 28s |
 | Get-CM7Device | 🟢 Passed | 19 | 0 | 0 | 93.33% | 38.36s |
 | Get-CM7DeviceCollection | 🟢 Passed | 18 | 0 | 0 | 100% | 45.74s |
+| Get-CM7DeviceCollectionDirectMembershipRule | 🟢 Passed | 19 | 0 | 0 | 85.53% | 6.45s |
 | Get-CM7DeviceVariable | 🟡 Partial | 18 | 0 | 2 | 87.72% | 7.74s |
 | Get-CM7MaintenanceWindow | 🟢 Passed | 19 | 0 | 0 | 90.36% | 7.12s |
 | Get-CM7ScriptExecutionStatus | 🟢 Passed | 20 | 0 | 0 | 93.75% | 69.94s |
@@ -83,6 +86,7 @@ This file tracks the test coverage status for all functions in the MECM7 module.
 | Get-CM7TaskSequence | 🟢 Passed | 18 | 0 | 0 | 89.89% | 195.82s |
 | Get-CM7TaskSequenceDeployment | 🟢 Passed | 25 | 0 | 0 | 85.98% | 575.2s |
 | Get-CM7UserCollection | 🟢 Passed | 18 | 0 | 0 | 100% | 9.68s |
+| Get-CM7UserCollectionDirectMembershipRule | 🟢 Passed | 19 | 0 | 0 | 85.53% | 6.32s |
 | Invoke-CM7ClientNotification | 🟢 Passed | 26 | 0 | 0 | 92.45% | 7.24s |
 | Invoke-CM7CollectionUpdate | 🟢 Passed | 20 | 0 | 0 | 87.27% | 5.71s |
 | Invoke-CM7Connection | 🟡 Partial | 18 | 0 | 1 | 81.58% | 7.08s |
