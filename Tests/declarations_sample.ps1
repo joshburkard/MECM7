@@ -67,6 +67,30 @@ $script:TestPollingInterval = 5  # Polling interval in seconds for status checks
 $script:TestData = @{
 
     # ========================================================================
+        # Get-CM7User
+        # ========================================================================
+        'Get-CM7User' = @{
+            ByName = @{
+                Name = "dan001\sd221778"
+                ExpectedCount = 1
+            }
+            ByResourceId = @{
+                ResourceId = 2063632223
+                ExpectedCount = 1
+            }
+            ByWildcard = @{
+                Name = "dan001*"
+                ExpectedMinCount = 1
+            }
+            All = @{
+                ExpectedMinCount = 1
+            }
+            NonExistent = @{
+                Name = "NONEXISTENT-USER-999"
+                ResourceId = 99999999
+                ExpectedCount = 0
+            }
+        }
     # Connect-CM7
     # ========================================================================
     'Connect-CM7' = @{

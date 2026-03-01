@@ -706,7 +706,7 @@ if ( -not [boolean]$OutputFolder ) {
         $contentLines += "## Functions"
         $contentLines += ""
         $contentLines += "| Function Name | Synopsis |"
-        $contentLines += "| -------------- | -------- |"
+        $contentLines += "| ------------- | -------- |"
 
         foreach ($funcName in ($FunctionNames | Sort-Object)) {
             # Try to get the function help

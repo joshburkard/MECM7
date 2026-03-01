@@ -2,7 +2,7 @@
 
 This file tracks the test coverage status for all functions in the MECM7 module.
 
-**Last Updated:** 2026-03-01 10:02:01
+**Last Updated:** 2026-03-01 15:41:17
 
 ## PowerShell 7.x
 
@@ -31,6 +31,7 @@ This file tracks the test coverage status for all functions in the MECM7 module.
 | Get-CM7SoftwareUpdateGroup | 🟢 Passed | 18 | 0 | 0 | 94.64% | 32.05s |
 | Get-CM7TaskSequence | 🟢 Passed | 18 | 0 | 0 | 89.89% | 230.3s |
 | Get-CM7TaskSequenceDeployment | 🟢 Passed | 25 | 0 | 0 | 85.98% | 597.41s |
+| Get-CM7User | 🟢 Passed | 10 | 0 | 0 | 85.29% | 53.11s |
 | Get-CM7UserCollection | 🟢 Passed | 18 | 0 | 0 | 100% | 7.06s |
 | Get-CM7UserCollectionDirectMembershipRule | 🟢 Passed | 19 | 0 | 0 | 85.53% | 4.75s |
 | Invoke-CM7ClientNotification | 🟢 Passed | 24 | 0 | 0 | 91.4% | 5.1s |
@@ -85,6 +86,7 @@ This file tracks the test coverage status for all functions in the MECM7 module.
 | Get-CM7SoftwareUpdateGroup | 🟢 Passed | 18 | 0 | 0 | 94.64% | 34.33s |
 | Get-CM7TaskSequence | 🟢 Passed | 18 | 0 | 0 | 89.89% | 195.82s |
 | Get-CM7TaskSequenceDeployment | 🟢 Passed | 25 | 0 | 0 | 85.98% | 575.2s |
+| Get-CM7User | 🟢 Passed | 10 | 0 | 0 | 85.29% | 50.81s |
 | Get-CM7UserCollection | 🟢 Passed | 18 | 0 | 0 | 100% | 9.68s |
 | Get-CM7UserCollectionDirectMembershipRule | 🟢 Passed | 19 | 0 | 0 | 85.53% | 6.32s |
 | Invoke-CM7ClientNotification | 🟢 Passed | 26 | 0 | 0 | 92.45% | 7.24s |

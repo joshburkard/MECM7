@@ -77,8 +77,8 @@ other functions will be described in the [Help](./Help/README.md) folder
 
 ### Connection Management
 
-
- - [`Sync-CM7SoftwareUpdate`](./Help/Sync-CM7SoftwareUpdate.md) - Synchronizes software updates metadata in MECM using CIM connectivity.
+- [`Get-CM7User`](./Help/Get-CM7User.md) - Retrieve user information from MECM using CIM connectivity (CIM-based equivalent of Get-CMUser)
+- [`Sync-CM7SoftwareUpdate`](./Help/Sync-CM7SoftwareUpdate.md) - Synchronizes software updates metadata in MECM using CIM connectivity.
 
 ### Software Update Deployment Management
 

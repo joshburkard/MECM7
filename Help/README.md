@@ -31,6 +31,7 @@ This documentation provides details on the functions available in the Public Pow
 | [Get-CM7TaskSequenceDeployment](./Get-CM7TaskSequenceDeployment.md) | Retrieves task sequence deployment information from Microsoft Endpoint Configuration Manager (MECM) using CIM. |
 | [Get-CM7UserCollection](./Get-CM7UserCollection.md) | Retrieves user collection information from Microsoft Endpoint Configuration Manager (MECM) using CIM. |
 | [Get-CM7UserCollectionDirectMembershipRule](./Get-CM7UserCollectionDirectMembershipRule.md) | Retrieves direct membership information for a MECM user collection using CIM. |
+| [Get-CM7User](./Get-CM7User.md) | Retrieves user information from Microsoft Endpoint Configuration Manager (MECM) using CIM. |
 | [Invoke-CM7ClientNotification](./Invoke-CM7ClientNotification.md) | Sends a client notification action to target devices or a collection using CIM. |
 | [Invoke-CM7CollectionUpdate](./Invoke-CM7CollectionUpdate.md) | Triggers a collection membership evaluation (refresh) on a MECM collection using CIM. |
 | [Invoke-CM7Script](./Invoke-CM7Script.md) | Invokes (runs) a Configuration Manager script on target devices or a collection using CIM. |
