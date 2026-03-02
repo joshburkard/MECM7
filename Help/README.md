@@ -40,6 +40,7 @@ This documentation provides details on the functions available in the Public Pow
 | [New-CM7Collection](./New-CM7Collection.md) | Creates a new MECM collection using CIM. |
 | [New-CM7DeviceCollectionVariable](./New-CM7DeviceCollectionVariable.md) | Creates a new collection variable on a MECM device collection using CIM. |
 | [New-CM7DeviceVariable](./New-CM7DeviceVariable.md) | Creates a new device variable on a MECM device using CIM. |
+| [New-CM7Folder](./New-CM7Folder.md) | Creates a new folder in MECM using CIM. |
 | [New-CM7MaintenanceWindow](./New-CM7MaintenanceWindow.md) | Creates a new maintenance window on a Microsoft Endpoint Configuration Manager (MECM) collection using CIM. |
 | [New-CM7Schedule](./New-CM7Schedule.md) | Creates an SMS schedule token for use with MECM CIM-based functions. |
 | [New-CM7SoftwareUpdateDeployment](./New-CM7SoftwareUpdateDeployment.md) | Creates a new software update deployment in Microsoft Endpoint Configuration Manager (MECM) using CIM. |
@@ -50,6 +51,7 @@ This documentation provides details on the functions available in the Public Pow
 | [Remove-CM7CollectionMembershipRule](./Remove-CM7CollectionMembershipRule.md) | Removes a membership rule from a MECM collection using CIM. |
 | [Remove-CM7DeviceCollectionVariable](./Remove-CM7DeviceCollectionVariable.md) | Removes a collection variable from a MECM device collection using CIM. |
 | [Remove-CM7DeviceVariable](./Remove-CM7DeviceVariable.md) | Removes a device variable from a MECM device using CIM. |
+| [Remove-CM7Folder](./Remove-CM7Folder.md) | Removes a folder in MECM using CIM. |
 | [Remove-CM7MaintenanceWindow](./Remove-CM7MaintenanceWindow.md) | Removes a maintenance window from a MECM collection using CIM. |
 | [Remove-CM7SoftwareUpdateDeployment](./Remove-CM7SoftwareUpdateDeployment.md) | Removes a software update deployment from a specified collection using CIM connectivity. |
 | [Remove-CM7SoftwareUpdateDeploymentPackage](./Remove-CM7SoftwareUpdateDeploymentPackage.md) | Removes a software update deployment package from MECM using CIM. |

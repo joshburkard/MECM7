@@ -67,6 +67,41 @@ $script:TestPollingInterval = 5  # Polling interval in seconds for status checks
 $script:TestData = @{
 
     # ========================================================================
+    # Remove-CM7Folder
+    # ========================================================================
+    'Remove-CM7Folder' = @{
+        ByPath = @{
+            ObjectType = "DeviceCollection"
+            Path = "TestCollections\\Test"
+            Name = "ChildTestFolder-$(Get-Date -Format 'yyyyMMdd_HHmmss')"
+            ExpectedCount = 0
+        }
+        ById = @{
+            ObjectType = "DeviceCollection"
+            ContainerNodeID = 16900001  # Replace with actual ContainerNodeID
+            ExpectedCount = 0
+        }
+        ByParentId = @{
+            ObjectType = "DeviceCollection"
+            ParentContainerNodeID = 16900000  # Replace with actual ParentContainerNodeID
+            Name = "ChildTestFolder-$(Get-Date -Format 'yyyyMMdd_HHmmss')"
+            ExpectedCount = 0
+        }
+        ByInputObject = @{
+            ObjectType = "DeviceCollection"
+            ParentFolder = $null  # Will be set in test
+            Name = "ChildTestFolder-$(Get-Date -Format 'yyyyMMdd_HHmmss')"
+            ExpectedCount = 0
+        }
+        WhatIf = @{
+            ObjectType = "DeviceCollection"
+            Path = "TestCollections\\Test"
+            Name = "WhatIfFolder-$(Get-Date -Format 'yyyyMMdd_HHmmss')"
+            ExpectedCount = 1
+        }
+    }
+
+    # ========================================================================
     # Get-CM7User
     # ========================================================================
     'Get-CM7User' = @{
@@ -1046,6 +1081,38 @@ $script:TestData = @{
     }
 
     # ========================================================================
+    # New-CM7Folder
+    # ========================================================================
+    'New-CM7Folder' = @{
+        ByParentPath = @{
+            ObjectType = "DeviceCollection"
+            ParentFolderPath = "TestCollections\\Test"
+            Name = "ChildTestFolder-$(Get-Date -Format 'yyyyMMdd_HHmmss')"
+            ExpectedName = "ChildTestFolder-$(Get-Date -Format 'yyyyMMdd_HHmmss')"
+            ExpectedCount = 1
+        }
+        ByParentObject = @{
+            ObjectType = "DeviceCollection"
+            ParentContainerNodeID = 16900001  # Use actual ContainerNodeID for TestCollections\Test
+            Name = "ChildTestFolderObj-$(Get-Date -Format 'yyyyMMdd_HHmmss')"
+            ExpectedName = "ChildTestFolderObj-$(Get-Date -Format 'yyyyMMdd_HHmmss')"
+            ExpectedCount = 1
+        }
+        DuplicateName = @{
+            ObjectType = "DeviceCollection"
+            ParentFolderPath = "TestCollections\\Test"
+            Name = "Test"  # Should already exist
+            ExpectedCount = 0
+        }
+        WhatIf = @{
+            ObjectType = "DeviceCollection"
+            ParentFolderPath = "TestCollections\\Test"
+            Name = "WhatIfFolder-$(Get-Date -Format 'yyyyMMdd_HHmmss')"
+            ExpectedCount = 0
+        }
+    }
+
+    # ========================================================================
     # Set-CMASCollection
     # ========================================================================
     'Set-CMASCollection' = @{
@@ -1075,6 +1142,7 @@ $script:TestData = @{
             }
         }
         UpdateMultipleProperties = @{
+
             # Note: Test collection will be created dynamically during tests
             CollectionName = "Test-Set-Collection-Multiple"
             NewName = "Test-Set-Collection-Multiple-Updated"

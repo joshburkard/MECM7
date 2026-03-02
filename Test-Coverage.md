@@ -2,7 +2,7 @@
 
 This file tracks the test coverage status for all functions in the MECM7 module.
 
-**Last Updated:** 2026-03-02 07:46:41
+**Last Updated:** 2026-03-02 14:07:43
 
 ## PowerShell 7.x
 
@@ -42,6 +42,7 @@ This file tracks the test coverage status for all functions in the MECM7 module.
 | Move-CM7Object | 🟢 Passed | 20 | 0 | 0 | 78.28% | 8.37s |
 | New-CM7DeviceCollectionVariable | 🟢 Passed | 19 | 0 | 0 | 85.15% | 8.52s |
 | New-CM7DeviceVariable | 🟢 Passed | 19 | 0 | 0 | 83.17% | 14.88s |
+| New-CM7Folder | 🟢 Passed | 6 | 0 | 0 | 93.98% | 3.61s |
 | New-CM7Schedule | 🟢 Passed | 39 | 0 | 0 | 97.14% | 5.23s |
 | New-CM7SoftwareUpdateDeployment | 🟢 Passed | 18 | 0 | 0 | 92.51% | 29.7s |
 | New-CM7SoftwareUpdateDeploymentPackage | 🟢 Passed | 3 | 0 | 0 | 94.44% | 2.28s |
@@ -51,6 +52,7 @@ This file tracks the test coverage status for all functions in the MECM7 module.
 | Remove-CM7CollectionMembershipRule | 🟢 Passed | 36 | 0 | 0 | 83.62% | 240.13s |
 | Remove-CM7DeviceCollectionVariable | 🟢 Passed | 16 | 0 | 0 | 93.07% | 23.6s |
 | Remove-CM7DeviceVariable | 🟢 Passed | 16 | 0 | 0 | 92.93% | 13.38s |
+| Remove-CM7Folder | 🟢 Passed | 7 | 0 | 0 | 77.08% | 15.64s |
 | Remove-CM7MaintenanceWindow | 🟢 Passed | 24 | 0 | 0 | 93.88% | 18.78s |
 | Remove-CM7SoftwareUpdateDeployment | 🟢 Passed | 7 | 0 | 0 | 93.02% | 10.94s |
 | Remove-CM7SoftwareUpdateDeploymentPackage | 🟢 Passed | 5 | 0 | 0 | 93.1% | 4.77s |
@@ -99,6 +101,7 @@ This file tracks the test coverage status for all functions in the MECM7 module.
 | New-CM7Collection | 🟢 Passed | 21 | 0 | 0 | 77.52% | 22.17s |
 | New-CM7DeviceCollectionVariable | 🟢 Passed | 19 | 0 | 0 | 85.44% | 10.16s |
 | New-CM7DeviceVariable | 🟢 Passed | 19 | 0 | 0 | 83.17% | 10.77s |
+| New-CM7Folder | 🟢 Passed | 6 | 0 | 0 | 93.98% | 5s |
 | New-CM7MaintenanceWindow | 🟢 Passed | 26 | 0 | 0 | 83.61% | 15.67s |
 | New-CM7Schedule | 🟢 Passed | 39 | 0 | 0 | 97.14% | 5.24s |
 | New-CM7SoftwareUpdateDeployment | 🟢 Passed | 18 | 0 | 0 | 92.51% | 26.44s |
@@ -109,6 +112,7 @@ This file tracks the test coverage status for all functions in the MECM7 module.
 | Remove-CM7CollectionMembershipRule | 🟢 Passed | 27 | 0 | 2 | 82.93% | 199.36s |
 | Remove-CM7DeviceCollectionVariable | 🟢 Passed | 16 | 0 | 0 | 93.07% | 14.06s |
 | Remove-CM7DeviceVariable | 🟢 Passed | 16 | 0 | 0 | 92.93% | 12.89s |
+| Remove-CM7Folder | 🟢 Passed | 7 | 0 | 0 | 77.08% | 19.04s |
 | Remove-CM7MaintenanceWindow | 🟢 Passed | 24 | 0 | 0 | 93.88% | 22.15s |
 | Remove-CM7SoftwareUpdateDeployment | 🟢 Passed | 7 | 0 | 0 | 92.68% | 14.99s |
 | Remove-CM7SoftwareUpdateDeploymentPackage | 🟢 Passed | 5 | 0 | 0 | 93.1% | 6.15s |
