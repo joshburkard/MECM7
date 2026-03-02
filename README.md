@@ -36,12 +36,14 @@ The most commands in the legacy ConfigurationManager module are dependent on WMI
 ## 📦 Installation
 
 1. Clone or download the module to your PowerShell modules directory:
+
    ```powershell
    $ModulePath = Join-Path $PROFILE .. "Modules"
    git clone <repo-url> $ModulePath\MECM7
    ```
 
 2. Import the module:
+
    ```powershell
    Import-Module MECM7
    ```
@@ -75,38 +77,41 @@ other functions will be described in the [Help](./Help/README.md) folder
 
 ## 📚 Available Functions
 
-### Connection Management
-
-- [`Get-CM7User`](./Help/Get-CM7User.md) - Retrieve user information from MECM using CIM connectivity (CIM-based equivalent of Get-CMUser)
-- [`Sync-CM7SoftwareUpdate`](./Help/Sync-CM7SoftwareUpdate.md) - Synchronizes software updates metadata in MECM using CIM connectivity.
-
-### Software Update Deployment Management
-
-- `Remove-CM7SoftwareUpdateDeployment`: Removes a software update deployment from a collection using CIM connectivity. See Help/Remove-CM7SoftwareUpdateDeployment.md for details.
+This is a short incomplete overview of available commands:
 
 ### Collection Management
 
+- [`Add-CM7CollectionMembershipRule`](./Help/Add-CM7CollectionMembershipRule.md) - Add a membership rule (direct, query, include, or exclude) to a collection
 - [`Get-CM7Collection`](./Help/Get-CM7Collection.md) - Retrieve collection information from MECM
-- [`Get-CM7DeviceCollection`](./Help/Get-CM7DeviceCollection.md) - Retrieve device collection information from MECM (wrapper for Get-CM7Collection -CollectionType Device)
-- [`Get-CM7UserCollection`](./Help/Get-CM7UserCollection.md) - Retrieve user collection information from MECM (wrapper for Get-CM7Collection -CollectionType User)
-- [`New-CM7Collection`](./Help/New-CM7Collection.md) - Create a new device or user collection in MECM
-- [`Remove-CM7Collection`](./Help/Remove-CM7Collection.md) - Remove a device or user collection from MECM
 - [`Get-CM7CollectionMember`](./Help/Get-CM7CollectionMember.md) - Retrieve all members of a collection
 - [`Get-CM7CollectionDirectMembership`](./Help/Get-CM7CollectionDirectMembership.md) - Retrieve direct members of a collection
 - [`Get-CM7CollectionExcludeMembershipRule`](./Help/Get-CM7CollectionExcludeMembershipRule.md) - Retrieve exclude membership rules for a collection
 - [`Get-CM7CollectionIncludeMembershipRule`](./Help/Get-CM7CollectionIncludeMembershipRule.md) - Retrieve include membership rules for a collection
 - [`Get-CM7CollectionQueryMembershipRule`](./Help/Get-CM7CollectionQueryMembershipRule.md) - Retrieve query membership rules for a collection
-- [`Add-CM7CollectionMembershipRule`](./Help/Add-CM7CollectionMembershipRule.md) - Add a membership rule (direct, query, include, or exclude) to a collection
-- [`Remove-CM7CollectionMembershipRule`](./Help/Remove-CM7CollectionMembershipRule.md) - Remove a membership rule (direct, query, include, or exclude) from a collection
 - [`Get-CM7CollectionVariable`](./Help/Get-CM7CollectionVariable.md) - Retrieve collection variables from a collection
-- [`New-CM7DeviceCollectionVariable`](./Help/New-CM7DeviceCollectionVariable.md) - Create a new collection variable on a device collection
-- [`Remove-CM7DeviceCollectionVariable`](./Help/Remove-CM7DeviceCollectionVariable.md) - Remove a collection variable from a device collection
+- [`Get-CM7DeviceCollection`](./Help/Get-CM7DeviceCollection.md) - Retrieve device collection information from MECM
 - [`Get-CM7DeviceVariable`](./Help/Get-CM7DeviceVariable.md) - Retrieve device variables from a MECM device
-- [`New-CM7DeviceVariable`](./Help/New-CM7DeviceVariable.md) - Create a new device variable on a MECM device
-- [`Remove-CM7DeviceVariable`](./Help/Remove-CM7DeviceVariable.md) - Remove a device variable from a MECM device
 - [`Get-CM7MaintenanceWindow`](./Help/Get-CM7MaintenanceWindow.md) - Retrieve maintenance windows from a collection
+- [`Get-CM7UserCollection`](./Help/Get-CM7UserCollection.md) - Retrieve user collection information from MECM
+- [`Invoke-CM7CollectionUpdate`](./Help/Invoke-CM7CollectionUpdate.md) - Trigger a collection membership evaluation (refresh) on a MECM collection
+- [`New-CM7Collection`](./Help/New-CM7Collection.md) - Create a new device or user collection in MECM
+- [`New-CM7DeviceCollectionVariable`](./Help/New-CM7DeviceCollectionVariable.md) - Create a new collection variable on a device collection
+- [`New-CM7DeviceVariable`](./Help/New-CM7DeviceVariable.md) - Create a new device variable on a MECM device
 - [`New-CM7MaintenanceWindow`](./Help/New-CM7MaintenanceWindow.md) - Create a new maintenance window on a collection
+- [`Remove-CM7Collection`](./Help/Remove-CM7Collection.md) - Remove a device or user collection from MECM
+- [`Remove-CM7CollectionMembershipRule`](./Help/Remove-CM7CollectionMembershipRule.md) - Remove a membership rule (direct, query, include, or exclude) from a collection
+- [`Remove-CM7DeviceCollectionVariable`](./Help/Remove-CM7DeviceCollectionVariable.md) - Remove a collection variable from a device collection
+- [`Remove-CM7DeviceVariable`](./Help/Remove-CM7DeviceVariable.md) - Remove a device variable from a MECM device
 - [`Remove-CM7MaintenanceWindow`](./Help/Remove-CM7MaintenanceWindow.md) - Remove a maintenance window from a collection
+
+### Deployment Management
+
+- [`Get-CM7Deployment`](./Help/Get-CM7Deployment.md) - Retrieve deployment information from MECM
+
+### Folder Management
+
+- [`Get-CM7Folder`](./Help/Get-CM7Folder.md) - Retrieves folder information from MECM using CIM.
+- [`Move-CM7Object`](./Help/Move-CM7Object.md) - Move MECM objects (collections, packages, etc.) between folders
 
 ### Schedule Management
 
@@ -118,10 +123,6 @@ other functions will be described in the [Help](./Help/README.md) folder
 - [`Invoke-CM7ClientNotification`](./Help/Invoke-CM7ClientNotification.md) - Send a client notification action (policy refresh, inventory, restart, etc.) to target devices or a collection
 - [`Get-CM7ScriptExecutionStatus`](./Help/Get-CM7ScriptExecutionStatus.md) - Retrieve the execution status and results of MECM scripts
 
-### Collection Update
-
-- [`Invoke-CM7CollectionUpdate`](./Help/Invoke-CM7CollectionUpdate.md) - Trigger a collection membership evaluation (refresh) on a MECM collection
-
 ### Software Update Management
 
 - [`Get-CM7SoftwareUpdate`](./Help/Get-CM7SoftwareUpdate.md) - Retrieve software update information from MECM
@@ -132,8 +133,10 @@ other functions will be described in the [Help](./Help/README.md) folder
 - [`Add-CM7SoftwareUpdateToGroup`](./Help/Add-CM7SoftwareUpdateToGroup.md) - Add software updates to a software update group in MECM
 - [`New-CM7SoftwareUpdateDeployment`](./Help/New-CM7SoftwareUpdateDeployment.md) - Create a new software update deployment in MECM
 - [`New-CM7SoftwareUpdateDeploymentPackage`](./Help/New-CM7SoftwareUpdateDeploymentPackage.md) - Create a new software update deployment package in MECM
+- [`Remove-CM7SoftwareUpdateDeployment`](./Help/Remove-CM7SoftwareUpdateDeployment.md): Removes a software update deployment from a collection using CIM connectivity. See Help/Remove-CM7SoftwareUpdateDeployment.md for details.
 - [`Remove-CM7SoftwareUpdateDeploymentPackage`](./Help/Remove-CM7SoftwareUpdateDeploymentPackage.md) - Remove a software update deployment package from MECM
 - [`Remove-CM7SoftwareUpdateGroup`](./Help/Remove-CM7SoftwareUpdateGroup.md) - Remove a software update group from MECM
+- [`Sync-CM7SoftwareUpdate`](./Help/Sync-CM7SoftwareUpdate.md) - Synchronizes software updates metadata in MECM using CIM connectivity.
 
 ### Task Sequence Management
 
@@ -143,13 +146,9 @@ other functions will be described in the [Help](./Help/README.md) folder
 - [`Set-CM7TaskSequenceDeployment`](./Help/Set-CM7TaskSequenceDeployment.md) - Configure an existing task sequence deployment in MECM
 - [`Remove-CM7TaskSequenceDeployment`](./Help/Remove-CM7TaskSequenceDeployment.md) - Remove a task sequence deployment from MECM
 
-### Deployment Management
+### User Management
 
-- [`Get-CM7Deployment`](./Help/Get-CM7Deployment.md) - Retrieve deployment information from MECM
-
-### Object Management
-
-- [`Move-CM7Object`](./Help/Move-CM7Object.md) - Move MECM objects (collections, packages, etc.) between folders
+- [`Get-CM7User`](./Help/Get-CM7User.md) - Retrieve user information from MECM using CIM connectivity (CIM-based equivalent of Get-CMUser)
 
 ## Testing
 

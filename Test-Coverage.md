@@ -2,7 +2,7 @@
 
 This file tracks the test coverage status for all functions in the MECM7 module.
 
-**Last Updated:** 2026-03-01 15:41:17
+**Last Updated:** 2026-03-02 07:46:41
 
 ## PowerShell 7.x
 
@@ -23,6 +23,7 @@ This file tracks the test coverage status for all functions in the MECM7 module.
 | Get-CM7DeviceCollection | 🟢 Passed | 18 | 0 | 0 | 100% | 56.2s |
 | Get-CM7DeviceCollectionDirectMembershipRule | 🟢 Passed | 19 | 0 | 0 | 85.53% | 4.44s |
 | Get-CM7DeviceVariable | 🟡 Partial | 18 | 0 | 2 | 87.72% | 7.36s |
+| Get-CM7Folder | 🟢 Passed | 10 | 0 | 0 | 89.42% | 2.57s |
 | Get-CM7MaintenanceWindow | 🟢 Passed | 19 | 0 | 0 | 90.36% | 6.26s |
 | Get-CM7ScriptExecutionStatus | 🟢 Passed | 20 | 0 | 0 | 93.75% | 21.15s |
 | Get-CM7SoftwareUpdate | 🟢 Passed | 21 | 0 | 0 | 61.24% | 49.78s |
@@ -78,6 +79,7 @@ This file tracks the test coverage status for all functions in the MECM7 module.
 | Get-CM7DeviceCollection | 🟢 Passed | 18 | 0 | 0 | 100% | 45.74s |
 | Get-CM7DeviceCollectionDirectMembershipRule | 🟢 Passed | 19 | 0 | 0 | 85.53% | 6.45s |
 | Get-CM7DeviceVariable | 🟡 Partial | 18 | 0 | 2 | 87.72% | 7.74s |
+| Get-CM7Folder | 🟢 Passed | 10 | 0 | 0 | 89.42% | 5.9s |
 | Get-CM7MaintenanceWindow | 🟢 Passed | 19 | 0 | 0 | 90.36% | 7.12s |
 | Get-CM7ScriptExecutionStatus | 🟢 Passed | 20 | 0 | 0 | 93.75% | 69.94s |
 | Get-CM7SoftwareUpdate | 🟢 Passed | 21 | 0 | 0 | 61.24% | 81.36s |

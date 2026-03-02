@@ -67,30 +67,32 @@ $script:TestPollingInterval = 5  # Polling interval in seconds for status checks
 $script:TestData = @{
 
     # ========================================================================
-        # Get-CM7User
-        # ========================================================================
-        'Get-CM7User' = @{
-            ByName = @{
-                Name = "dan001\sd221778"
-                ExpectedCount = 1
-            }
-            ByResourceId = @{
-                ResourceId = 2063632223
-                ExpectedCount = 1
-            }
-            ByWildcard = @{
-                Name = "dan001*"
-                ExpectedMinCount = 1
-            }
-            All = @{
-                ExpectedMinCount = 1
-            }
-            NonExistent = @{
-                Name = "NONEXISTENT-USER-999"
-                ResourceId = 99999999
-                ExpectedCount = 0
-            }
+    # Get-CM7User
+    # ========================================================================
+    'Get-CM7User' = @{
+        ByName = @{
+            Name = "dan001\sd221778"
+            ExpectedCount = 1
         }
+        ByResourceId = @{
+            ResourceId = 2063632223
+            ExpectedCount = 1
+        }
+        ByWildcard = @{
+            Name = "dan001*"
+            ExpectedMinCount = 1
+        }
+        All = @{
+            ExpectedMinCount = 1
+        }
+        NonExistent = @{
+            Name = "NONEXISTENT-USER-999"
+            ResourceId = 99999999
+            ExpectedCount = 0
+        }
+    }
+
+    # =======================================================================
     # Connect-CM7
     # ========================================================================
     'Connect-CM7' = @{
@@ -133,6 +135,37 @@ $script:TestData = @{
         }
         All = @{
             ExpectedMinCount = 1  # At least 1 device should exist
+        }
+    }
+
+    # ========================================================================
+    # Get-CM7Folder
+    # ========================================================================
+    'Get-CM7Folder' = @{
+        ByPath = @{
+            ObjectType = "DeviceCollection"
+            Path = "TestCollections\\Test"
+            ExpectedName = "Test"
+            ExpectedCount = 1
+        }
+        ById = @{
+            ObjectType = "DeviceCollection"
+            ContainerNodeID = 16900001  # Replace with actual ContainerNodeID of a folder in your environment
+            ExpectedMinCount = 1
+        }
+        ByParentId = @{
+            ObjectType = "DeviceCollection"
+            ParentContainerNodeID = 16900000  # Replace with actual ParentContainerNodeID of a folder in your environment
+            ExpectedMinCount = 1
+        }
+        NonExistent = @{
+            ObjectType = "DeviceCollection"
+            Path = "NonExistentFolder"
+            ExpectedCount = 0
+        }
+        RootFolders = @{
+            ObjectType = "DeviceCollection"
+            ExpectedMinCount = 1
         }
     }
 

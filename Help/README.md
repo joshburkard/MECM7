@@ -5,7 +5,7 @@ This documentation provides details on the functions available in the Public Pow
 ## Functions
 
 | Function Name | Synopsis |
-| -------------- | -------- |
+| ------------- | -------- |
 | [Add-CM7CollectionMembershipRule](./Add-CM7CollectionMembershipRule.md) | Adds a membership rule to a MECM collection using CIM. |
 | [Add-CM7SoftwareUpdateToGroup](./Add-CM7SoftwareUpdateToGroup.md) | Adds one or more software updates to a software update group in Microsoft Endpoint Configuration Manager (MECM) using CIM. |
 | [Connect-CM7](./Connect-CM7.md) | Establishes a connection to a Microsoft Endpoint Configuration Manager (MECM) site server. |
@@ -21,6 +21,7 @@ This documentation provides details on the functions available in the Public Pow
 | [Get-CM7DeviceCollection](./Get-CM7DeviceCollection.md) | Retrieves device collection information from Microsoft Endpoint Configuration Manager (MECM) using CIM. |
 | [Get-CM7DeviceCollectionDirectMembershipRule](./Get-CM7DeviceCollectionDirectMembershipRule.md) | Retrieves direct membership information for a MECM device collection using CIM. |
 | [Get-CM7DeviceVariable](./Get-CM7DeviceVariable.md) | Retrieves device variables from a MECM device using CIM. |
+| [Get-CM7Folder](./Get-CM7Folder.md) | Retrieves folder information from MECM using CIM. |
 | [Get-CM7MaintenanceWindow](./Get-CM7MaintenanceWindow.md) | Retrieves maintenance windows from a Microsoft Endpoint Configuration Manager (MECM) collection using CIM. |
 | [Get-CM7ScriptExecutionStatus](./Get-CM7ScriptExecutionStatus.md) | Retrieves the execution status of MECM scripts using CIM. |
 | [Get-CM7SoftwareUpdate](./Get-CM7SoftwareUpdate.md) | Retrieves software update information from Microsoft Endpoint Configuration Manager (MECM) using CIM. |
@@ -29,9 +30,9 @@ This documentation provides details on the functions available in the Public Pow
 | [Get-CM7SoftwareUpdateGroup](./Get-CM7SoftwareUpdateGroup.md) | Retrieves software update group information from Microsoft Endpoint Configuration Manager (MECM) using CIM. |
 | [Get-CM7TaskSequence](./Get-CM7TaskSequence.md) | Retrieves task sequence information from Microsoft Endpoint Configuration Manager (MECM) using CIM. |
 | [Get-CM7TaskSequenceDeployment](./Get-CM7TaskSequenceDeployment.md) | Retrieves task sequence deployment information from Microsoft Endpoint Configuration Manager (MECM) using CIM. |
+| [Get-CM7User](./Get-CM7User.md) | No synopsis available |
 | [Get-CM7UserCollection](./Get-CM7UserCollection.md) | Retrieves user collection information from Microsoft Endpoint Configuration Manager (MECM) using CIM. |
 | [Get-CM7UserCollectionDirectMembershipRule](./Get-CM7UserCollectionDirectMembershipRule.md) | Retrieves direct membership information for a MECM user collection using CIM. |
-| [Get-CM7User](./Get-CM7User.md) | Retrieves user information from Microsoft Endpoint Configuration Manager (MECM) using CIM. |
 | [Invoke-CM7ClientNotification](./Invoke-CM7ClientNotification.md) | Sends a client notification action to target devices or a collection using CIM. |
 | [Invoke-CM7CollectionUpdate](./Invoke-CM7CollectionUpdate.md) | Triggers a collection membership evaluation (refresh) on a MECM collection using CIM. |
 | [Invoke-CM7Script](./Invoke-CM7Script.md) | Invokes (runs) a Configuration Manager script on target devices or a collection using CIM. |
