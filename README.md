@@ -114,6 +114,7 @@ This is a short incomplete overview of available commands:
 - [`Move-CM7Object`](./Help/Move-CM7Object.md) - Move MECM objects (collections, packages, etc.) between folders
 - [`New-CM7Folder`](./Help/New-CM7Folder.md) - Createss a new folder in MECM using CIM.
 - [`Remove-CM7Folder`](./Help/Remove-CM7Folder) - Removes an existing folder in MECM using CIM.
+- [`Set-CM7Folder`](./Help/Set-CM7Folder) - Renames or moves an existing folder in MECM using CIM.
 
 ### Schedule Management
 

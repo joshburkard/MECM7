@@ -102,6 +102,41 @@ $script:TestData = @{
     }
 
     # ========================================================================
+    # Set-CM7Folder
+    # ========================================================================
+    'Set-CM7Folder' = @{
+        Rename = @{
+            ObjectType = "DeviceCollection"
+            Path = "TestCollections\\Test"
+            Name = "ChildTestFolder-$(Get-Date -Format 'yyyyMMdd_HHmmss')"
+            NewName = "RenamedChildFolder-$(Get-Date -Format 'yyyyMMdd_HHmmss')"
+            ExpectedName = "RenamedChildFolder-$(Get-Date -Format 'yyyyMMdd_HHmmss')"
+            ExpectedCount = 1
+        }
+        Move = @{
+            ObjectType = "DeviceCollection"
+            Path = "TestCollections\\Test"
+            Name = "ChildTestFolder-$(Get-Date -Format 'yyyyMMdd_HHmmss')"
+            NewParentPath = "TestCollections\\MovedHere"
+            ExpectedCount = 1
+        }
+        ById = @{
+            ObjectType = "DeviceCollection"
+            ContainerNodeID = 16900001  # Replace with actual ContainerNodeID
+            NewName = "RenamedById-$(Get-Date -Format 'yyyyMMdd_HHmmss')"
+            ExpectedName = "RenamedById-$(Get-Date -Format 'yyyyMMdd_HHmmss')"
+            ExpectedCount = 1
+        }
+        WhatIf = @{
+            ObjectType = "DeviceCollection"
+            Path = "TestCollections\\Test"
+            Name = "ChildTestFolder-$(Get-Date -Format 'yyyyMMdd_HHmmss')"
+            NewName = "WhatIfRenamed-$(Get-Date -Format 'yyyyMMdd_HHmmss')"
+            ExpectedCount = 1
+        }
+    }
+
+    # ========================================================================
     # Get-CM7User
     # ========================================================================
     'Get-CM7User' = @{

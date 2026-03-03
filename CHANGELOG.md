@@ -56,3 +56,4 @@
 0.01.00054 | Get-CM7Folder | 2026-03-02 | Josua Burkard
 0.01.00055 | New-CM7Folder | 2026-03-02 | Josua Burkard
 0.01.00056 | Remove-CM7Folder | 2026-03-02 | Josua Burkard
+0.01.00057 | Set-CM7Folder | 2026-03-03 | Josua Burkard
