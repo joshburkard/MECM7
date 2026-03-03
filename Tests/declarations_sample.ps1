@@ -65,6 +65,27 @@ $script:TestPollingInterval = 5  # Polling interval in seconds for status checks
 # This makes it easy to add new functions and parameter sets
 
 $script:TestData = @{
+    # ========================================================================
+    # Get-CM7Boundary
+    # ========================================================================
+    'Get-CM7Boundary' = @{
+        ByName = @{
+            Name = "TEST GINO"
+            ExpectedCount = 1
+        }
+        ByBoundaryId = @{
+            BoundaryId = 12345678  # Replace with actual BoundaryID for TEST GINO if known
+            ExpectedCount = 1
+        }
+        NonExistent = @{
+            Name = "NONEXISTENT-BOUNDARY-999"
+            BoundaryId = 99999999
+            ExpectedCount = 0
+        }
+        All = @{
+            ExpectedMinCount = 1
+        }
+    }
 
     # ========================================================================
     # Remove-CM7Folder

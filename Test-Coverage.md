@@ -2,7 +2,7 @@
 
 This file tracks the test coverage status for all functions in the MECM7 module.
 
-**Last Updated:** 2026-03-03 08:03:04
+**Last Updated:** 2026-03-03 09:23:05
 
 ## PowerShell 7.x
 
@@ -11,6 +11,7 @@ This file tracks the test coverage status for all functions in the MECM7 module.
 | Add-CM7CollectionMembershipRule | 🟢 Passed | 31 | 0 | 0 | 92.86% | 62.19s |
 | Add-CM7SoftwareUpdateToGroup | 🟡 Partial | 16 | 0 | 2 | 94.52% | 14.5s |
 | Connect-CM7 | 🟡 Partial | 25 | 0 | 2 | 100% | 8.9s |
+| Get-CM7Boundary | 🟢 Passed | 7 | 0 | 0 | 80.77% | 4.02s |
 | Get-CM7Collection | 🟢 Passed | 18 | 0 | 0 | 96.88% | 42.9s |
 | Get-CM7CollectionDirectMembershipRule | 🟢 Passed | 19 | 0 | 0 | 83.33% | 4.84s |
 | Get-CM7CollectionExcludeMembershipRule | 🟢 Passed | 17 | 0 | 0 | 90.74% | 5.01s |
@@ -70,6 +71,7 @@ This file tracks the test coverage status for all functions in the MECM7 module.
 | Add-CM7CollectionMembershipRule | 🟢 Passed | 31 | 0 | 0 | 92.86% | 67.47s |
 | Add-CM7SoftwareUpdateToGroup | 🟡 Partial | 16 | 0 | 2 | 65.75% | 32.67s |
 | Connect-CM7 | 🟡 Partial | 25 | 0 | 2 | 100% | 13.67s |
+| Get-CM7Boundary | 🟢 Passed | 7 | 0 | 0 | 80.77% | 7.21s |
 | Get-CM7Collection | 🟢 Passed | 18 | 0 | 0 | 96.88% | 69.7s |
 | Get-CM7CollectionDirectMembershipRule | 🟢 Passed | 19 | 0 | 0 | 83.33% | 7.33s |
 | Get-CM7CollectionExcludeMembershipRule | 🟢 Passed | 17 | 0 | 0 | 90.74% | 7.44s |

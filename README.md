@@ -153,6 +153,12 @@ This is a short incomplete overview of available commands:
 
 - [`Get-CM7User`](./Help/Get-CM7User.md) - Retrieve user information from MECM using CIM connectivity (CIM-based equivalent of Get-CMUser)
 
+### Infrastructure Management
+
+#### Boundaries
+
+- [`Get-CM7Boundary`](./Help/Get-CM7Boundary.md) - Retrieve existing boundary informations from MECM
+
 ## Testing
 
 The module includes comprehensive Pester tests:
