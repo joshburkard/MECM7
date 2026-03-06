@@ -3,7 +3,7 @@
 A PowerShell module for managing Microsoft Endpoint Configuration Manager (MECM) via CIM.
 
 ![PowerShell](https://img.shields.io/badge/PowerShell-5.1%20%7C%207.x-blue)
-![Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20Linux%20%7C%20macOS-lightgrey)
+![Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20Linux%20%7C%20macOS-brightgreen)
 
 ## 📋 Table of Contents
 
@@ -22,7 +22,7 @@ A PowerShell module for managing Microsoft Endpoint Configuration Manager (MECM)
 
 ## 🎯 Overview
 
-MECM7 provides a collection of PowerShell functions for common MECM administration tasks. The module works with PowerShell 5.1+ and PowerShell 7.x, using CIM (Common Information Model) cmdlets for remote management via WinRM.
+The MECM7 PowerShell module provides a collection of PowerShell functions for common MECM administration tasks. The module works with PowerShell 5.1+ and PowerShell 7.x, using CIM (Common Information Model) cmdlets for remote management via WinRM.
 
 The most commands in the legacy ConfigurationManager module are dependent on WMI which isn't anymore possible in PowerShell 7.x. Importing the ConfigurationManager Module with parameter `UseWindowsPowerShell` brings multiple disadvantages.
 
@@ -159,6 +159,7 @@ This is a short incomplete overview of available commands:
 
 - [`Get-CM7Boundary`](./Help/Get-CM7Boundary.md) - Retrieve existing boundary informations from MECM
 - [`New-CM7Boundary`](./Help/New-CM7Boundary.md) - Creates a new boundary in MECM
+- [`Remove-CM7Boundary`](./Help/Remove-VM7Boundary.md) - Removes a existing boundary from MECM
 
 ## Testing
 

@@ -2,7 +2,7 @@
 
 This file tracks the test coverage status for all functions in the MECM7 module.
 
-**Last Updated:** 2026-03-06 15:14:12
+**Last Updated:** 2026-03-06 15:58:21
 
 ## PowerShell 7.x
 
@@ -50,6 +50,7 @@ This file tracks the test coverage status for all functions in the MECM7 module.
 | New-CM7SoftwareUpdateDeploymentPackage | 🟢 Passed | 3 | 0 | 0 | 94.44% | 2.28s |
 | New-CM7SoftwareUpdateGroup | 🟢 Passed | 14 | 0 | 0 | 82.02% | 25.62s |
 | New-CM7TaskSequenceDeployment | 🟢 Passed | 20 | 0 | 0 | 90.91% | 13.89s |
+| Remove-CM7Boundary | 🟢 Passed | 16 | 0 | 0 | 88.89% | 14.14s |
 | Remove-CM7Collection | 🟢 Passed | 15 | 0 | 0 | 91.14% | 17.95s |
 | Remove-CM7CollectionMembershipRule | 🟢 Passed | 36 | 0 | 0 | 83.62% | 240.13s |
 | Remove-CM7DeviceCollectionVariable | 🟢 Passed | 16 | 0 | 0 | 93.07% | 23.6s |
@@ -113,6 +114,7 @@ This file tracks the test coverage status for all functions in the MECM7 module.
 | New-CM7SoftwareUpdateDeploymentPackage | 🟢 Passed | 3 | 0 | 0 | 94.44% | 3.68s |
 | New-CM7SoftwareUpdateGroup | 🟢 Passed | 14 | 0 | 0 | 82.02% | 20.33s |
 | New-CM7TaskSequenceDeployment | 🟢 Passed | 20 | 0 | 0 | 90.91% | 16.45s |
+| Remove-CM7Boundary | 🟢 Passed | 16 | 0 | 0 | 88.89% | 16.98s |
 | Remove-CM7Collection | 🟢 Passed | 15 | 0 | 0 | 91.14% | 19.77s |
 | Remove-CM7CollectionMembershipRule | 🟢 Passed | 27 | 0 | 2 | 82.93% | 199.36s |
 | Remove-CM7DeviceCollectionVariable | 🟢 Passed | 16 | 0 | 0 | 93.07% | 14.06s |

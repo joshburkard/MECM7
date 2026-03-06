@@ -106,6 +106,40 @@ $script:TestData = @{
     }
 
     # ========================================================================
+    # Remove-CM7Boundary
+    # ========================================================================
+    'Remove-CM7Boundary' = @{
+        ByName = @{
+            # Name of an existing boundary to remove (will be created via New-CM7Boundary in tests)
+            Name = "TestSubnet-192.168.1.0"
+        }
+        ById = @{
+            # BoundaryId will be set dynamically in tests after creating a boundary
+            BoundaryId = $null  # Will be set at test runtime
+        }
+        ByInputObject = @{
+            # InputObject will be retrieved via Get-CM7Boundary in tests
+            Name = "TestRange-192.168.2.1-192.168.3.255"
+        }
+        NewBoundaries = @{
+            IPSubnet = @{
+                Name = "TestSubnet-192.168.1.0"
+                BoundaryType = 'IPSubnet'
+                Value = "192.168.1.0"
+            }
+            IPRange = @{
+                Name = "TestRange-192.168.2.1-192.168.3.255"
+                BoundaryType = 'IPRange'
+                Value = "192.168.2.1-192.168.3.255"
+            }
+        }
+        NonExistent = @{
+            Name = "NONEXISTENT-BOUNDARY-999"
+            BoundaryId = 99999999
+        }
+    }
+
+    # ========================================================================
     # Remove-CM7Folder
     # ========================================================================
     'Remove-CM7Folder' = @{

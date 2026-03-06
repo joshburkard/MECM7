@@ -59,3 +59,4 @@
 0.01.00057 | Set-CM7Folder | 2026-03-03 | Josua Burkard
 0.01.00058 | Get-CM7Boundary | 2026-03-03 | Josua Burkard
 0.01.00059 | New-CM7Boundary | 2026-03-06 | Josua Burkard
+0.01.00060 | Remove-CM7Boundary | 2026-03-06 | Josua Burkard
