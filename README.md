@@ -159,7 +159,8 @@ This is a short incomplete overview of available commands:
 
 - [`Get-CM7Boundary`](./Help/Get-CM7Boundary.md) - Retrieve existing boundary informations from MECM
 - [`New-CM7Boundary`](./Help/New-CM7Boundary.md) - Creates a new boundary in MECM
-- [`Remove-CM7Boundary`](./Help/Remove-VM7Boundary.md) - Removes a existing boundary from MECM
+- [`Remove-CM7Boundary`](./Help/Remove-VM7Boundary.md) - Removes an existing boundary from MECM
+- [`Set-CM7Boundary`](./Help/Set-VM7Boundary.md) - Modifies an existing boundary from MECM
 
 ## Testing
 

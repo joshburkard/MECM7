@@ -140,6 +140,55 @@ $script:TestData = @{
     }
 
     # ========================================================================
+    # Set-CM7Boundary
+    # ========================================================================
+    'Set-CM7Boundary' = @{
+        # Boundaries created during tests
+        NewBoundaries = @{
+            IPSubnet = @{
+                Name         = "TestSubnet-192.168.1.0"
+                BoundaryType = 'IPSubnet'
+                Value        = "192.168.1.0"
+            }
+            IPRange = @{
+                Name         = "TestRange-192.168.2.1-192.168.3.255"
+                BoundaryType = 'IPRange'
+                Value        = "192.168.2.1-192.168.3.255"
+            }
+        }
+        # Rename via -Id
+        SetById = @{
+            NewName = "RenamedSubnet-192.168.1.0"
+        }
+        # Rename via -InputObject / pipeline
+        SetByInputObject = @{
+            NewName = "RenamedRange-192.168.2.1-192.168.3.255"
+        }
+        # Rename by locating with -Type + -Value
+        SetByName = @{
+            NewName = "ByNameRenamed-192.168.1.0"
+        }
+        # Change value only
+        SetNewValue = @{
+            NewValue = "192.168.99.0"
+        }
+        # Change type and value together
+        SetNewType = @{
+            NewName  = "ConvertedToRange-192.168.1.0"
+            NewType  = 'IPRange'
+            NewValue = "192.168.10.1-192.168.10.255"
+        }
+        # WhatIf: should not rename
+        WhatIf = @{
+            NewName = "WhatIfRenamed-ShouldNotExist"
+        }
+        # Non-existent boundary
+        NonExistent = @{
+            BoundaryId = 99999998
+        }
+    }
+
+    # ========================================================================
     # Remove-CM7Folder
     # ========================================================================
     'Remove-CM7Folder' = @{

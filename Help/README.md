@@ -61,6 +61,7 @@ This documentation provides details on the functions available in the Public Pow
 | [Remove-CM7SoftwareUpdateGroup](./Remove-CM7SoftwareUpdateGroup.md) | Removes a software update group from MECM using CIM connectivity. |
 | [Remove-CM7TaskSequenceDeployment](./Remove-CM7TaskSequenceDeployment.md) | Removes a task sequence deployment from MECM using CIM. |
 | [Save-CM7SoftwareUpdate](./Save-CM7SoftwareUpdate.md) | Saves one or more software updates to update groups and deployment packages using CIM connectivity. |
+| [Set-CM7Boundary](./Set-CM7Boundary.md) | Modifies an existing boundary in MECM using CIM. |
 | [Set-CM7Folder](./Set-CM7Folder.md) | Modifies an existing folder in MECM using CIM (rename, move, change parent). |
 | [Set-CM7TaskSequenceDeployment](./Set-CM7TaskSequenceDeployment.md) | Configures an existing task sequence deployment in MECM using CIM. |
 | [Sync-CM7SoftwareUpdate](./Sync-CM7SoftwareUpdate.md) | Synchronizes software updates metadata from Microsoft Update via MECM CIM. |
