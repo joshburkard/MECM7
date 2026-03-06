@@ -158,6 +158,7 @@ This is a short incomplete overview of available commands:
 #### Boundaries
 
 - [`Get-CM7Boundary`](./Help/Get-CM7Boundary.md) - Retrieve existing boundary informations from MECM
+- [`New-CM7Boundary`](./Help/New-CM7Boundary.md) - Creates a new boundary in MECM
 
 ## Testing
 

@@ -38,6 +38,7 @@ This documentation provides details on the functions available in the Public Pow
 | [Invoke-CM7CollectionUpdate](./Invoke-CM7CollectionUpdate.md) | Triggers a collection membership evaluation (refresh) on a MECM collection using CIM. |
 | [Invoke-CM7Script](./Invoke-CM7Script.md) | Invokes (runs) a Configuration Manager script on target devices or a collection using CIM. |
 | [Move-CM7Object](./Move-CM7Object.md) | Moves one or more MECM objects to a specified folder using CIM. |
+| [New-CM7Boundary](./New-CM7Boundary.md) | Creates a new boundary in MECM using CIM. |
 | [New-CM7Collection](./New-CM7Collection.md) | Creates a new MECM collection using CIM. |
 | [New-CM7DeviceCollectionVariable](./New-CM7DeviceCollectionVariable.md) | Creates a new collection variable on a MECM device collection using CIM. |
 | [New-CM7DeviceVariable](./New-CM7DeviceVariable.md) | Creates a new device variable on a MECM device using CIM. |
