@@ -189,6 +189,32 @@ $script:TestData = @{
     }
 
     # ========================================================================
+    # Get-CM7BoundaryGroup
+    # ========================================================================
+    'Get-CM7BoundaryGroup' = @{
+        ByName = @{
+            Name = "Test Gino"  # Replace with an existing boundary group name
+            ExpectedCount = 1
+        }
+        ByGroupId = @{
+            GroupId = 16777428  # Replace with the actual GroupID for the boundary group above
+            ExpectedCount = 1
+        }
+        ByWildcard = @{
+            NamePattern = "Test*"  # Replace with a wildcard pattern matching at least one group
+            ExpectedMinCount = 1
+        }
+        NonExistent = @{
+            Name = "NONEXISTENT-BOUNDARYGROUP-999"
+            GroupId = 99999999
+            ExpectedCount = 0
+        }
+        All = @{
+            ExpectedMinCount = 1
+        }
+    }
+
+    # ========================================================================
     # Remove-CM7Folder
     # ========================================================================
     'Remove-CM7Folder' = @{

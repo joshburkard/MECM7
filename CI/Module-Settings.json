@@ -1,9 +1,9 @@
 {
   "ModuleName": "MECM7",
-  "ModuleVersion": "0.01.00061",
+  "ModuleVersion": "0.01.00062",
   "ModuleDescription": "managing MECM / SCCM through WinRM / CIM sessions",
   "ModuleAuthor": "Josua Burkard",
   "ModuleCompany": "Josua Burkard",
   "ModulePrefix": "CM7",
-  "LastChange": "Set-CM7Boundary"
+  "LastChange": "Get-CM7BoundaryGroup"
 }

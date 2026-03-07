@@ -162,6 +162,10 @@ This is a short incomplete overview of available commands:
 - [`Remove-CM7Boundary`](./Help/Remove-VM7Boundary.md) - Removes an existing boundary from MECM
 - [`Set-CM7Boundary`](./Help/Set-VM7Boundary.md) - Modifies an existing boundary from MECM
 
+#### Boundary Groups
+
+- [`Get-CM7BoundaryGroup`](./Help/Get-CM7BoundaryGroup.md) - Retrieve existing boundary group informations from MECM
+
 ## Testing
 
 The module includes comprehensive Pester tests:
@@ -273,7 +277,7 @@ Connect-CM7 -SiteServer "your-server" -SkipCertificateCheck
 
 ### AI-Assisted Development
 
-Most functions in this module were developed with the assistance of AI (GitHub Copilot). All code has been reviewed, tested, and validated against live MECM environments.
+Some of the functions in this module were developed with the assistance of AI (GitHub Copilot). All code has been reviewed, tested, and validated against live MECM environments.
 
 ### Differences from the ConfigurationManager Module
 
