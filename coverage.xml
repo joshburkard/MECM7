@@ -1,78 +1,99 @@
-﻿<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE report PUBLIC "-//JACOCO//DTD Report 1.1//EN" "report.dtd"[]>
-<report name="Pester (03/07/2026 10:11:16)">
-  <sessioninfo id="this" start="1772878265955" dump="1772878276979" />
+<report name="Pester (03/07/2026 11:25:50)">
+  <sessioninfo id="this" start="1772882729164" dump="1772882750281" />
   <package name="Public">
-    <class name="Public/Remove-CM7BoundaryGroup" sourcefilename="Remove-CM7BoundaryGroup.ps1">
-      <method name="Remove-CM7BoundaryGroup" desc="()" line="101">
-        <counter type="INSTRUCTION" missed="7" covered="43" />
-        <counter type="LINE" missed="7" covered="39" />
+    <class name="Public/Add-CM7BoundaryToGroup" sourcefilename="Add-CM7BoundaryToGroup.ps1">
+      <method name="Add-CM7BoundaryToGroup" desc="()" line="150">
+        <counter type="INSTRUCTION" missed="12" covered="60" />
+        <counter type="LINE" missed="11" covered="56" />
         <counter type="METHOD" missed="0" covered="1" />
       </method>
-      <counter type="INSTRUCTION" missed="7" covered="43" />
-      <counter type="LINE" missed="7" covered="39" />
+      <counter type="INSTRUCTION" missed="12" covered="60" />
+      <counter type="LINE" missed="11" covered="56" />
       <counter type="METHOD" missed="0" covered="1" />
       <counter type="CLASS" missed="0" covered="1" />
     </class>
-    <sourcefile name="Remove-CM7BoundaryGroup.ps1">
-      <line nr="101" mi="0" ci="2" mb="0" cb="0" />
-      <line nr="102" mi="0" ci="1" mb="0" cb="0" />
-      <line nr="105" mi="0" ci="1" mb="0" cb="0" />
-      <line nr="106" mi="0" ci="1" mb="0" cb="0" />
-      <line nr="110" mi="0" ci="1" mb="0" cb="0" />
-      <line nr="111" mi="0" ci="1" mb="0" cb="0" />
-      <line nr="114" mi="0" ci="2" mb="0" cb="0" />
-      <line nr="115" mi="0" ci="1" mb="0" cb="0" />
-      <line nr="116" mi="0" ci="1" mb="0" cb="0" />
-      <line nr="117" mi="0" ci="1" mb="0" cb="0" />
-      <line nr="124" mi="0" ci="1" mb="0" cb="0" />
-      <line nr="126" mi="0" ci="1" mb="0" cb="0" />
-      <line nr="128" mi="0" ci="1" mb="0" cb="0" />
-      <line nr="130" mi="1" ci="0" mb="0" cb="0" />
-      <line nr="131" mi="1" ci="0" mb="0" cb="0" />
-      <line nr="134" mi="0" ci="1" mb="0" cb="0" />
-      <line nr="135" mi="0" ci="1" mb="0" cb="0" />
-      <line nr="138" mi="0" ci="2" mb="0" cb="0" />
-      <line nr="140" mi="0" ci="1" mb="0" cb="0" />
-      <line nr="141" mi="0" ci="1" mb="0" cb="0" />
-      <line nr="147" mi="0" ci="1" mb="0" cb="0" />
-      <line nr="148" mi="0" ci="1" mb="0" cb="0" />
-      <line nr="149" mi="0" ci="1" mb="0" cb="0" />
-      <line nr="150" mi="0" ci="1" mb="0" cb="0" />
+    <sourcefile name="Add-CM7BoundaryToGroup.ps1">
+      <line nr="150" mi="0" ci="2" mb="0" cb="0" />
       <line nr="151" mi="0" ci="1" mb="0" cb="0" />
-      <line nr="153" mi="0" ci="1" mb="0" cb="0" />
-      <line nr="157" mi="0" ci="1" mb="0" cb="0" />
+      <line nr="154" mi="0" ci="1" mb="0" cb="0" />
+      <line nr="155" mi="1" ci="0" mb="0" cb="0" />
+      <line nr="159" mi="0" ci="1" mb="0" cb="0" />
+      <line nr="160" mi="0" ci="1" mb="0" cb="0" />
+      <line nr="163" mi="0" ci="2" mb="0" cb="0" />
       <line nr="164" mi="0" ci="1" mb="0" cb="0" />
       <line nr="165" mi="0" ci="1" mb="0" cb="0" />
       <line nr="166" mi="0" ci="1" mb="0" cb="0" />
-      <line nr="167" mi="1" ci="0" mb="0" cb="0" />
-      <line nr="168" mi="1" ci="0" mb="0" cb="0" />
-      <line nr="170" mi="1" ci="0" mb="0" cb="0" />
-      <line nr="173" mi="0" ci="1" mb="0" cb="0" />
-      <line nr="174" mi="0" ci="1" mb="0" cb="0" />
       <line nr="175" mi="0" ci="1" mb="0" cb="0" />
-      <line nr="176" mi="1" ci="0" mb="0" cb="0" />
-      <line nr="179" mi="0" ci="2" mb="0" cb="0" />
-      <line nr="184" mi="0" ci="1" mb="0" cb="0" />
-      <line nr="185" mi="0" ci="1" mb="0" cb="0" />
+      <line nr="177" mi="0" ci="1" mb="0" cb="0" />
+      <line nr="179" mi="0" ci="1" mb="0" cb="0" />
+      <line nr="180" mi="0" ci="1" mb="0" cb="0" />
+      <line nr="181" mi="0" ci="1" mb="0" cb="0" />
+      <line nr="182" mi="0" ci="1" mb="0" cb="0" />
       <line nr="186" mi="0" ci="1" mb="0" cb="0" />
+      <line nr="187" mi="0" ci="1" mb="0" cb="0" />
       <line nr="188" mi="0" ci="1" mb="0" cb="0" />
       <line nr="189" mi="0" ci="1" mb="0" cb="0" />
       <line nr="190" mi="0" ci="1" mb="0" cb="0" />
-      <line nr="191" mi="0" ci="1" mb="0" cb="0" />
-      <line nr="195" mi="1" ci="0" mb="0" cb="0" />
-      <counter type="INSTRUCTION" missed="7" covered="43" />
-      <counter type="LINE" missed="7" covered="39" />
+      <line nr="195" mi="0" ci="1" mb="0" cb="0" />
+      <line nr="196" mi="0" ci="1" mb="0" cb="0" />
+      <line nr="197" mi="0" ci="1" mb="0" cb="0" />
+      <line nr="198" mi="1" ci="0" mb="0" cb="0" />
+      <line nr="199" mi="1" ci="0" mb="0" cb="0" />
+      <line nr="201" mi="1" ci="0" mb="0" cb="0" />
+      <line nr="203" mi="0" ci="1" mb="0" cb="0" />
+      <line nr="204" mi="0" ci="1" mb="0" cb="0" />
+      <line nr="205" mi="0" ci="1" mb="0" cb="0" />
+      <line nr="206" mi="1" ci="0" mb="0" cb="0" />
+      <line nr="214" mi="0" ci="1" mb="0" cb="0" />
+      <line nr="216" mi="0" ci="1" mb="0" cb="0" />
+      <line nr="218" mi="0" ci="1" mb="0" cb="0" />
+      <line nr="220" mi="0" ci="1" mb="0" cb="0" />
+      <line nr="221" mi="0" ci="1" mb="0" cb="0" />
+      <line nr="222" mi="0" ci="1" mb="0" cb="0" />
+      <line nr="224" mi="0" ci="1" mb="0" cb="0" />
+      <line nr="227" mi="0" ci="1" mb="0" cb="0" />
+      <line nr="228" mi="0" ci="1" mb="0" cb="0" />
+      <line nr="229" mi="0" ci="1" mb="0" cb="0" />
+      <line nr="230" mi="0" ci="1" mb="0" cb="0" />
+      <line nr="231" mi="0" ci="1" mb="0" cb="0" />
+      <line nr="233" mi="0" ci="2" mb="0" cb="0" />
+      <line nr="234" mi="1" ci="0" mb="0" cb="0" />
+      <line nr="236" mi="0" ci="1" mb="0" cb="0" />
+      <line nr="240" mi="0" ci="1" mb="0" cb="0" />
+      <line nr="241" mi="0" ci="1" mb="0" cb="0" />
+      <line nr="242" mi="1" ci="0" mb="0" cb="0" />
+      <line nr="243" mi="1" ci="0" mb="0" cb="0" />
+      <line nr="245" mi="1" ci="0" mb="0" cb="0" />
+      <line nr="247" mi="0" ci="1" mb="0" cb="0" />
+      <line nr="249" mi="0" ci="1" mb="0" cb="0" />
+      <line nr="250" mi="0" ci="1" mb="0" cb="0" />
+      <line nr="251" mi="1" ci="0" mb="0" cb="0" />
+      <line nr="259" mi="0" ci="1" mb="0" cb="0" />
+      <line nr="260" mi="0" ci="1" mb="0" cb="0" />
+      <line nr="262" mi="0" ci="1" mb="0" cb="0" />
+      <line nr="263" mi="0" ci="1" mb="0" cb="0" />
+      <line nr="265" mi="0" ci="1" mb="0" cb="0" />
+      <line nr="266" mi="0" ci="1" mb="0" cb="0" />
+      <line nr="268" mi="0" ci="1" mb="0" cb="0" />
+      <line nr="269" mi="0" ci="2" mb="0" cb="0" />
+      <line nr="272" mi="0" ci="1" mb="0" cb="0" />
+      <line nr="273" mi="2" ci="0" mb="0" cb="0" />
+      <line nr="276" mi="0" ci="1" mb="0" cb="0" />
+      <line nr="279" mi="0" ci="1" mb="0" cb="0" />
+      <counter type="INSTRUCTION" missed="12" covered="60" />
+      <counter type="LINE" missed="11" covered="56" />
       <counter type="METHOD" missed="0" covered="1" />
       <counter type="CLASS" missed="0" covered="1" />
     </sourcefile>
-    <counter type="INSTRUCTION" missed="7" covered="43" />
-    <counter type="LINE" missed="7" covered="39" />
+    <counter type="INSTRUCTION" missed="12" covered="60" />
+    <counter type="LINE" missed="11" covered="56" />
     <counter type="METHOD" missed="0" covered="1" />
     <counter type="CLASS" missed="0" covered="1" />
   </package>
-  <counter type="INSTRUCTION" missed="7" covered="43" />
-  <counter type="LINE" missed="7" covered="39" />
+  <counter type="INSTRUCTION" missed="12" covered="60" />
+  <counter type="LINE" missed="11" covered="56" />
   <counter type="METHOD" missed="0" covered="1" />
   <counter type="CLASS" missed="0" covered="1" />
 </report>
