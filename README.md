@@ -1,6 +1,6 @@
 ﻿# MECM7 PowerShell Module
 
-A PowerShell module for managing Microsoft Endpoint Configuration Manager (MECM) via CIM.
+This is a PowerShell module for managing Microsoft Endpoint Configuration Manager (MECM) via CIM.
 
 ![PowerShell](https://img.shields.io/badge/PowerShell-5.1%20%7C%207.x-blue)
 ![Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20Linux%20%7C%20macOS-brightgreen)
@@ -22,9 +22,11 @@ A PowerShell module for managing Microsoft Endpoint Configuration Manager (MECM)
 
 ## 🎯 Overview
 
-The MECM7 PowerShell module provides a collection of PowerShell functions for common MECM administration tasks. The module works with PowerShell 5.1+ and PowerShell 7.x, using CIM (Common Information Model) cmdlets for remote management via WinRM.
+The **MECM7 PowerShell module** provides a collection of functions designed to simplify common Microsoft Endpoint Configuration Manager (MECM) administration tasks. The module is compatible with **PowerShell 5.1** and **PowerShell 7.x** and uses **CIM (Common Information Model) cmdlets** for remote management via **WinRM**.
 
-The most commands in the legacy ConfigurationManager module are dependent on WMI which isn't anymore possible in PowerShell 7.x. Importing the ConfigurationManager Module with parameter `UseWindowsPowerShell` brings multiple disadvantages.
+Many commands in the legacy **ConfigurationManager** PowerShell module rely on **WMI**, which is not supported in **PowerShell 7.x**. While it is technically possible to import the module using the `-UseWindowsPowerShell` parameter, doing so introduces additional complexity and limitations.
+
+To address these challenges and enable native PowerShell 7 compatibility, this module was created. It reimplements commonly used MECM administrative functions using **CIM-based approaches**, making them more modern, portable, and compatible with current PowerShell versions.
 
 ## Requirements
 
@@ -166,6 +168,7 @@ This is a short incomplete overview of available commands:
 
 - [`Get-CM7BoundaryGroup`](./Help/Get-CM7BoundaryGroup.md) - Retrieve existing boundary group informations from MECM
 - [`New-CM7BoundaryGroup`](./Help/New-CM7BoundaryGroup.md) - Creates a new boundary group in MECM
+- [`Remove-CM7BoundaryGroup`](./Help/Remove-CM7BoundaryGroup.md) - Removes an existing boundary group from MECM
 
 ## Testing
 

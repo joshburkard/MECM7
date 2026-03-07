@@ -232,6 +232,37 @@ $script:TestData = @{
     }
 
     # ========================================================================
+    # Remove-CM7BoundaryGroup
+    # ========================================================================
+    'Remove-CM7BoundaryGroup' = @{
+        ByName = @{
+            # Name of the boundary group to remove (will be created via New-CM7BoundaryGroup in tests)
+            Name = "Test"
+        }
+        ById = @{
+            # GroupID will be set dynamically in tests after creating a boundary group
+            GroupId = $null  # Will be set at test runtime
+        }
+        ByInputObject = @{
+            # InputObject will be retrieved via Get-CM7BoundaryGroup in tests
+            Name = "TestWithDescription"  # The group to retrieve and remove via pipeline
+        }
+        NewGroups = @{
+            Simple = @{
+                Name = "Test"  # Boundary group to create and remove by name
+            }
+            WithDescription = @{
+                Name        = "TestWithDescription"
+                Description = "Test boundary group created by Pester tests"
+            }
+        }
+        NonExistent = @{
+            Name    = "NONEXISTENT-BOUNDARYGROUP-999"
+            GroupId = "99999999"
+        }
+    }
+
+    # ========================================================================
     # Remove-CM7Folder
     # ========================================================================
     'Remove-CM7Folder' = @{
