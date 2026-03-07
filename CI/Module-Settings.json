@@ -1,9 +1,9 @@
 {
   "ModuleName": "MECM7",
-  "ModuleVersion": "0.01.00067",
-  "ModuleDescription": "managing MECM / SCCM through WinRM / CIM sessions",
+  "ModuleVersion": "0.01.00068",
+  "ModuleDescription": "Powerful automation for Microsoft Endpoint Configuration Manager (MECM/SCCM): manage collections, deployments, boundaries, and more via intuitive PowerShell commands using WinRM/CIM. Streamline your MECM administration and boost productivity with this comprehensive toolkit.",
   "ModuleAuthor": "Josua Burkard",
   "ModuleCompany": "Josua Burkard",
   "ModulePrefix": "CM7",
-  "LastChange": "first published version"
+  "LastChange": "updating module description"
 }
