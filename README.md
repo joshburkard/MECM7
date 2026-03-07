@@ -165,6 +165,7 @@ This is a short incomplete overview of available commands:
 #### Boundary Groups
 
 - [`Get-CM7BoundaryGroup`](./Help/Get-CM7BoundaryGroup.md) - Retrieve existing boundary group informations from MECM
+- [`New-CM7BoundaryGroup`](./Help/New-CM7BoundaryGroup.md) - Creates a new boundary group in MECM
 
 ## Testing
 
@@ -196,6 +197,7 @@ Invoke-Pester -Path ".\Tests\"
 ### Test Configuration
 
 Test credentials and site server information are configured in:
+
 - `Tests/declarations.ps1` - Your test environment configuration
 - `Tests/declarations_sample_v2.ps1` - Template for new environments
 
@@ -213,7 +215,7 @@ Copy `declarations_sample_v2.ps1` to `declarations.ps1` and update with your tes
 
 The module follows this pattern:
 
-```
+```text
 MECM7/
 ├── CI/
 │   ├── Build-Module.ps1
@@ -246,7 +248,6 @@ MECM7/
     ├── Get-CM7Device.md
     ├── Get-CM7Collection.md
     └── ...
-
 ```
 
 ## Troubleshooting
@@ -254,6 +255,7 @@ MECM7/
 ### "Access is denied" when connecting
 
 This typically indicates one of:
+
 1. **Invalid credentials** - Verify username and password
 2. **Insufficient permissions** - User must have MECM administrative rights
 3. **WinRM not enabled** - Verify WinRM is running on the SMS Provider: `Test-WSMan -ComputerName <server>`

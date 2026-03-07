@@ -215,6 +215,23 @@ $script:TestData = @{
     }
 
     # ========================================================================
+    # New-CM7BoundaryGroup
+    # ========================================================================
+    'New-CM7BoundaryGroup' = @{
+        Simple = @{
+            Name = "Test"  # Name for the boundary group to create
+        }
+        WithDescription = @{
+            Name        = "TestWithDescription"  # Name for a boundary group with description
+            Description = "Test boundary group created by Pester tests"
+        }
+        WithDefaultSiteCode = @{
+            Name            = "TestWithSiteCode"  # Name for a boundary group with default site code
+            DefaultSiteCode = "CM1"  # Replace with your actual site code
+        }
+    }
+
+    # ========================================================================
     # Remove-CM7Folder
     # ========================================================================
     'Remove-CM7Folder' = @{

@@ -62,3 +62,4 @@
 0.01.00060 | Remove-CM7Boundary | 2026-03-06 | Josua Burkard
 0.01.00061 | Set-CM7Boundary | 2026-03-06 | Josua Burkard
 0.01.00062 | Get-CM7BoundaryGroup | 2026-03-07 | Josua Burkard
+0.01.00063 | New-CM7BoundaryGroup | 2026-03-07 | Josua Burkard
