@@ -161,13 +161,16 @@ if($TestsResult.FailedCount -eq 0){
     }
 
     $ModuleManifestSplat = @{
-        Path              = $FullModuleName
-        ModuleVersion     = $ModuleVersion
-        Description       = $ModuleDescription
-        Author            = $ModuleAuthor
-        CompanyName       = $ModuleCompany
-        RootModule        = "$($ModuleName).psm1"
-        PowerShellVersion = '5.1'
+        Path                 = $FullModuleName
+        ModuleVersion        = $ModuleVersion
+        Description          = $ModuleDescription
+        Author               = $ModuleAuthor
+        CompanyName          = $ModuleCompany
+        RootModule           = "$($ModuleName).psm1"
+        PowerShellVersion    = '5.1'
+        CompatiblePSEditions = @('Desktop', 'Core')
+        ProjectUri           = 'https://github.com/joshburkard/MECM7'
+        LicenseUri           = 'https://github.com/joshburkard/MECM7/blob/main/LICENSE'
     }
     New-ModuleManifest @ModuleManifestSplat
 

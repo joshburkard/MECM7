@@ -66,3 +66,4 @@
 0.01.00064 | REmove-CM7BoundaryGroup | 2026-03-07 | Josua Burkard
 0.01.00065 | Set-CM7BoundaryGroup | 2026-03-07 | Josua Burkard
 0.01.00066 | Add-CM7BoundaryToGrou / REmove-CM7BoundaryFromGroup | 2026-03-07 | Josua Burkard
+0.01.00067 | first published version | 2026-03-07 | Josua Burkard
