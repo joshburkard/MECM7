@@ -263,6 +263,82 @@ $script:TestData = @{
     }
 
     # ========================================================================
+    # Set-CM7BoundaryGroup
+    # ========================================================================
+    'Set-CM7BoundaryGroup' = @{
+        Create = @{
+            Name = "Test"  # Boundary group to create for Set tests
+        }
+        Rename = @{
+            NewName = "TestRenamed"  # New name to rename the boundary group to
+        }
+        Description = @{
+            Value = "Test boundary group description set by Pester tests"
+        }
+        SiteCode = @{
+            Value = "CM1"  # Replace with your actual site code
+        }
+        Options = @{
+            AllowPeerDownload      = $true
+            SubnetPeerDownloadOnly = $true
+            PreferDPOverPeer       = $true
+            PreferCloudDPOverDP    = $false
+        }
+        NonExistent = @{
+            Name    = "NONEXISTENT-BOUNDARYGROUP-999"
+            GroupId = "99999999"
+        }
+    }
+
+    # ========================================================================
+    # Add-CM7BoundaryToGroup
+    # ========================================================================
+    'Add-CM7BoundaryToGroup' = @{
+        # Boundary to create, add to a group, then clean up
+        NewBoundary = @{
+            Name         = "TestBoundary-Add2Group"
+            BoundaryType = 'IPSubnet'  # 0 = IPSubnet
+            Value        = "192.168.100.0"
+        }
+        # Boundary group to create, use, and then clean up
+        NewBoundaryGroup = @{
+            Name = "Test"
+        }
+        NonExistentBoundary = @{
+            BoundaryId = 99999997
+            Name       = "NONEXISTENT-BOUNDARY-ADD-999"
+        }
+        NonExistentGroup = @{
+            BoundaryGroupId   = 99999997
+            BoundaryGroupName = "NONEXISTENT-GROUP-ADD-999"
+        }
+    }
+
+    # ========================================================================
+    # Remove-CM7BoundaryFromGroup
+    # ========================================================================
+    'Remove-CM7BoundaryFromGroup' = @{
+        # Boundary to create, add to a group, then remove from group and clean up
+        NewBoundary = @{
+            Name         = "TestBoundary-RemoveFromGroup"
+            BoundaryType = 'IPSubnet'  # 0 = IPSubnet
+            Value        = "192.168.101.0"
+        }
+        # Boundary group to create, use, and then clean up
+        NewBoundaryGroup = @{
+            Name = "Test"
+        }
+        NonExistentBoundary = @{
+            BoundaryId = 99999996
+            Name       = "NONEXISTENT-BOUNDARY-REMOVE-999"
+        }
+        NonExistentGroup = @{
+            BoundaryGroupId   = 99999996
+            BoundaryGroupName = "NONEXISTENT-GROUP-REMOVE-999"
+        }
+    }
+
+    # ========================================================================
     # Remove-CM7Folder
     # ========================================================================
     'Remove-CM7Folder' = @{

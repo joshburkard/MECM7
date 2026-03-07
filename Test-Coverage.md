@@ -2,12 +2,13 @@
 
 This file tracks the test coverage status for all functions in the MECM7 module.
 
-**Last Updated:** 2026-03-07 12:25:50
+**Last Updated:** 2026-03-07 12:36:12
 
 ## PowerShell 7.x
 
 | Function | Status | Passed | Failed | Skipped | Coverage % | Duration |
 | -------- | ------ | ------ | ------ | ------- | ---------- | -------- |
+| Add-CM7BoundaryToGroup | 🟢 Passed | 30 | 0 | 0 | 83.33% | 20.51s |
 | Add-CM7CollectionMembershipRule | 🟢 Passed | 31 | 0 | 0 | 92.86% | 62.19s |
 | Add-CM7SoftwareUpdateToGroup | 🟡 Partial | 16 | 0 | 2 | 94.52% | 14.5s |
 | Connect-CM7 | 🟡 Partial | 25 | 0 | 2 | 100% | 8.9s |
@@ -53,6 +54,7 @@ This file tracks the test coverage status for all functions in the MECM7 module.
 | New-CM7SoftwareUpdateGroup | 🟢 Passed | 14 | 0 | 0 | 82.02% | 25.62s |
 | New-CM7TaskSequenceDeployment | 🟢 Passed | 20 | 0 | 0 | 90.91% | 13.89s |
 | Remove-CM7Boundary | 🟢 Passed | 16 | 0 | 0 | 88.89% | 14.14s |
+| Remove-CM7BoundaryFromGroup | 🟢 Passed | 22 | 0 | 0 | 83.33% | 60.11s |
 | Remove-CM7BoundaryGroup | 🟢 Passed | 13 | 0 | 0 | 86% | 8.65s |
 | Remove-CM7Collection | 🟢 Passed | 15 | 0 | 0 | 91.14% | 17.95s |
 | Remove-CM7CollectionMembershipRule | 🟢 Passed | 36 | 0 | 0 | 83.62% | 240.13s |
@@ -75,6 +77,7 @@ This file tracks the test coverage status for all functions in the MECM7 module.
 
 | Function | Status | Passed | Failed | Skipped | Coverage % | Duration |
 | -------- | ------ | ------ | ------ | ------- | ---------- | -------- |
+| Add-CM7BoundaryToGroup | 🟢 Passed | 30 | 0 | 0 | 83.33% | 22.23s |
 | Add-CM7CollectionMembershipRule | 🟢 Passed | 31 | 0 | 0 | 92.86% | 67.47s |
 | Add-CM7SoftwareUpdateToGroup | 🟡 Partial | 16 | 0 | 2 | 65.75% | 32.67s |
 | Connect-CM7 | 🟡 Partial | 25 | 0 | 2 | 100% | 13.67s |
@@ -122,6 +125,7 @@ This file tracks the test coverage status for all functions in the MECM7 module.
 | New-CM7SoftwareUpdateGroup | 🟢 Passed | 14 | 0 | 0 | 82.02% | 20.33s |
 | New-CM7TaskSequenceDeployment | 🟢 Passed | 20 | 0 | 0 | 90.91% | 16.45s |
 | Remove-CM7Boundary | 🟢 Passed | 16 | 0 | 0 | 88.89% | 16.98s |
+| Remove-CM7BoundaryFromGroup | 🟢 Passed | 22 | 0 | 0 | 83.33% | 51.56s |
 | Remove-CM7BoundaryGroup | 🟢 Passed | 13 | 0 | 0 | 86% | 11.02s |
 | Remove-CM7Collection | 🟢 Passed | 15 | 0 | 0 | 91.14% | 19.77s |
 | Remove-CM7CollectionMembershipRule | 🟢 Passed | 27 | 0 | 2 | 82.93% | 199.36s |

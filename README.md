@@ -170,6 +170,8 @@ This is a short incomplete overview of available commands:
 - [`New-CM7BoundaryGroup`](./Help/New-CM7BoundaryGroup.md) - Creates a new boundary group in MECM
 - [`Remove-CM7BoundaryGroup`](./Help/Remove-CM7BoundaryGroup.md) - Removes an existing boundary group from MECM
 - [`Set-CM7BoundaryGroup`](./Help/Set-CM7BoundaryGroup.md) - Changes an existing boundary group from MECM
+- [`Add-CM7BoundaryToGroup`](./Help/Add-CM7BoundaryToGroup.md) - Add an existing boundary to an existing boundary group in MECM
+- [`Remove-CM7BoundaryFromGroup`](./Help/Remove-CM7BoundaryFromGroup.md) - Removes an existing boundary from a boundary group in MECM
 
 ## Testing
 

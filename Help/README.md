@@ -6,6 +6,7 @@ This documentation provides details on the functions available in the Public Pow
 
 | Function Name | Synopsis |
 | ------------- | -------- |
+| [Add-CM7BoundaryToGroup](./Add-CM7BoundaryToGroup.md) | Assigns a boundary to a boundary group in MECM using CIM. |
 | [Add-CM7CollectionMembershipRule](./Add-CM7CollectionMembershipRule.md) | Adds a membership rule to a MECM collection using CIM. |
 | [Add-CM7SoftwareUpdateToGroup](./Add-CM7SoftwareUpdateToGroup.md) | Adds one or more software updates to a software update group in Microsoft Endpoint Configuration Manager (MECM) using CIM. |
 | [Connect-CM7](./Connect-CM7.md) | Establishes a connection to a Microsoft Endpoint Configuration Manager (MECM) site server. |
@@ -52,6 +53,7 @@ This documentation provides details on the functions available in the Public Pow
 | [New-CM7SoftwareUpdateGroup](./New-CM7SoftwareUpdateGroup.md) | Creates a new software update group in Microsoft Endpoint Configuration Manager (MECM) using CIM. |
 | [New-CM7TaskSequenceDeployment](./New-CM7TaskSequenceDeployment.md) | Creates a new task sequence deployment in Microsoft Endpoint Configuration Manager (MECM) using CIM. |
 | [Remove-CM7Boundary](./Remove-CM7Boundary.md) | Removes a boundary from MECM using CIM. |
+| [Remove-CM7BoundaryFromGroup](./Remove-CM7BoundaryFromGroup.md) | Removes a boundary from a boundary group in MECM using CIM. |
 | [Remove-CM7BoundaryGroup](./Remove-CM7BoundaryGroup.md) | Removes a boundary group from MECM using CIM. |
 | [Remove-CM7Collection](./Remove-CM7Collection.md) | Removes a collection from MECM using CIM. |
 | [Remove-CM7CollectionMembershipRule](./Remove-CM7CollectionMembershipRule.md) | Removes a membership rule from a MECM collection using CIM. |
