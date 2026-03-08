@@ -66,6 +66,27 @@ $script:TestPollingInterval = 5  # Polling interval in seconds for status checks
 
 $script:TestData = @{
     # ========================================================================
+    # Get-CM7Application
+    # ========================================================================
+    'Get-CM7Application' = @{
+        ByName = @{
+            Name = "Sample Application Name"
+            ExpectedCount = 1
+        }
+        ByID = @{
+            ID = 12345678
+            ExpectedCount = 1
+        }
+        NonExistent = @{
+            Name = "NONEXISTENT-APPLICATION-999"
+            ID = 99999999
+            ExpectedCount = 0
+        }
+        All = @{
+            ExpectedMinCount = 1
+        }
+    }
+    # ========================================================================
     # Get-CM7Boundary
     # ========================================================================
     'Get-CM7Boundary' = @{

@@ -37,24 +37,29 @@ To address these challenges and enable native PowerShell 7 compatibility, this m
 
 ## 📦 Installation
 
-1. Clone or download the module to your PowerShell modules directory:
+### Automatic Installation (Recommended)
 
-   ```powershell
-   $ModulePath = Join-Path $PROFILE .. "Modules"
-   git clone <repo-url> $ModulePath\MECM7
-   ```
+```powershell
+Install-Module -Name MEMC7
+```
 
-2. Import the module:
+### Manual Installation
 
-   ```powershell
-   Import-Module MECM7
-   ```
+Clone or download the module to your PowerShell modules directory:
+
+```powershell
+$ModulePath = Join-Path $PROFILE .. "Modules"
+git clone <repo-url> $ModulePath\MECM7
+```
 
 ## 🚀 Quick Start
 
 ### Connect to MECM
 
 ```powershell
+# IMport the Module
+Import-Module MECM7
+
 # Basic connection using current user credentials
 Connect-CM7 -SiteServer "mecm.yourdomain.local"
 
@@ -80,6 +85,10 @@ other functions will be described in the [Help](./Help/README.md) folder
 ## 📚 Available Functions
 
 This is a short incomplete overview of available commands:
+
+### Application Management
+
+- [`Get-CM7Application`](./Help/Get-CM7Application.md) - Retrieve Application information from MECM
 
 ### Collection Management
 
