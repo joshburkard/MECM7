@@ -69,3 +69,4 @@
 0.01.00067 | first published version | 2026-03-07 | Josua Burkard
 0.01.00068 | updating module description | 2026-03-07 | Josua Burkard
 0.01.00069 | Get-CM7Application | 2026-03-08 | Josua Burkard
+0.01.00070 | New-CM7Application | 2026-03-10 | Josua Burkard

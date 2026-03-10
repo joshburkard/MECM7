@@ -87,6 +87,47 @@ $script:TestData = @{
         }
     }
     # ========================================================================
+    # New-CM7Application
+    # ========================================================================
+    'New-CM7Application' = @{
+        Basic = @{
+            Name = "Test"
+            Publisher = "SamplePublisher"
+            SoftwareVersion = "1.0.0"
+            Description = "Sample application created by automated test."
+            AutoInstall = $true
+            ReleaseDate = "2024-01-01"
+            Owner = "Admin"
+            SupportContact = "helpdesk@example.com"
+            SupportUrl = "https://support.example.com"
+            SupportPhone = "+1234567890"
+            OptionalReference = "Ref-001"
+            IsEnabled = $true
+            IsHidden = $false
+            ReleaseNotes = "Initial release."
+            PrivacyUrl = "https://privacy.example.com"
+            InformationUrl = "https://info.example.com"
+        }
+        Duplicate = @{
+            Name = "Test"
+            Publisher = "SamplePublisher"
+            SoftwareVersion = "1.0.0"
+            Description = "Sample application created by automated test."
+            AutoInstall = $true
+            ReleaseDate = "2024-01-01"
+            Owner = "Admin"
+            SupportContact = "helpdesk@example.com"
+            SupportUrl = "https://support.example.com"
+            SupportPhone = "+1234567890"
+            OptionalReference = "Ref-001"
+            IsEnabled = $true
+            IsHidden = $false
+            ReleaseNotes = "Initial release."
+            PrivacyUrl = "https://privacy.example.com"
+            InformationUrl = "https://info.example.com"
+        }
+    }
+    # ========================================================================
     # Get-CM7Boundary
     # ========================================================================
     'Get-CM7Boundary' = @{

@@ -2,7 +2,7 @@
 
 This file tracks the test coverage status for all functions in the MECM7 module.
 
-**Last Updated:** 2026-03-08 10:16:18
+**Last Updated:** 2026-03-10 13:30:42
 
 ## PowerShell 7.x
 
@@ -44,6 +44,7 @@ This file tracks the test coverage status for all functions in the MECM7 module.
 | Invoke-CM7Connection | 🟡 Partial | 18 | 0 | 1 | 81.58% | 5.53s |
 | Invoke-CM7Script | 🟢 Passed | 16 | 0 | 0 | 81.34% | 6.08s |
 | Move-CM7Object | 🟢 Passed | 20 | 0 | 0 | 78.28% | 8.37s |
+| New-CM7Application | 🟢 Passed | 11 | 0 | 0 | 92.62% | 17.5s |
 | New-CM7Boundary | 🟢 Passed | 4 | 0 | 0 | 83.61% | 2.63s |
 | New-CM7BoundaryGroup | 🟢 Passed | 13 | 0 | 0 | 89.39% | 5.79s |
 | New-CM7DeviceCollectionVariable | 🟢 Passed | 19 | 0 | 0 | 85.15% | 8.52s |
@@ -114,6 +115,7 @@ This file tracks the test coverage status for all functions in the MECM7 module.
 | Invoke-CM7Connection | 🟡 Partial | 18 | 0 | 1 | 81.58% | 7.08s |
 | Invoke-CM7Script | 🟢 Passed | 16 | 0 | 0 | 81.34% | 6.7s |
 | Move-CM7Object | 🟢 Passed | 20 | 0 | 0 | 78.28% | 9.35s |
+| New-CM7Application | 🟢 Passed | 11 | 0 | 0 | 92.62% | 17.56s |
 | New-CM7Boundary | 🟢 Passed | 4 | 0 | 0 | 83.61% | 4.47s |
 | New-CM7BoundaryGroup | 🟢 Passed | 13 | 0 | 0 | 89.39% | 7.98s |
 | New-CM7Collection | 🟢 Passed | 21 | 0 | 0 | 77.52% | 22.17s |

@@ -89,6 +89,7 @@ This is a short incomplete overview of available commands:
 ### Application Management
 
 - [`Get-CM7Application`](./Help/Get-CM7Application.md) - Retrieve Application information from MECM
+- [`New-CM7Application`](./Help/New-CM7Application.md) - Creates a new Application information in MECM
 
 ### Collection Management
 
