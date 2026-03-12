@@ -128,6 +128,24 @@ $script:TestData = @{
         }
     }
     # ========================================================================
+    # Remove-CM7Application
+    # ========================================================================
+    'Remove-CM7Application' = @{
+        ByName = @{
+            Name = "Test"
+            ExpectedResult = $true
+        }
+        ByID = @{
+            ID = 12345678
+            ExpectedResult = $true
+        }
+        NonExistent = @{
+            Name = "NONEXISTENT-APPLICATION-999"
+            ID = 99999999
+            ExpectedResult = $false
+        }
+    }
+    # ========================================================================
     # Get-CM7Boundary
     # ========================================================================
     'Get-CM7Boundary' = @{
