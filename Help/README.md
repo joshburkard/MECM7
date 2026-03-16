@@ -64,7 +64,7 @@ This documentation provides details on the functions available in the Public Pow
 | [Remove-CM7DeviceVariable](./Remove-CM7DeviceVariable.md) | Removes a device variable from a MECM device using CIM. |
 | [Remove-CM7Folder](./Remove-CM7Folder.md) | Removes a folder in MECM using CIM. |
 | [Remove-CM7MaintenanceWindow](./Remove-CM7MaintenanceWindow.md) | Removes a maintenance window from a MECM collection using CIM. |
-| [Remove-CM7SoftwareUpdateDeployment](./Remove-CM7SoftwareUpdateDeployment.md) | Removes a software update deployment from a specified collection using CIM connectivity. |
+| [Remove-CM7SoftwareUpdateDeployment](./Remove-CM7SoftwareUpdateDeployment.md) | Removes a software update deployment from a collection using CIM connectivity. |
 | [Remove-CM7SoftwareUpdateDeploymentPackage](./Remove-CM7SoftwareUpdateDeploymentPackage.md) | Removes a software update deployment package from MECM using CIM. |
 | [Remove-CM7SoftwareUpdateGroup](./Remove-CM7SoftwareUpdateGroup.md) | Removes a software update group from MECM using CIM connectivity. |
 | [Remove-CM7TaskSequenceDeployment](./Remove-CM7TaskSequenceDeployment.md) | Removes a task sequence deployment from MECM using CIM. |

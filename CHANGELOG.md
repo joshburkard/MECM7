@@ -73,3 +73,5 @@
 0.01.00071 | Remove-CM7Application | 2026-03-11 | Josua Burkard
 0.01.00072 | New-CM7MaintenanceWindow | 2026-03-16 | Josua Burkard
 0.1.73 | added parameters to New-CM7SoftwareUpdateDeployment | 2026-03-16 | Josua Burkard
+0.1.74 | fixed Remove-CM7SoftwareUpdateDeployment | 2026-03-16 | Josua Burkard
+0.1.74 | fixed Remove-CM7SoftwareUpdateDeployment | 2026-03-16 | Josua Burkard

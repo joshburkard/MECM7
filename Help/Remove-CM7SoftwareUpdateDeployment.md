@@ -1,50 +1,117 @@
-﻿# Remove-CM7SoftwareUpdateDeployment.md
+# Remove-CM7SoftwareUpdateDeployment
 
----
 ## SYNOPSIS
 
-Removes a software update deployment from a specified collection using CIM connectivity.
-
-## SYNTAX
-
-```PowerShell
-Remove-CM7SoftwareUpdateDeployment [-SoftwareUpdateGroupName] <string> [-CollectionName] <string> [-Force] [-WhatIf] [<CommonParameters>]
-```
+Removes a software update deployment from a collection using CIM connectivity.
 
 ## DESCRIPTION
 
-Removes a deployment of a software update group from a device collection in SCCM, using CIM connectivity. This function is analogous to Remove-CMSoftwareUpdateDeployment from the ConfigurationManager module, but works via CIM.
+Removes a deployment of a software update group from a device collection in MECM, using CIM. This is the CIM-based equivalent of Remove-CMSoftwareUpdateDeployment from the ConfigurationManager module.
 
 ## PARAMETERS
 
-- **SoftwareUpdateGroupName** (string, required): Name of the software update group.
-- **CollectionName** (string, required): Name of the collection from which to remove the deployment.
-- **Force** (switch, optional): Force removal without confirmation.
-- **WhatIf** (switch, optional): Shows what would happen if the command runs.
+### InputObject
+
+A software update deployment CIM instance (SMS_UpdateGroupAssignment) to remove. Can be piped from Get-CM7SoftwareUpdateDeployment.
+
+- Type: PSObject
+- Required: true
+- Accept pipeline input: true (ByValue)
+- Accept wildcard characters: false
+
+### DeploymentID
+
+The unique ID (AssignmentUniqueID) of the software update deployment to remove.
+
+- Type: String
+- Required: true
+- Accept pipeline input: false
+- Accept wildcard characters: false
+
+### SoftwareUpdateGroupName
+
+The name of the software update group whose deployment should be removed.
+
+- Type: String
+- Required: true
+- Accept pipeline input: false
+- Accept wildcard characters: false
+
+### SoftwareUpdateGroupID
+
+The CI_ID of the software update group whose deployment should be removed.
+
+- Type: String
+- Required: true
+- Accept pipeline input: false
+- Accept wildcard characters: false
+
+### CollectionName
+
+The name of the collection from which to remove the deployment.
+
+- Type: String
+- Required: true
+- Accept pipeline input: false
+- Accept wildcard characters: false
+
+### CollectionID
+
+The CollectionID of the collection from which to remove the deployment.
+
+- Type: String
+- Required: true
+- Accept pipeline input: false
+- Accept wildcard characters: false
+
+### Force
+
+Suppresses confirmation prompts.
+
+- Type: SwitchParameter
+- Required: false
+- Default value: False
+- Accept pipeline input: false
+- Accept wildcard characters: false
+
+### WhatIf
+
+Shows what would happen if the cmdlet runs. The cmdlet is not run.
+
+- Type: SwitchParameter
+- Required: false
+- Accept pipeline input: false
+- Accept wildcard characters: false
+
+### Confirm
+
+
+
+- Type: SwitchParameter
+- Required: false
+- Accept pipeline input: false
+- Accept wildcard characters: false
 
 ## EXAMPLES
 
 ### Example 1
 
-```PowerShell
-Remove-CM7SoftwareUpdateDeployment -SoftwareUpdateGroupName "Test-SUG" -CollectionName "Test-Collection-Direct"
+```powershell
+Remove-CM7SoftwareUpdateDeployment -SoftwareUpdateGroupName "Test-SUG" -CollectionName "Test-Collection-Direct" -Force
 ```
 
 ### Example 2
 
-```PowerShell
-Remove-CM7SoftwareUpdateDeployment -SoftwareUpdateGroupName "Test-SUG" -CollectionName "Test-Collection-Include" -Force
+```powershell
+Remove-CM7SoftwareUpdateDeployment -DeploymentID "{A1B2C3D4-E5F6-7890-ABCD-EF1234567890}" -Force
+```
+
+### Example 3
+
+```powershell
+Get-CM7SoftwareUpdateDeployment -SoftwareUpdateGroupName "Test-SUG" | Remove-CM7SoftwareUpdateDeployment -Force
 ```
 
 ## NOTES
 
-- Requires CIM connectivity to SCCM site server.
-- Only removes deployments for the specified SUG and collection.
-
-## RELATED LINKS
-
-- [Remove-CMSoftwareUpdateDeployment](https://learn.microsoft.com/en-us/powershell/module/configurationmanager/remove-cmsoftwareupdatedeployment?view=sccm-ps)
-- [New-CM7SoftwareUpdateDeployment](./New-CM7SoftwareUpdateDeployment.md)
-- [Get-CM7SoftwareUpdateDeployment](./Get-CM7SoftwareUpdateDeployment.md)
-
----
+Requires an active connection established via Connect-CM7.
