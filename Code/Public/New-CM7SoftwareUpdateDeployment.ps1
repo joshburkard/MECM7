@@ -97,6 +97,32 @@ function New-CM7SoftwareUpdateDeployment {
         .PARAMETER UseGMTTimes
             Specifies whether to use UTC/GMT times. Default is $false (use local time).
 
+        .PARAMETER VerbosityLevel
+            Controls the verbosity of state messages reported by clients. Valid values are:
+            - AllMessages: Report all messages
+            - OnlySuccessAndErrorMessages: Report only success and error messages (default)
+            - OnlyErrorMessages: Report only error messages
+
+        .PARAMETER AcceptEula
+            When $true, automatically accepts any End User License Agreements (EULAs) for software
+            updates in the group that have EulaExists = $true and have not yet been accepted.
+            This calls the AcceptEULA() instance method on each qualifying SMS_SoftwareUpdate object
+            before the deployment is created. Default is $false.
+
+        .PARAMETER DisableOperationsManagerAlert
+            Disables Operations Manager (MOM/SCOM) alerts during the deployment. Default is $false.
+
+        .PARAMETER PersistOnWriteFilterDevice
+            Enables the write filter committal on devices that use a write filter (e.g., embedded
+            devices). When $true, changes are committed to the device. Default is $true.
+
+        .PARAMETER PreDownloadUpdateContent
+            Pre-downloads update content before the deployment deadline. Default is $false.
+
+        .PARAMETER Comment
+            An alias for the Description parameter. Provides an optional comment/description
+            for the deployment.
+
         .PARAMETER Enabled
             Whether the deployment is enabled. Default is $true.
 
@@ -164,6 +190,7 @@ function New-CM7SoftwareUpdateDeployment {
         [string]$DeploymentName,
 
         [Parameter()]
+        [Alias('Comment')]
         [string]$Description = '',
 
         [Parameter()]
@@ -214,6 +241,22 @@ function New-CM7SoftwareUpdateDeployment {
 
         [Parameter()]
         [Boolean]$Enabled = $true,
+
+        [Parameter()]
+        [ValidateSet('AllMessages', 'OnlySuccessAndErrorMessages', 'OnlyErrorMessages')]
+        [string]$VerbosityLevel = 'OnlySuccessAndErrorMessages',
+
+        [Parameter()]
+        [Boolean]$AcceptEula = $false,
+
+        [Parameter()]
+        [Boolean]$DisableOperationsManagerAlert = $false,
+
+        [Parameter()]
+        [Boolean]$PersistOnWriteFilterDevice = $true,
+
+        [Parameter()]
+        [Boolean]$PreDownloadUpdateContent = $false,
 
         [Parameter()]
         [switch]$Force
@@ -269,6 +312,12 @@ function New-CM7SoftwareUpdateDeployment {
             0 = 'Detect'
             1 = 'Apply'
             2 = 'Apply'
+        }
+
+        $verbosityLevelMap = @{
+            'AllMessages'                 = [uint32]1
+            'OnlySuccessAndErrorMessages' = [uint32]5
+            'OnlyErrorMessages'           = [uint32]10
         }
     }
 
@@ -392,6 +441,27 @@ function New-CM7SoftwareUpdateDeployment {
                 $assignedCIs = [int32[]]$groupDetail.Updates
             }
 
+            # ---- Accept EULAs if requested ----
+            if ($AcceptEula -and $assignedCIs.Count -gt 0) {
+                Write-Verbose "AcceptEula specified - checking for updates with pending EULAs"
+                $ciIdList = $assignedCIs -join ','
+                $eulaQuery = "SELECT CI_ID, LocalizedDisplayName, EulaExists, EulaAccepted FROM SMS_SoftwareUpdate WHERE CI_ID IN ($ciIdList) AND EulaExists = 1 AND EulaAccepted = 0"
+                Write-Verbose "EULA query: $eulaQuery"
+                $updatesWithEula = @(Get-CimInstance @cimParams -Query $eulaQuery)
+                if ($updatesWithEula.Count -gt 0) {
+                    Write-Verbose "Accepting EULAs for $($updatesWithEula.Count) update(s)"
+                    foreach ($updateWithEula in $updatesWithEula) {
+                        Write-Verbose "Accepting EULA for update: '$($updateWithEula.LocalizedDisplayName)' (CI_ID: $($updateWithEula.CI_ID))"
+                        $eulaResult = Invoke-CimMethod -InputObject $updateWithEula -MethodName 'AcceptEULA' -Arguments @{ Accepted = $true }
+                        if ($eulaResult.ReturnValue -ne 0) {
+                            Write-Warning "AcceptEULA returned non-zero ($($eulaResult.ReturnValue)) for update '$($updateWithEula.LocalizedDisplayName)' (CI_ID: $($updateWithEula.CI_ID))"
+                        }
+                    }
+                } else {
+                    Write-Verbose "No updates with pending EULAs found"
+                }
+            }
+
             # ---- Create the deployment ----
             $actionDescription = "Create software update deployment '$actualDeploymentName' targeting collection '$resolvedCollectionName' ($resolvedCollectionId) with type '$DeploymentType'"
             if ($Force -or $PSCmdlet.ShouldProcess($actualDeploymentName, $actionDescription)) {
@@ -421,17 +491,17 @@ function New-CM7SoftwareUpdateDeployment {
                     DPLocality                      = [uint32]16
                     UseBranchCache                  = [bool]$UseBranchCache
                     RequirePostRebootFullScan       = [bool]$RequirePostRebootFullScan
-                    PreDownloadUpdateContent        = [bool]$false
+                    PreDownloadUpdateContent        = [bool]$PreDownloadUpdateContent
                     ApplyToSubTargets               = [bool]$false
                     LogComplianceToWinEvent         = [bool]$false
-                    DisableMomAlerts                = [bool]$false
+                    DisableMomAlerts                = [bool]$DisableOperationsManagerAlert
                     RaiseMomAlertsOnFailure         = [bool]$false
-                    PersistOnWriteFilterDevices     = [bool]$true
+                    PersistOnWriteFilterDevices     = [bool]$PersistOnWriteFilterDevice
                     SoftDeadlineEnabled             = [bool]$false
                     WoLEnabled                      = [bool]$false
                     SendDetailedNonComplianceStatus = [bool]$false
                     LimitStateMessageVerbosity      = [bool]$true
-                    StateMessageVerbosity           = [uint32]5
+                    StateMessageVerbosity           = [uint32]$verbosityLevelMap[$VerbosityLevel]
                 }
 
                 # Set enforcement deadline for Required deployments

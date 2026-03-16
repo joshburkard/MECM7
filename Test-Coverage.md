@@ -2,7 +2,7 @@
 
 This file tracks the test coverage status for all functions in the MECM7 module.
 
-**Last Updated:** 2026-03-16 12:18:36
+**Last Updated:** 2026-03-16 13:14:37
 
 ## PowerShell 7.x
 
@@ -52,7 +52,7 @@ This file tracks the test coverage status for all functions in the MECM7 module.
 | New-CM7Folder | 🟢 Passed | 6 | 0 | 0 | 93.98% | 3.61s |
 | New-CM7MaintenanceWindow | 🟢 Passed | 26 | 0 | 0 | 81.63% | 19.78s |
 | New-CM7Schedule | 🟢 Passed | 39 | 0 | 0 | 97.14% | 5.23s |
-| New-CM7SoftwareUpdateDeployment | 🟢 Passed | 18 | 0 | 0 | 92.51% | 29.7s |
+| New-CM7SoftwareUpdateDeployment | 🟢 Passed | 18 | 0 | 0 | 83.49% | 39.66s |
 | New-CM7SoftwareUpdateDeploymentPackage | 🟢 Passed | 3 | 0 | 0 | 94.44% | 2.28s |
 | New-CM7SoftwareUpdateGroup | 🟢 Passed | 14 | 0 | 0 | 82.02% | 25.62s |
 | New-CM7TaskSequenceDeployment | 🟢 Passed | 20 | 0 | 0 | 90.91% | 13.89s |
@@ -127,7 +127,7 @@ This file tracks the test coverage status for all functions in the MECM7 module.
 | New-CM7Folder | 🟢 Passed | 6 | 0 | 0 | 93.98% | 5s |
 | New-CM7MaintenanceWindow | 🟢 Passed | 26 | 0 | 0 | 81.63% | 21.01s |
 | New-CM7Schedule | 🟢 Passed | 39 | 0 | 0 | 97.14% | 5.24s |
-| New-CM7SoftwareUpdateDeployment | 🟢 Passed | 18 | 0 | 0 | 92.51% | 26.44s |
+| New-CM7SoftwareUpdateDeployment | 🟢 Passed | 18 | 0 | 0 | 83.49% | 35.28s |
 | New-CM7SoftwareUpdateDeploymentPackage | 🟢 Passed | 3 | 0 | 0 | 94.44% | 3.68s |
 | New-CM7SoftwareUpdateGroup | 🟢 Passed | 14 | 0 | 0 | 82.02% | 20.33s |
 | New-CM7TaskSequenceDeployment | 🟢 Passed | 20 | 0 | 0 | 90.91% | 16.45s |

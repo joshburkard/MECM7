@@ -50,7 +50,7 @@ This documentation provides details on the functions available in the Public Pow
 | [New-CM7Folder](./New-CM7Folder.md) | Creates a new folder in MECM using CIM. |
 | [New-CM7MaintenanceWindow](./New-CM7MaintenanceWindow.md) | Creates a new maintenance window on a Microsoft Endpoint Configuration Manager (MECM) collection using CIM. |
 | [New-CM7Schedule](./New-CM7Schedule.md) | Creates an SMS schedule token for use with MECM CIM-based functions. |
-| [New-CM7SoftwareUpdateDeployment](./New-CM7SoftwareUpdateDeployment.md) | Creates a new software update deployment in Microsoft Endpoint Configuration Manager (MECM) using CIM. |
+| [New-CM7SoftwareUpdateDeployment](./New-CM7SoftwareUpdateDeployment.md) | Creates a new software update deployment in MECM using CIM. |
 | [New-CM7SoftwareUpdateDeploymentPackage](./New-CM7SoftwareUpdateDeploymentPackage.md) | Creates a new software update deployment package in MECM using CIM connectivity. |
 | [New-CM7SoftwareUpdateGroup](./New-CM7SoftwareUpdateGroup.md) | Creates a new software update group in Microsoft Endpoint Configuration Manager (MECM) using CIM. |
 | [New-CM7TaskSequenceDeployment](./New-CM7TaskSequenceDeployment.md) | Creates a new task sequence deployment in Microsoft Endpoint Configuration Manager (MECM) using CIM. |
