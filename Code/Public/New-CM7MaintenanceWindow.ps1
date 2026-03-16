@@ -234,18 +234,18 @@ function New-CM7MaintenanceWindow {
         [ValidateRange(1, 12)]
         [int]$ForNumberOfMonths = 1,
 
-        # Raw schedule token (alternative to building schedule)
+        # Raw schedule token or schedule object from New-CM7Schedule (alternative to building schedule)
         [Parameter(ParameterSetName = 'ByCollectionNameScheduleToken', Mandatory = $true)]
         [Parameter(ParameterSetName = 'ByCollectionIdScheduleToken', Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
-        [string]$Schedule,
+        [object]$Schedule,
 
         [Parameter()]
         [ValidateSet('Any', 'SoftwareUpdatesOnly', 'TaskSequencesOnly')]
         [string]$ApplyTo = 'Any',
 
         [Parameter()]
-        [bool]$IsEnabled = $true,
+        [boolean]$IsEnabled = $true,
 
         [Parameter()]
         [switch]$IsUtc,
@@ -359,8 +359,20 @@ function New-CM7MaintenanceWindow {
             $scheduleString = $null
 
             if ($PSCmdlet.ParameterSetName -like '*ScheduleToken') {
-                # Use the provided raw schedule token
-                $scheduleString = $Schedule
+                # Extract the schedule token string from object or use string directly
+                if ($Schedule -is [string]) {
+                    $scheduleString = $Schedule
+                }
+                elseif ($null -ne $Schedule.ScheduleString) {
+                    $scheduleString = $Schedule.ScheduleString
+                    # Inherit IsGMT from the schedule object when -IsUtc is not explicitly specified
+                    if (-not $PSBoundParameters.ContainsKey('IsUtc') -and $null -ne $Schedule.IsGMT) {
+                        $IsUtc = [switch]([bool]$Schedule.IsGMT)
+                    }
+                }
+                else {
+                    throw "The -Schedule parameter must be a schedule token string or an object with a ScheduleString property (e.g., from New-CM7Schedule)."
+                }
                 Write-Verbose "Using provided schedule token: $scheduleString"
             }
             else {
@@ -547,7 +559,7 @@ function New-CM7MaintenanceWindow {
                 # Update the ServiceWindows property and commit
                 Write-Verbose "Updating SMS_CollectionSettings with new maintenance window..."
                 $fullSettings.CimInstanceProperties['ServiceWindows'].Value = [CimInstance[]]$updatedWindows.ToArray()
-                $fullSettings | Set-CimInstance
+                $fullSettings | Set-CimInstance -ErrorAction Stop
 
                 Write-Verbose "Successfully created maintenance window '$Name' on collection '$collectionDisplayName' ($collectionIdToUse)."
 

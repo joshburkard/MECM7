@@ -71,3 +71,4 @@
 0.01.00069 | Get-CM7Application | 2026-03-08 | Josua Burkard
 0.01.00070 | New-CM7Application | 2026-03-10 | Josua Burkard
 0.01.00071 | Remove-CM7Application | 2026-03-11 | Josua Burkard
+0.01.00072 | New-CM7MaintenanceWindow | 2026-03-16 | Josua Burkard

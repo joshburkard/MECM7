@@ -145,6 +145,31 @@ $script:TestData = @{
             ExpectedResult = $false
         }
     }
+
+    # ========================================================================
+    # Set-CM7Application
+    # ========================================================================
+    'Set-CM7Application' = @{
+        Valid = @{
+            Name = 'Test'
+            Publisher = 'Contoso'
+            SoftwareVersion = '1.0.0'
+            Description = 'Test application for Set-CM7Application'
+            NewDescription = 'Updated description for Set-CM7Application'
+            Owner = 'domain\\testuser'
+            SupportContact = 'helpdesk'
+            SupportUrl = 'https://contoso.com/support'
+            InfoUrl = 'https://contoso.com/info'
+            PrivacyUrl = 'https://contoso.com/privacy'
+            IsEnabled = $true
+            IsHidden = $false
+            AutoInstall = $false
+        }
+        NonExistent = @{
+            Name = 'NonExistentApp'
+        }
+    }
+
     # ========================================================================
     # Get-CM7Boundary
     # ========================================================================

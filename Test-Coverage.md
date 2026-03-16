@@ -2,7 +2,7 @@
 
 This file tracks the test coverage status for all functions in the MECM7 module.
 
-**Last Updated:** 2026-03-11 16:15:48
+**Last Updated:** 2026-03-16 12:18:36
 
 ## PowerShell 7.x
 
@@ -50,6 +50,7 @@ This file tracks the test coverage status for all functions in the MECM7 module.
 | New-CM7DeviceCollectionVariable | 🟢 Passed | 19 | 0 | 0 | 85.15% | 8.52s |
 | New-CM7DeviceVariable | 🟢 Passed | 19 | 0 | 0 | 83.17% | 14.88s |
 | New-CM7Folder | 🟢 Passed | 6 | 0 | 0 | 93.98% | 3.61s |
+| New-CM7MaintenanceWindow | 🟢 Passed | 26 | 0 | 0 | 81.63% | 19.78s |
 | New-CM7Schedule | 🟢 Passed | 39 | 0 | 0 | 97.14% | 5.23s |
 | New-CM7SoftwareUpdateDeployment | 🟢 Passed | 18 | 0 | 0 | 92.51% | 29.7s |
 | New-CM7SoftwareUpdateDeploymentPackage | 🟢 Passed | 3 | 0 | 0 | 94.44% | 2.28s |
@@ -70,6 +71,7 @@ This file tracks the test coverage status for all functions in the MECM7 module.
 | Remove-CM7SoftwareUpdateGroup | 🟢 Passed | 8 | 0 | 0 | 96.67% | 5.16s |
 | Remove-CM7TaskSequenceDeployment | 🟢 Passed | 17 | 0 | 0 | 74.1% | 15.55s |
 | Save-CM7SoftwareUpdate | 🟢 Passed | 12 | 0 | 0 | 79.73% | 298.16s |
+| Set-CM7Application | 🔴 Failed | 5 | 1 | 0 | 43.41% | 8.4s |
 | Set-CM7Boundary | 🟢 Passed | 18 | 0 | 0 | 83.84% | 28.88s |
 | Set-CM7BoundaryGroup | 🟢 Passed | 23 | 0 | 0 | 81.94% | 11.82s |
 | Set-CM7Folder | 🟢 Passed | 6 | 0 | 0 | 88.61% | 23.04s |
@@ -123,7 +125,7 @@ This file tracks the test coverage status for all functions in the MECM7 module.
 | New-CM7DeviceCollectionVariable | 🟢 Passed | 19 | 0 | 0 | 85.44% | 10.16s |
 | New-CM7DeviceVariable | 🟢 Passed | 19 | 0 | 0 | 83.17% | 10.77s |
 | New-CM7Folder | 🟢 Passed | 6 | 0 | 0 | 93.98% | 5s |
-| New-CM7MaintenanceWindow | 🟢 Passed | 26 | 0 | 0 | 83.61% | 15.67s |
+| New-CM7MaintenanceWindow | 🟢 Passed | 26 | 0 | 0 | 81.63% | 21.01s |
 | New-CM7Schedule | 🟢 Passed | 39 | 0 | 0 | 97.14% | 5.24s |
 | New-CM7SoftwareUpdateDeployment | 🟢 Passed | 18 | 0 | 0 | 92.51% | 26.44s |
 | New-CM7SoftwareUpdateDeploymentPackage | 🟢 Passed | 3 | 0 | 0 | 94.44% | 3.68s |
