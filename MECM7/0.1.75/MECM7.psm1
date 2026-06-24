@@ -1,5 +1,5 @@
 <#
-    Generated at 03/16/2026 13:42:33 by Josua Burkard
+    Generated at 03/16/2026 14:18:00 by Josua Burkard
 #>
 #region namespace MECM7
 function Get-CM7FullCimInstance {
@@ -11827,6 +11827,16 @@ function New-CM7TaskSequenceDeployment {
             - AsSoonAsPossible: Run as soon as possible after the available time (default)
             - LogOn: Run at next user logon
             - LogOff: Run at next user logoff
+            When -Schedule is specified, -ScheduleEvent is ignored unless also explicitly provided.
+
+        .PARAMETER Schedule
+            One or more schedule token objects (from New-CM7Schedule) to assign as the deployment
+            schedule for Required deployments. When provided, the -ScheduleEvent flag is not set
+            automatically (unless -ScheduleEvent is also explicitly specified).
+
+        .PARAMETER AllowUsersRunIndependently
+            Allows users to run the task sequence independently of the deployment assignment.
+            Maps to the AllowUsersRunIndependently or PresentUsers property in SMS_Advertisement.
 
         .PARAMETER Force
             Suppresses confirmation prompts.
@@ -11987,6 +11997,12 @@ function New-CM7TaskSequenceDeployment {
         [string]$ScheduleEvent = 'AsSoonAsPossible',
 
         [Parameter()]
+        [PSObject[]]$Schedule,
+
+        [Parameter()]
+        [Boolean]$AllowUsersRunIndependently,
+
+        [Parameter()]
         [switch]$Force
     )
 
@@ -12144,11 +12160,15 @@ function New-CM7TaskSequenceDeployment {
             }
 
             # Schedule event (for Required deployments)
+            # When a Schedule object is provided, skip ScheduleEvent flags unless ScheduleEvent
+            # was also explicitly specified by the caller.
             if ($DeployPurpose -eq 'Required') {
-                switch ($ScheduleEvent) {
-                    'AsSoonAsPossible' { $advertFlags = $advertFlags -bor $ADVERT_IMMEDIATE }
-                    'LogOn'            { $advertFlags = $advertFlags -bor $ADVERT_ONUSERLOGON }
-                    'LogOff'           { $advertFlags = $advertFlags -bor $ADVERT_ONUSERLOGOFF }
+                if (-not $PSBoundParameters.ContainsKey('Schedule') -or $PSBoundParameters.ContainsKey('ScheduleEvent')) {
+                    switch ($ScheduleEvent) {
+                        'AsSoonAsPossible' { $advertFlags = $advertFlags -bor $ADVERT_IMMEDIATE }
+                        'LogOn'            { $advertFlags = $advertFlags -bor $ADVERT_ONUSERLOGON }
+                        'LogOff'           { $advertFlags = $advertFlags -bor $ADVERT_ONUSERLOGOFF }
+                    }
                 }
             }
 
@@ -12237,8 +12257,15 @@ function New-CM7TaskSequenceDeployment {
                     $deploymentProperties['ExpirationTimeIsGMT'] = [bool]$UseUtcForExpireSchedule
                 }
 
-                # For Required deployments with AsSoonAsPossible, enable the assigned schedule
+                # For Required deployments, enable the assigned schedule
                 if ($DeployPurpose -eq 'Required') {
+                    $deploymentProperties['AssignedScheduleEnabled'] = [bool]$true
+                    $deploymentProperties['AssignedScheduleIsGMT'] = [bool]$UseUtcForAvailableSchedule
+                }
+
+                # Set assignment schedule token(s) if explicitly provided
+                if ($PSBoundParameters.ContainsKey('Schedule') -and $Schedule) {
+                    $deploymentProperties['AssignedSchedule'] = [Microsoft.Management.Infrastructure.CimInstance[]]@($Schedule)
                     $deploymentProperties['AssignedScheduleEnabled'] = [bool]$true
                     $deploymentProperties['AssignedScheduleIsGMT'] = [bool]$UseUtcForAvailableSchedule
                 }
@@ -12262,6 +12289,21 @@ function New-CM7TaskSequenceDeployment {
                 $result = Get-CimInstance @cimParams -Query $resultQuery
 
                 if ($result) {
+                    # Apply AllowUsersRunIndependently if specified
+                    if ($PSBoundParameters.ContainsKey('AllowUsersRunIndependently')) {
+                        $mapped = $false
+                        foreach ($candidate in @('AllowUsersRunIndependently', 'PresentUsers')) {
+                            if ($result.CimInstanceProperties[$candidate]) {
+                                Set-CimInstance -CimSession $script:CMConnection.CimSession -InputObject $result -Property @{ $candidate = [bool]$AllowUsersRunIndependently } | Out-Null
+                                $mapped = $true
+                                break
+                            }
+                        }
+                        if (-not $mapped) {
+                            Write-Verbose "Could not map parameter 'AllowUsersRunIndependently' to a known SMS_Advertisement property in this environment."
+                        }
+                    }
+
                     # Resolve task sequence name for output
                     $outputTsName = $resolvedTSName
 

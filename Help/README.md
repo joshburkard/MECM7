@@ -53,7 +53,7 @@ This documentation provides details on the functions available in the Public Pow
 | [New-CM7SoftwareUpdateDeployment](./New-CM7SoftwareUpdateDeployment.md) | Creates a new software update deployment in MECM using CIM. |
 | [New-CM7SoftwareUpdateDeploymentPackage](./New-CM7SoftwareUpdateDeploymentPackage.md) | Creates a new software update deployment package in MECM using CIM connectivity. |
 | [New-CM7SoftwareUpdateGroup](./New-CM7SoftwareUpdateGroup.md) | Creates a new software update group in Microsoft Endpoint Configuration Manager (MECM) using CIM. |
-| [New-CM7TaskSequenceDeployment](./New-CM7TaskSequenceDeployment.md) | Creates a new task sequence deployment in Microsoft Endpoint Configuration Manager (MECM) using CIM. |
+| [New-CM7TaskSequenceDeployment](./New-CM7TaskSequenceDeployment.md) | Creates a new task sequence deployment in MECM using CIM. |
 | [Remove-CM7Application](./Remove-CM7Application.md) | Removes an application from MECM using CIM connectivity. |
 | [Remove-CM7Boundary](./Remove-CM7Boundary.md) | Removes a boundary from MECM using CIM. |
 | [Remove-CM7BoundaryFromGroup](./Remove-CM7BoundaryFromGroup.md) | Removes a boundary from a boundary group in MECM using CIM. |

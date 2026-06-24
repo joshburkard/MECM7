@@ -120,6 +120,16 @@ function New-CM7TaskSequenceDeployment {
             - AsSoonAsPossible: Run as soon as possible after the available time (default)
             - LogOn: Run at next user logon
             - LogOff: Run at next user logoff
+            When -Schedule is specified, -ScheduleEvent is ignored unless also explicitly provided.
+
+        .PARAMETER Schedule
+            One or more schedule token objects (from New-CM7Schedule) to assign as the deployment
+            schedule for Required deployments. When provided, the -ScheduleEvent flag is not set
+            automatically (unless -ScheduleEvent is also explicitly specified).
+
+        .PARAMETER AllowUsersRunIndependently
+            Allows users to run the task sequence independently of the deployment assignment.
+            Maps to the AllowUsersRunIndependently or PresentUsers property in SMS_Advertisement.
 
         .PARAMETER Force
             Suppresses confirmation prompts.
@@ -188,9 +198,10 @@ function New-CM7TaskSequenceDeployment {
             over WinRM instead of requiring the ConfigMgr console or PowerShell drive.
 
             AdvertFlags and RemoteClientFlags are computed from the specified parameters to match
-            the behavior of the native New-CMTaskSequenceDeployment cmdlet. The default parameter
-            values produce the same flag values as the native cmdlet with default settings:
-            AdvertFlags = 0x8b0000 (9109504), RemoteClientFlags = 0x8850 (34896).
+            the behavior of the native New-CMTaskSequenceDeployment cmdlet. Bit definitions are
+            sourced from the official SMS_Advertisement WMI class documentation.
+            Default (Available, SoftwareInstallation=$true, SystemRestart=$true, AllowFallback=$false):
+            AdvertFlags = 0x00320000 (OVERRIDE_SERVICE_WINDOWS | REBOOT_OUTSIDE_SERVICE_WINDOWS | DONOT_FALLBACK).
     #>
     [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'Medium', DefaultParameterSetName = 'ByTSPackageIdCollectionName')]
     param(
@@ -280,6 +291,12 @@ function New-CM7TaskSequenceDeployment {
         [string]$ScheduleEvent = 'AsSoonAsPossible',
 
         [Parameter()]
+        [PSObject[]]$Schedule,
+
+        [Parameter()]
+        [Boolean]$AllowUsersRunIndependently,
+
+        [Parameter()]
         [switch]$Force
     )
 
@@ -302,34 +319,32 @@ function New-CM7TaskSequenceDeployment {
         }
 
         # ---- AdvertFlags bit definitions for SMS_Advertisement ----
-        $ADVERT_IMMEDIATE                      = [uint32]0x00000020  # 32 - As soon as possible
-        $ADVERT_ONSYSTEMSTARTUP                = [uint32]0x00000100  # 256
-        $ADVERT_ONUSERLOGON                    = [uint32]0x00000200  # 512
-        $ADVERT_ONUSERLOGOFF                   = [uint32]0x00000400  # 1024
-        $ADVERT_ENABLE_TS_FROM_CD_AND_PXE      = [uint32]0x00002000  # 8192
-        $ADVERT_NO_DISPLAY                     = [uint32]0x00008000  # 32768
-        $ADVERT_OVERRIDE_SERVICE_WINDOWS       = [uint32]0x00010000  # 65536
-        $ADVERT_REBOOT_OUTSIDE_SERVICE_WINDOWS = [uint32]0x00020000  # 131072
-        $ADVERT_WAKE_ON_LAN                    = [uint32]0x00040000  # 262144
-        $ADVERT_DONOT_FALLBACK                 = [uint32]0x00080000  # 524288
-        $ADVERT_ENABLE_PEER_CACHING            = [uint32]0x00100000  # 1048576
-        $ADVERT_SHOW_PROGRESS                  = [uint32]0x02000000  # 33554432
-        $ADVERT_USE_REMOTE_DP                  = [uint32]0x00800000  # 8388608
+        # Values from: https://learn.microsoft.com/en-us/intune/configmgr/develop/reference/core/servers/configure/sms_advertisement-server-wmi-class
+        $ADVERT_IMMEDIATE                      = [uint32]0x00000020  # bit  5 - Run as soon as possible
+        $ADVERT_ONSYSTEMSTARTUP                = [uint32]0x00000100  # bit  8 - Announce on system startup
+        $ADVERT_ONUSERLOGON                    = [uint32]0x00000200  # bit  9 - Announce on user logon
+        $ADVERT_ONUSERLOGOFF                   = [uint32]0x00000400  # bit 10 - Announce on user logoff
+        $ADVERT_ENABLE_PEER_CACHING            = [uint32]0x00010000  # bit 16 - Always set for TS deployments (verified vs native cmdlet)
+        $ADVERT_DONOT_FALLBACK                 = [uint32]0x00020000  # bit 17 - Do not fall back to unprotected DPs
+        $ADVERT_TS_BASE_FLAG_19               = [uint32]0x00080000  # bit 19 - Always set for TS deployments (undocumented, verified vs native cmdlet)
+        $ADVERT_ENABLE_TS_FROM_CD_AND_PXE      = [uint32]0x00040000  # bit 18 - TS available via media and PXE
+        $ADVERT_OVERRIDE_SERVICE_WINDOWS       = [uint32]0x00100000  # bit 20 - Override maintenance windows (SoftwareInstallation)
+        $ADVERT_REBOOT_OUTSIDE_SERVICE_WINDOWS = [uint32]0x00200000  # bit 21 - Reboot outside maintenance windows (SystemRestart)
+        $ADVERT_WAKE_ON_LAN                    = [uint32]0x00400000  # bit 22 - Wake On LAN enabled
+        $ADVERT_SHOW_PROGRESS                  = [uint32]0x00800000  # bit 23 - Show task sequence progress
+        $ADVERT_NO_DISPLAY                     = [uint32]0x02000000  # bit 25 - User cannot run independently (NO_DISPLAY)
 
         # ---- RemoteClientFlags bit definitions ----
-        $RCF_DOWNLOAD_FROM_LOCAL_DP            = [uint32]0x00000001  # 1
-        $RCF_DOWNLOAD_FROM_REMOTE_DP           = [uint32]0x00000002  # 2
-        $RCF_DONT_RUN_NO_LOCAL_DP              = [uint32]0x00000004  # 4
-        $RCF_DOWNLOAD_FROM_INTERNET            = [uint32]0x00000008  # 8
-        $RCF_ALLOW_SHARED_CONTENT              = [uint32]0x00000010  # 16
-        $RCF_ALWAYS_RERUN                      = [uint32]0x00000020  # 32
-        $RCF_RERUN_IF_FAILED                   = [uint32]0x00000040  # 64
-        $RCF_RERUN_IF_SUCCEEDED                = [uint32]0x00000080  # 128
-        $RCF_DOWNLOAD_FROM_UNPROTECTED_DP      = [uint32]0x00000100  # 256
-        $RCF_PERSIST_ON_WRITE_FILTER           = [uint32]0x00000400  # 1024
-        $RCF_ALLOW_INTERNET_CLIENTS            = [uint32]0x00000800  # 2048
-        $RCF_TS_SHOW_PROGRESS                  = [uint32]0x00004000  # 16384
-        $RCF_USE_METERED_NETWORK               = [uint32]0x00008000  # 32768
+        # Values from: https://learn.microsoft.com/en-us/intune/configmgr/develop/reference/core/servers/configure/sms_advertisement-server-wmi-class
+        $RCF_DOWNLOAD_FROM_LOCAL_DP            = [uint32]0x00000010  # bit  4 - Always set for TS deployments (verified vs native cmdlet)
+        $RCF_DONT_RUN_NO_LOCAL_DP              = [uint32]0x00000020  # bit  5 - Do not run if no local DP (RunFromDistributionPoint)
+        $RCF_DOWNLOAD_FROM_REMOTE_DP           = [uint32]0x00000040  # bit  6 - Always set for TS deployments (verified vs native cmdlet)
+        $RCF_ALWAYS_RERUN                      = [uint32]0x00000800  # bit 11 - Always rerun
+        $RCF_RERUN_NEVER                       = [uint32]0x00001000  # bit 12 - Never rerun
+        $RCF_RERUN_IF_FAILED                   = [uint32]0x00002000  # bit 13 - Rerun if previously failed
+        $RCF_RERUN_IF_SUCCEEDED                = [uint32]0x00004000  # bit 14 - Rerun if previously succeeded
+        $RCF_PERSIST_ON_WRITE_FILTER           = [uint32]0x00008000  # bit 15 - Persist on write-filter devices
+        $RCF_USE_METERED_NETWORK               = [uint32]0x00040000  # bit 18 - Allow metered network (DP_ALLOW_METERED_NETWORK)
     }
 
     process {
@@ -403,7 +418,8 @@ function New-CM7TaskSequenceDeployment {
             $actualAvailableDateTime = if ($PSBoundParameters.ContainsKey('AvailableDateTime')) { $AvailableDateTime } else { $now }
 
             # ---- Compute AdvertFlags ----
-            [uint32]$advertFlags = $ADVERT_USE_REMOTE_DP   # Always set for TS deployments
+            # Bits 16 and 19 are always set for TS deployments (verified against native New-CMTaskSequenceDeployment)
+            [uint32]$advertFlags = $ADVERT_ENABLE_PEER_CACHING -bor $ADVERT_TS_BASE_FLAG_19
 
             # Service window and restart control
             if ($SoftwareInstallation) {
@@ -437,18 +453,23 @@ function New-CM7TaskSequenceDeployment {
             }
 
             # Schedule event (for Required deployments)
+            # When a Schedule object is provided, skip ScheduleEvent flags unless ScheduleEvent
+            # was also explicitly specified by the caller.
             if ($DeployPurpose -eq 'Required') {
-                switch ($ScheduleEvent) {
-                    'AsSoonAsPossible' { $advertFlags = $advertFlags -bor $ADVERT_IMMEDIATE }
-                    'LogOn'            { $advertFlags = $advertFlags -bor $ADVERT_ONUSERLOGON }
-                    'LogOff'           { $advertFlags = $advertFlags -bor $ADVERT_ONUSERLOGOFF }
+                if (-not $PSBoundParameters.ContainsKey('Schedule') -or $PSBoundParameters.ContainsKey('ScheduleEvent')) {
+                    switch ($ScheduleEvent) {
+                        'AsSoonAsPossible' { $advertFlags = $advertFlags -bor $ADVERT_IMMEDIATE }
+                        'LogOn'            { $advertFlags = $advertFlags -bor $ADVERT_ONUSERLOGON }
+                        'LogOff'           { $advertFlags = $advertFlags -bor $ADVERT_ONUSERLOGOFF }
+                    }
                 }
             }
 
             Write-Verbose "AdvertFlags == 0x$($advertFlags.ToString('X')) / $advertFlags"
 
             # ---- Compute RemoteClientFlags ----
-            [uint32]$remoteClientFlags = 0
+            # Bits 4 and 6 are always set for TS deployments (verified against native New-CMTaskSequenceDeployment)
+            [uint32]$remoteClientFlags = $RCF_DOWNLOAD_FROM_LOCAL_DP -bor $RCF_DOWNLOAD_FROM_REMOTE_DP
 
             # Rerun behavior
             switch ($RerunBehavior) {
@@ -473,10 +494,8 @@ function New-CM7TaskSequenceDeployment {
                 $remoteClientFlags = $remoteClientFlags -bor $RCF_ALLOW_INTERNET_CLIENTS
             }
 
-            # Show TS progress in RemoteClientFlags
-            if ($ShowTaskSequenceProgress) {
-                $remoteClientFlags = $remoteClientFlags -bor $RCF_TS_SHOW_PROGRESS
-            }
+            # Show TS progress - controlled via AdvertFlags (ADVERT_SHOW_PROGRESS) only, per official docs.
+            # RemoteClientFlags has no documented bit for this.
 
             # Metered network
             if ($UseMeteredNetwork) {
@@ -530,8 +549,15 @@ function New-CM7TaskSequenceDeployment {
                     $deploymentProperties['ExpirationTimeIsGMT'] = [bool]$UseUtcForExpireSchedule
                 }
 
-                # For Required deployments with AsSoonAsPossible, enable the assigned schedule
+                # For Required deployments, enable the assigned schedule
                 if ($DeployPurpose -eq 'Required') {
+                    $deploymentProperties['AssignedScheduleEnabled'] = [bool]$true
+                    $deploymentProperties['AssignedScheduleIsGMT'] = [bool]$UseUtcForAvailableSchedule
+                }
+
+                # Set assignment schedule token(s) if explicitly provided
+                if ($PSBoundParameters.ContainsKey('Schedule') -and $Schedule) {
+                    $deploymentProperties['AssignedSchedule'] = [Microsoft.Management.Infrastructure.CimInstance[]]@($Schedule)
                     $deploymentProperties['AssignedScheduleEnabled'] = [bool]$true
                     $deploymentProperties['AssignedScheduleIsGMT'] = [bool]$UseUtcForAvailableSchedule
                 }
@@ -555,6 +581,21 @@ function New-CM7TaskSequenceDeployment {
                 $result = Get-CimInstance @cimParams -Query $resultQuery
 
                 if ($result) {
+                    # Apply AllowUsersRunIndependently if specified
+                    if ($PSBoundParameters.ContainsKey('AllowUsersRunIndependently')) {
+                        $mapped = $false
+                        foreach ($candidate in @('AllowUsersRunIndependently', 'PresentUsers')) {
+                            if ($result.CimInstanceProperties[$candidate]) {
+                                Set-CimInstance -CimSession $script:CMConnection.CimSession -InputObject $result -Property @{ $candidate = [bool]$AllowUsersRunIndependently } | Out-Null
+                                $mapped = $true
+                                break
+                            }
+                        }
+                        if (-not $mapped) {
+                            Write-Verbose "Could not map parameter 'AllowUsersRunIndependently' to a known SMS_Advertisement property in this environment."
+                        }
+                    }
+
                     # Resolve task sequence name for output
                     $outputTsName = $resolvedTSName
 

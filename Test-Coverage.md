@@ -2,7 +2,7 @@
 
 This file tracks the test coverage status for all functions in the MECM7 module.
 
-**Last Updated:** 2026-03-16 13:35:40
+**Last Updated:** 2026-06-24 19:40:15
 
 ## PowerShell 7.x
 
@@ -14,7 +14,7 @@ This file tracks the test coverage status for all functions in the MECM7 module.
 | Connect-CM7 | 🟡 Partial | 25 | 0 | 2 | 100% | 8.9s |
 | Get-CM7Application | 🟢 Passed | 7 | 0 | 0 | 92.45% | 102.2s |
 | Get-CM7Boundary | 🟢 Passed | 7 | 0 | 0 | 80.77% | 4.02s |
-| Get-CM7BoundaryGroup | 🟢 Passed | 17 | 0 | 0 | 93.48% | 3.17s |
+| Get-CM7BoundaryGroup | 🟢 Passed | 17 | 0 | 0 | 95% | 5.14s |
 | Get-CM7Collection | 🟢 Passed | 18 | 0 | 0 | 96.88% | 42.9s |
 | Get-CM7CollectionDirectMembershipRule | 🟢 Passed | 19 | 0 | 0 | 83.33% | 4.84s |
 | Get-CM7CollectionExcludeMembershipRule | 🟢 Passed | 17 | 0 | 0 | 90.74% | 5.01s |
@@ -55,7 +55,7 @@ This file tracks the test coverage status for all functions in the MECM7 module.
 | New-CM7SoftwareUpdateDeployment | 🟢 Passed | 18 | 0 | 0 | 83.49% | 39.66s |
 | New-CM7SoftwareUpdateDeploymentPackage | 🟢 Passed | 3 | 0 | 0 | 94.44% | 2.28s |
 | New-CM7SoftwareUpdateGroup | 🟢 Passed | 14 | 0 | 0 | 82.02% | 25.62s |
-| New-CM7TaskSequenceDeployment | 🟢 Passed | 20 | 0 | 0 | 90.91% | 13.89s |
+| New-CM7TaskSequenceDeployment | 🟢 Passed | 20 | 0 | 0 | 85.12% | 25.34s |
 | Remove-CM7Application | 🟢 Passed | 9 | 0 | 0 | 89.74% | 14.44s |
 | Remove-CM7Boundary | 🟢 Passed | 16 | 0 | 0 | 88.89% | 14.14s |
 | Remove-CM7BoundaryFromGroup | 🟢 Passed | 22 | 0 | 0 | 83.33% | 60.11s |
@@ -72,8 +72,8 @@ This file tracks the test coverage status for all functions in the MECM7 module.
 | Remove-CM7TaskSequenceDeployment | 🟢 Passed | 17 | 0 | 0 | 74.1% | 15.55s |
 | Save-CM7SoftwareUpdate | 🟢 Passed | 12 | 0 | 0 | 79.73% | 298.16s |
 | Set-CM7Application | 🔴 Failed | 5 | 1 | 0 | 43.41% | 8.4s |
-| Set-CM7Boundary | 🟢 Passed | 18 | 0 | 0 | 83.84% | 28.88s |
-| Set-CM7BoundaryGroup | 🟢 Passed | 23 | 0 | 0 | 81.94% | 11.82s |
+| Set-CM7Boundary | 🟢 Passed | 18 | 0 | 0 | 83.84% | 29.82s |
+| Set-CM7BoundaryGroup | 🟢 Passed | 23 | 0 | 0 | 82.05% | 16.44s |
 | Set-CM7Folder | 🟢 Passed | 6 | 0 | 0 | 88.61% | 23.04s |
 | Set-CM7TaskSequenceDeployment | 🟢 Passed | 20 | 0 | 0 | 71.11% | 33.83s |
 | Sync-CM7SoftwareUpdate | 🟢 Passed | 4 | 0 | 0 | 90.91% | 2.83s |
@@ -88,7 +88,7 @@ This file tracks the test coverage status for all functions in the MECM7 module.
 | Connect-CM7 | 🟡 Partial | 25 | 0 | 2 | 100% | 13.67s |
 | Get-CM7Application | 🟢 Passed | 7 | 0 | 0 | 92.45% | 102.91s |
 | Get-CM7Boundary | 🟢 Passed | 7 | 0 | 0 | 80.77% | 7.21s |
-| Get-CM7BoundaryGroup | 🟢 Passed | 17 | 0 | 0 | 93.48% | 5.64s |
+| Get-CM7BoundaryGroup | 🟢 Passed | 17 | 0 | 0 | 95% | 9.05s |
 | Get-CM7Collection | 🟢 Passed | 18 | 0 | 0 | 96.88% | 69.7s |
 | Get-CM7CollectionDirectMembershipRule | 🟢 Passed | 19 | 0 | 0 | 83.33% | 7.33s |
 | Get-CM7CollectionExcludeMembershipRule | 🟢 Passed | 17 | 0 | 0 | 90.74% | 7.44s |
@@ -146,8 +146,8 @@ This file tracks the test coverage status for all functions in the MECM7 module.
 | Remove-CM7SoftwareUpdateGroup | 🟢 Passed | 8 | 0 | 0 | 96.67% | 7.68s |
 | Remove-CM7TaskSequenceDeployment | 🟢 Passed | 17 | 0 | 0 | 74.1% | 17.09s |
 | Save-CM7SoftwareUpdate | 🟢 Passed | 12 | 0 | 0 | 78.38% | 169.98s |
-| Set-CM7Boundary | 🟢 Passed | 18 | 0 | 0 | 81.82% | 31.96s |
-| Set-CM7BoundaryGroup | 🟢 Passed | 23 | 0 | 0 | 81.94% | 14.88s |
+| Set-CM7Boundary | 🔴 Failed | 17 | 1 | 0 | 81.82% | 41.22s |
+| Set-CM7BoundaryGroup | 🟢 Passed | 23 | 0 | 0 | 82.05% | 21.05s |
 | Set-CM7Folder | 🟢 Passed | 6 | 0 | 0 | 91.14% | 9.39s |
 | Set-CM7TaskSequenceDeployment | 🟢 Passed | 20 | 0 | 0 | 71.11% | 39.58s |
 | Sync-CM7SoftwareUpdate | 🟢 Passed | 4 | 0 | 0 | 90.91% | 5.1s |

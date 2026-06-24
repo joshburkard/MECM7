@@ -213,10 +213,11 @@ function Set-CM7BoundaryGroup {
         }
 
         # Flags bit flags for peer download settings (SMS_BoundaryGroup.Flags property)
-        $optionBitAllowPeerDownload    = [uint32]0x0002
-        $optionBitSubnetPeerOnly       = [uint32]0x0004
-        $optionBitPreferDPOverPeer     = [uint32]0x0008
-        $optionBitPreferCloudDPOverDP  = [uint32]0x0010
+        $optionBitAllowPeerDownload    = [uint32]0x0000
+        $optionBitDenyPeerDownload     = [uint32]0x0001
+        $optionBitSubnetPeerOnly       = [uint32]0x0002
+        $optionBitPreferDPOverPeer     = [uint32]0x0004
+        $optionBitPreferCloudDPOverDP  = [uint32]0x0008
     }
 
     process {
@@ -300,8 +301,10 @@ function Set-CM7BoundaryGroup {
                     $currentOptions = [uint32]$group.Flags
 
                     if ($PSBoundParameters.ContainsKey('AllowPeerDownload')) {
-                        if ($AllowPeerDownload) { $currentOptions = $currentOptions -bor $optionBitAllowPeerDownload }
-                        else                    { $currentOptions = $currentOptions -band (-bnot $optionBitAllowPeerDownload) }
+                        # if AllowPeerDownload is set, the Flag adds 0 otherwhise it adds 1 to the Flag. The other flags are only relevant if AllowPeerDownload is set.
+
+                        if ($AllowPeerDownload) { $currentOptions = $currentOptions -band (-bnot $optionBitDenyPeerDownload) }
+                        else                         { $currentOptions = $currentOptions -bor $optionBitDenyPeerDownload }
                     }
 
                     if ($PSBoundParameters.ContainsKey('SubnetPeerDownloadOnly')) {

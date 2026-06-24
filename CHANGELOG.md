@@ -75,3 +75,6 @@
 0.1.73 | added parameters to New-CM7SoftwareUpdateDeployment | 2026-03-16 | Josua Burkard
 0.1.74 | fixed Remove-CM7SoftwareUpdateDeployment | 2026-03-16 | Josua Burkard
 0.1.74 | fixed Remove-CM7SoftwareUpdateDeployment | 2026-03-16 | Josua Burkard
+0.1.75 | fixed New-CM7TaskSequenceDeployment | 2026-03-16 | Josua Burkard
+0.1.74 | fixed New-CM7TaskSequenceDeployment | 2026-03-16 | Josua Burkard
+0.1.76 | adjusted Get-/Set-CM7BoundaryGroup | 2026-06-24 | Josua Burkard

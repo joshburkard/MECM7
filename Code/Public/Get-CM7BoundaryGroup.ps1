@@ -127,6 +127,18 @@ function Get-CM7BoundaryGroup {
 
             if ($results) {
                 foreach ($result in $results) {
+                    # Flags bit flags for peer download settings (SMS_BoundaryGroup.Flags property)
+                    $optionBitAllowPeerDownload    = [uint32]0x0000
+                    $optionBitDenyPeerDownload     = [uint32]0x0001
+                    $optionBitSubnetPeerOnly       = [uint32]0x0002
+                    $optionBitPreferDPOverPeer     = [uint32]0x0004
+                    $optionBitPreferCloudDPOverDP  = [uint32]0x0008
+
+                    [boolean]$allowPeerDownload      = -not ($result.Flags -band $optionBitDenyPeerDownload)
+                    [boolean]$subnetPeerDownloadOnly = $result.Flags -band $optionBitSubnetPeerOnly
+                    [boolean]$preferDPOverPeer       = $result.Flags -band $optionBitPreferDPOverPeer
+                    [boolean]$preferCloudDPOverDP    = $result.Flags -band $optionBitPreferCloudDPOverDP
+
                     $output = [PSCustomObject]@{
                         PSTypeName      = 'MECM7.BoundaryGroup'
                         GroupID         = [int]$result.GroupID
@@ -135,12 +147,16 @@ function Get-CM7BoundaryGroup {
                         DefaultSiteCode = $result.DefaultSiteCode
                         MemberCount     = $result.MemberCount
                         SiteSystemCount = $result.SiteSystemCount
+                        AllowPeerDownload      = $allowPeerDownload
+                        SubnetPeerDownloadOnly = $subnetPeerDownloadOnly
+                        PreferDPOverPeer       = $preferDPOverPeer
+                        PreferCloudDPOverDP    = $preferCloudDPOverDP
                     }
                     $output.PSObject.TypeNames.Insert(0, 'MECM7.BoundaryGroup')
 
                     # Append any additional CIM properties not already mapped
                     $result.CimInstanceProperties | ForEach-Object {
-                        if ($_.Name -notin $output.PSObject.Properties.Name) {
+                        if ($_.Name -notin $output.PSObject.Properties.Name -and $_.Name -ne 'Flags') {
                             $output | Add-Member -MemberType NoteProperty -Name $_.Name -Value $_.Value -Force
                         }
                     }

@@ -159,7 +159,7 @@ Describe "Set-CM7BoundaryGroup Function Tests" -Tag "Integration", "BoundaryGrou
             $result = Get-CM7BoundaryGroup -Id $groupId
             $result | Should -Not -BeNullOrEmpty
             # Bit 0x0002 = AllowPeerDownload
-            ($result.Flags -band 0x0002) | Should -Be 2
+            ($result.AllowPeerDownload) | Should -Be $true
         }
 
         It "Should enable SubnetPeerDownloadOnly" {
@@ -171,7 +171,7 @@ Describe "Set-CM7BoundaryGroup Function Tests" -Tag "Integration", "BoundaryGrou
             $result = Get-CM7BoundaryGroup -Id $groupId
             $result | Should -Not -BeNullOrEmpty
             # Bit 0x0004 = SubnetPeerDownloadOnly
-            ($result.Flags -band 0x0004) | Should -Be 4
+            ($result.SubnetPeerDownloadOnly) | Should -Be $true
         }
 
         It "Should enable PreferDPOverPeer" {
@@ -183,7 +183,7 @@ Describe "Set-CM7BoundaryGroup Function Tests" -Tag "Integration", "BoundaryGrou
             $result = Get-CM7BoundaryGroup -Id $groupId
             $result | Should -Not -BeNullOrEmpty
             # Bit 0x0008 = PreferDPOverPeer
-            ($result.Flags -band 0x0008) | Should -Be 8
+            ($result.PreferDPOverPeer) | Should -Be $true
         }
 
         It "Should enable PreferCloudDPOverDP" {
@@ -195,7 +195,7 @@ Describe "Set-CM7BoundaryGroup Function Tests" -Tag "Integration", "BoundaryGrou
             $result = Get-CM7BoundaryGroup -Id $groupId
             $result | Should -Not -BeNullOrEmpty
             # Bit 0x0010 = PreferCloudDPOverDP
-            ($result.Flags -band 0x0010) | Should -Be 16
+            ($result.PreferCloudDPOverDP) | Should -Be $true
         }
 
         It "Should disable AllowPeerDownload and clear all related flags at once" {

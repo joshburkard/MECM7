@@ -323,27 +323,31 @@ function Set-CM7TaskSequenceDeployment {
             Namespace  = $namespace
         }
 
-        $ADVERT_IMMEDIATE                      = [uint32]0x00000020
-        $ADVERT_ONUSERLOGON                    = [uint32]0x00000200
-        $ADVERT_ONUSERLOGOFF                   = [uint32]0x00000400
-        $ADVERT_ENABLE_TS_FROM_CD_AND_PXE      = [uint32]0x00002000
-        $ADVERT_NO_DISPLAY                     = [uint32]0x00008000
-        $ADVERT_OVERRIDE_SERVICE_WINDOWS       = [uint32]0x00010000
-        $ADVERT_REBOOT_OUTSIDE_SERVICE_WINDOWS = [uint32]0x00020000
-        $ADVERT_WAKE_ON_LAN                    = [uint32]0x00040000
-        $ADVERT_DONOT_FALLBACK                 = [uint32]0x00080000
-        $ADVERT_SHOW_PROGRESS                  = [uint32]0x02000000
+        # Values from: https://learn.microsoft.com/en-us/intune/configmgr/develop/reference/core/servers/configure/sms_advertisement-server-wmi-class
+        $ADVERT_IMMEDIATE                      = [uint32]0x00000020  # bit  5
+        $ADVERT_ONUSERLOGON                    = [uint32]0x00000200  # bit  9
+        $ADVERT_ONUSERLOGOFF                   = [uint32]0x00000400  # bit 10
+        $ADVERT_ENABLE_TS_FROM_CD_AND_PXE      = [uint32]0x00040000  # bit 18
+        $ADVERT_NO_DISPLAY                     = [uint32]0x02000000  # bit 25
+        $ADVERT_OVERRIDE_SERVICE_WINDOWS       = [uint32]0x00100000  # bit 20
+        $ADVERT_REBOOT_OUTSIDE_SERVICE_WINDOWS = [uint32]0x00200000  # bit 21
+        $ADVERT_WAKE_ON_LAN                    = [uint32]0x00400000  # bit 22
+        $ADVERT_DONOT_FALLBACK                 = [uint32]0x00020000  # bit 17
+        $ADVERT_SHOW_PROGRESS                  = [uint32]0x00800000  # bit 23
 
-        $RCF_DOWNLOAD_FROM_REMOTE_DP           = [uint32]0x00000002
-        $RCF_DONT_RUN_NO_LOCAL_DP              = [uint32]0x00000004
-        $RCF_ALLOW_SHARED_CONTENT              = [uint32]0x00000010
-        $RCF_ALWAYS_RERUN                      = [uint32]0x00000020
-        $RCF_RERUN_IF_FAILED                   = [uint32]0x00000040
-        $RCF_RERUN_IF_SUCCEEDED                = [uint32]0x00000080
-        $RCF_PERSIST_ON_WRITE_FILTER           = [uint32]0x00000400
-        $RCF_ALLOW_INTERNET_CLIENTS            = [uint32]0x00000800
-        $RCF_TS_SHOW_PROGRESS                  = [uint32]0x00004000
-        $RCF_USE_METERED_NETWORK               = [uint32]0x00008000
+        # Bits 4 and 6 are always set for TS deployments (verified against native New-CMTaskSequenceDeployment)
+        $RCF_DOWNLOAD_FROM_LOCAL_DP            = [uint32]0x00000010  # bit  4 - always set for TS
+        $RCF_DOWNLOAD_FROM_REMOTE_DP           = [uint32]0x00000040  # bit  6 - always set for TS
+        $RCF_DONT_RUN_NO_LOCAL_DP              = [uint32]0x00000020  # bit  5
+        $RCF_ALWAYS_RERUN                      = [uint32]0x00000800  # bit 11
+        $RCF_RERUN_IF_FAILED                   = [uint32]0x00002000  # bit 13
+        $RCF_RERUN_IF_SUCCEEDED                = [uint32]0x00004000  # bit 14
+        $RCF_PERSIST_ON_WRITE_FILTER           = [uint32]0x00008000  # bit 15
+        $RCF_USE_METERED_NETWORK               = [uint32]0x00040000  # bit 18
+        # NOTE: The following RemoteClientFlags are not defined in the official SMS_Advertisement docs.
+        # Their correct bit positions are unverified. Use with caution.
+        $RCF_ALLOW_SHARED_CONTENT              = [uint32]0x00000010  # Undocumented - BranchCache/peer cache (unverified)
+        $RCF_ALLOW_INTERNET_CLIENTS            = [uint32]0x00010000  # Undocumented - internet-based clients (unverified)
 
         $collectionLookup = @{}
         $deploymentIdList = New-Object System.Collections.Generic.List[string]
@@ -539,10 +543,10 @@ function Set-CM7TaskSequenceDeployment {
                 if ($PSBoundParameters.ContainsKey('ShowTaskSequenceProgress')) {
                     if ($ShowTaskSequenceProgress) {
                         $advertFlags = $advertFlags -bor $ADVERT_SHOW_PROGRESS
-                        $remoteClientFlags = $remoteClientFlags -bor $RCF_TS_SHOW_PROGRESS
+                        # ShowTaskSequenceProgress is controlled via AdvertFlags only (per official docs).
+                        # RemoteClientFlags has no documented bit for this.
                     } else {
                         $advertFlags = $advertFlags -band (-bnot $ADVERT_SHOW_PROGRESS)
-                        $remoteClientFlags = $remoteClientFlags -band (-bnot $RCF_TS_SHOW_PROGRESS)
                     }
                 }
 
