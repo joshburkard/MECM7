@@ -171,6 +171,7 @@ if($TestsResult.FailedCount -eq 0){
         CompatiblePSEditions = @('Desktop', 'Core')
         ProjectUri           = 'https://github.com/joshburkard/MECM7'
         LicenseUri           = 'https://github.com/joshburkard/MECM7/blob/main/LICENSE'
+        Tags                 = @('MECM', 'SCCM', 'ConfigurationManager', 'MicrosoftEndpointConfigurationManager', 'PowerShell', 'Automation', 'WinRM', 'CIM')
     }
     New-ModuleManifest @ModuleManifestSplat
 

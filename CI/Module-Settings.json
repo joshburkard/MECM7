@@ -1,9 +1,9 @@
 {
   "ModuleName": "MECM7",
-  "ModuleVersion": "0.1.76",
+  "ModuleVersion": "0.1.77",
   "ModuleDescription": "Powerful automation for Microsoft Endpoint Configuration Manager (MECM/SCCM): manage collections, deployments, boundaries, and more via intuitive PowerShell commands using WinRM/CIM. Streamline your MECM administration and boost productivity with this comprehensive toolkit. All commands of this module are designed to work with PowerShell 7.x and legacy Windows PowerShell 5.1, ensuring compatibility across various environments.",
   "ModuleAuthor": "Josua Burkard",
   "ModuleCompany": "Josua Burkard",
   "ModulePrefix": "CM7",
-  "LastChange": "adjusted Get-/Set-CM7BoundaryGroup"
+  "LastChange": "added Tags to Module-Manifest"
 }

@@ -78,4 +78,4 @@
 0.1.75 | fixed New-CM7TaskSequenceDeployment | 2026-03-16 | Josua Burkard
 0.1.74 | fixed New-CM7TaskSequenceDeployment | 2026-03-16 | Josua Burkard
 0.1.76 | adjusted Get-/Set-CM7BoundaryGroup | 2026-06-24 | Josua Burkard
-0.1.76 | adjusted Get-/Set-CM7BoundaryGroup | 2026-06-24 | Josua Burkard
+0.1.77 | added Tags to Module-Manifest | 2026-06-26 | Josua Burkard
