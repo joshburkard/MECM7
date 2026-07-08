@@ -66,9 +66,9 @@
     Run all functional tests only in PowerShell 5.1 (via subprocess).
 
 .NOTES
-    This script requires Pester 5.2.2 or higher.
+    This script requires Pester 6.0.0 or higher.
     When using -PSVersion Both, PowerShell 5.1 tests run in a subprocess via powershell.exe.
-    Pester 5.2.2+ must be installed in both PowerShell versions for dual-version testing.
+    Pester 6.0.0+ must be installed in both PowerShell versions for dual-version testing.
 #>
 [CmdletBinding()]
 param(
@@ -133,17 +133,18 @@ param(
 if ($SubprocessMode) {
     # Minimal execution mode for testing in a different PowerShell version
     # Results are exported as JSON to $ResultFile
-    if ((Get-Module -Name Pester).Version -match '^3\.\d{1}\.\d{1}') {
+    $pesterModule = Get-Module -Name Pester
+    if (-not $pesterModule -or $pesterModule.Version -lt [Version]'6.0.0') {
         try { Remove-Module -Name Pester -ErrorAction Stop } catch {}
     }
-    if (-not (Get-Module -Name Pester -ListAvailable | Where-Object { $_.Version -ge '5.2.2' })) {
+    if (-not (Get-Module -Name Pester -ListAvailable | Where-Object { $_.Version -ge '6.0.0' })) {
         @{
-            Error     = "Pester 5.2.2+ not available in PowerShell $($PSVersionTable.PSVersion)"
+            Error     = "Pester 6.0.0+ not available in PowerShell $($PSVersionTable.PSVersion)"
             PSVersion = $PSVersionTable.PSVersion.ToString()
         } | ConvertTo-Json -Depth 3 | Set-Content -Path $ResultFile -Encoding UTF8
         exit 1
     }
-    Import-Module -Name Pester -MinimumVersion 5.2.2 -ErrorAction Stop
+    Import-Module -Name Pester -MinimumVersion 6.0.0 -ErrorAction Stop
 
     $TestsPath = $PSScriptRoot
     $Root = (Get-Item $TestsPath).Parent.FullName
@@ -244,20 +245,21 @@ if ($SubprocessMode) {
 Clear-Host
 Write-Host "========================================" -ForegroundColor Cyan
 
-# Ensure Pester 5.x is loaded
-if((Get-Module -Name Pester).Version -match '^3\.\d{1}\.\d{1}'){
+# Ensure Pester 6.x is loaded
+$pesterModule = Get-Module -Name Pester
+if (-not $pesterModule -or $pesterModule.Version -lt [Version]'6.0.0') {
     try {
         Remove-Module -Name Pester -ErrorAction Stop
-        Write-Host "[TEST] Removing Pester 3.x" -ForegroundColor Yellow
+        Write-Host "[TEST] Removing old Pester version" -ForegroundColor Yellow
     } catch {}
 }
 
-if(-not (Get-Module -Name Pester -ListAvailable | Where-Object { $_.Version -ge '5.2.2' })) {
-    Write-Error "Pester 5.2.2 or higher is required. Install with: Install-Module -Name Pester -MinimumVersion 5.2.2 -Force"
+if(-not (Get-Module -Name Pester -ListAvailable | Where-Object { $_.Version -ge '6.0.0' })) {
+    Write-Error "Pester 6.0.0 or higher is required. Install with: Install-Module -Name Pester -MinimumVersion 6.0.0 -Force"
     exit 1
 }
 
-Import-Module -Name Pester -MinimumVersion 5.2.2 -ErrorAction Stop
+Import-Module -Name Pester -MinimumVersion 6.0.0 -ErrorAction Stop
 
 # Get script paths
 $TestsPath = $PSScriptRoot

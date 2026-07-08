@@ -2,7 +2,7 @@
 
 This file tracks the test coverage status for all functions in the MECM7 module.
 
-**Last Updated:** 2026-07-08 11:26:24
+**Last Updated:** 2026-07-08 11:42:44
 
 ## PowerShell 7.x
 
@@ -11,7 +11,7 @@ This file tracks the test coverage status for all functions in the MECM7 module.
 | Add-CM7BoundaryToGroup | 🟢 Passed | 30 | 0 | 0 | 83.33% | 20.51s |
 | Add-CM7CollectionMembershipRule | 🟢 Passed | 31 | 0 | 0 | 92.86% | 62.19s |
 | Add-CM7SoftwareUpdateToGroup | 🟡 Partial | 16 | 0 | 2 | 94.52% | 14.5s |
-| Connect-CM7 | 🟡 Partial | 25 | 0 | 2 | 67% | 5.12s |
+| Connect-CM7 | 🟡 Partial | 25 | 0 | 2 | 67% | 3.15s |
 | Get-CM7Application | 🟢 Passed | 7 | 0 | 0 | 92.45% | 102.2s |
 | Get-CM7Boundary | 🟢 Passed | 7 | 0 | 0 | 80.77% | 4.02s |
 | Get-CM7BoundaryGroup | 🟢 Passed | 17 | 0 | 0 | 95% | 5.14s |
@@ -85,7 +85,7 @@ This file tracks the test coverage status for all functions in the MECM7 module.
 | Add-CM7BoundaryToGroup | 🟢 Passed | 30 | 0 | 0 | 83.33% | 22.23s |
 | Add-CM7CollectionMembershipRule | 🟢 Passed | 31 | 0 | 0 | 92.86% | 67.47s |
 | Add-CM7SoftwareUpdateToGroup | 🟡 Partial | 16 | 0 | 2 | 65.75% | 32.67s |
-| Connect-CM7 | 🟡 Partial | 25 | 0 | 2 | 67% | 11.19s |
+| Connect-CM7 | 🟡 Partial | 25 | 0 | 2 | 67% | 11.74s |
 | Get-CM7Application | 🟢 Passed | 7 | 0 | 0 | 92.45% | 102.91s |
 | Get-CM7Boundary | 🟢 Passed | 7 | 0 | 0 | 80.77% | 7.21s |
 | Get-CM7BoundaryGroup | 🟢 Passed | 17 | 0 | 0 | 95% | 9.05s |
