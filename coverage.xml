@@ -1,62 +1,50 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="no"?>
 <!DOCTYPE report PUBLIC "-//JACOCO//DTD Report 1.1//EN" "report.dtd"[]>
 <report name="Pester ()">
-  <sessioninfo id="this" start="1783502771712" dump="1783502782904" />
+  <sessioninfo id="this" start="1783510776774" dump="1783510779731" />
   <package name="Code/Public">
-    <class name="Code/Public/Connect-CM7" sourcefilename="Connect-CM7.ps1">
-      <method name="Connect-CM7" desc="()" line="54">
-        <counter type="INSTRUCTION" missed="1" covered="20" />
-        <counter type="LINE" missed="0" covered="16" />
+    <class name="Code/Public/Get-CM7SoftwareUpdateSyncStatus" sourcefilename="Get-CM7SoftwareUpdateSyncStatus.ps1">
+      <method name="Get-CM7SoftwareUpdateSyncStatus" desc="()" line="19">
+        <counter type="INSTRUCTION" missed="0" covered="22" />
+        <counter type="LINE" missed="0" covered="18" />
         <counter type="METHOD" missed="0" covered="1" />
       </method>
-      <method name="&lt;script&gt;" desc="()" line="80">
-        <counter type="INSTRUCTION" missed="0" covered="9" />
-        <counter type="LINE" missed="0" covered="9" />
-        <counter type="METHOD" missed="0" covered="1" />
-      </method>
-      <counter type="INSTRUCTION" missed="1" covered="29" />
-      <counter type="LINE" missed="0" covered="25" />
-      <counter type="METHOD" missed="0" covered="2" />
+      <counter type="INSTRUCTION" missed="0" covered="22" />
+      <counter type="LINE" missed="0" covered="18" />
+      <counter type="METHOD" missed="0" covered="1" />
       <counter type="CLASS" missed="0" covered="1" />
     </class>
-    <sourcefile name="Connect-CM7.ps1">
-      <line nr="54" mi="0" ci="1" mb="0" cb="0" />
-      <line nr="56" mi="0" ci="1" mb="0" cb="0" />
-      <line nr="57" mi="0" ci="1" mb="0" cb="0" />
-      <line nr="58" mi="0" ci="1" mb="0" cb="0" />
-      <line nr="59" mi="0" ci="1" mb="0" cb="0" />
-      <line nr="60" mi="0" ci="1" mb="0" cb="0" />
-      <line nr="61" mi="0" ci="1" mb="0" cb="0" />
-      <line nr="62" mi="0" ci="1" mb="0" cb="0" />
-      <line nr="63" mi="1" ci="2" mb="0" cb="0" />
-      <line nr="65" mi="0" ci="3" mb="0" cb="0" />
-      <line nr="67" mi="0" ci="1" mb="0" cb="0" />
-      <line nr="68" mi="0" ci="1" mb="0" cb="0" />
-      <line nr="69" mi="0" ci="1" mb="0" cb="0" />
-      <line nr="70" mi="0" ci="1" mb="0" cb="0" />
-      <line nr="71" mi="0" ci="1" mb="0" cb="0" />
-      <line nr="75" mi="0" ci="2" mb="0" cb="0" />
-      <line nr="80" mi="0" ci="1" mb="0" cb="0" />
-      <line nr="81" mi="0" ci="1" mb="0" cb="0" />
-      <line nr="82" mi="0" ci="1" mb="0" cb="0" />
-      <line nr="83" mi="0" ci="1" mb="0" cb="0" />
-      <line nr="84" mi="0" ci="1" mb="0" cb="0" />
-      <line nr="85" mi="0" ci="1" mb="0" cb="0" />
-      <line nr="86" mi="0" ci="1" mb="0" cb="0" />
-      <line nr="87" mi="0" ci="1" mb="0" cb="0" />
-      <line nr="88" mi="0" ci="1" mb="0" cb="0" />
-      <counter type="INSTRUCTION" missed="1" covered="29" />
-      <counter type="LINE" missed="0" covered="25" />
-      <counter type="METHOD" missed="0" covered="2" />
+    <sourcefile name="Get-CM7SoftwareUpdateSyncStatus.ps1">
+      <line nr="19" mi="0" ci="2" mb="0" cb="0" />
+      <line nr="20" mi="0" ci="1" mb="0" cb="0" />
+      <line nr="23" mi="0" ci="1" mb="0" cb="0" />
+      <line nr="24" mi="0" ci="2" mb="0" cb="0" />
+      <line nr="27" mi="0" ci="2" mb="0" cb="0" />
+      <line nr="29" mi="0" ci="1" mb="0" cb="0" />
+      <line nr="30" mi="0" ci="1" mb="0" cb="0" />
+      <line nr="34" mi="0" ci="1" mb="0" cb="0" />
+      <line nr="35" mi="0" ci="1" mb="0" cb="0" />
+      <line nr="36" mi="0" ci="1" mb="0" cb="0" />
+      <line nr="37" mi="0" ci="1" mb="0" cb="0" />
+      <line nr="38" mi="0" ci="1" mb="0" cb="0" />
+      <line nr="39" mi="0" ci="1" mb="0" cb="0" />
+      <line nr="40" mi="0" ci="1" mb="0" cb="0" />
+      <line nr="41" mi="0" ci="1" mb="0" cb="0" />
+      <line nr="42" mi="0" ci="1" mb="0" cb="0" />
+      <line nr="44" mi="0" ci="2" mb="0" cb="0" />
+      <line nr="47" mi="0" ci="1" mb="0" cb="0" />
+      <counter type="INSTRUCTION" missed="0" covered="22" />
+      <counter type="LINE" missed="0" covered="18" />
+      <counter type="METHOD" missed="0" covered="1" />
       <counter type="CLASS" missed="0" covered="1" />
     </sourcefile>
-    <counter type="INSTRUCTION" missed="1" covered="29" />
-    <counter type="LINE" missed="0" covered="25" />
-    <counter type="METHOD" missed="0" covered="2" />
+    <counter type="INSTRUCTION" missed="0" covered="22" />
+    <counter type="LINE" missed="0" covered="18" />
+    <counter type="METHOD" missed="0" covered="1" />
     <counter type="CLASS" missed="0" covered="1" />
   </package>
-  <counter type="INSTRUCTION" missed="1" covered="29" />
-  <counter type="LINE" missed="0" covered="25" />
-  <counter type="METHOD" missed="0" covered="2" />
+  <counter type="INSTRUCTION" missed="0" covered="22" />
+  <counter type="LINE" missed="0" covered="18" />
+  <counter type="METHOD" missed="0" covered="1" />
   <counter type="CLASS" missed="0" covered="1" />
 </report>

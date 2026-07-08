@@ -2530,6 +2530,25 @@ $script:TestData = @{
         }
     }
 
+    # ========================================================================
+    # Get-CM7SoftwareUpdateSyncStatus
+    # ========================================================================
+    'Get-CM7SoftwareUpdateSyncStatus' = @{
+        All = @{
+            ExpectedMinCount = 1
+            KnownLastSyncStates = @(
+                'WSUS Synchronization done (Success)',
+                'WSUS Synchronization failed',
+                'WSUS Synchronization in progress. Current phase: Synchronizing WSUS Server',
+                'WSUS Synchronization in progress. Current phase: Synchronizing site database',
+                'WSUS Synchronization in progress. Current phase: Synchronizing Internet facing WSUS Server',
+                'Content of WSUS server is out of sync with upstream server',
+                'WSUS synchronization complete, with pending license terms downloads',
+                'Unknown'
+            )
+        }
+    }
+
 }
 #endregion
 

@@ -80,3 +80,4 @@
 0.1.76 | adjusted Get-/Set-CM7BoundaryGroup | 2026-06-24 | Josua Burkard
 0.1.77 | added Tags to Module-Manifest | 2026-06-26 | Josua Burkard
 0.1.78 | add parameter AddToTrustedHosts to Connect-CM7 | 2026-07-08 | Josua Burkard
+0.1.79 | Get-CM7SoftwareUpdateSyncStatus | 2026-07-08 | Josua Burkard

@@ -2,7 +2,7 @@
 
 This file tracks the test coverage status for all functions in the MECM7 module.
 
-**Last Updated:** 2026-07-08 11:42:44
+**Last Updated:** 2026-07-08 13:39:39
 
 ## PowerShell 7.x
 
@@ -34,6 +34,7 @@ This file tracks the test coverage status for all functions in the MECM7 module.
 | Get-CM7SoftwareUpdateDeployment | 🟢 Passed | 20 | 0 | 0 | 83.47% | 117.11s |
 | Get-CM7SoftwareUpdateDeploymentPackage | 🟢 Passed | 18 | 0 | 0 | 91.36% | 5.12s |
 | Get-CM7SoftwareUpdateGroup | 🟢 Passed | 18 | 0 | 0 | 94.64% | 32.05s |
+| Get-CM7SoftwareUpdateSyncStatus | 🟢 Passed | 18 | 0 | 0 | 100% | 2.96s |
 | Get-CM7TaskSequence | 🟢 Passed | 18 | 0 | 0 | 89.89% | 230.3s |
 | Get-CM7TaskSequenceDeployment | 🟢 Passed | 25 | 0 | 0 | 85.98% | 597.41s |
 | Get-CM7User | 🟢 Passed | 10 | 0 | 0 | 85.29% | 53.11s |
@@ -108,6 +109,7 @@ This file tracks the test coverage status for all functions in the MECM7 module.
 | Get-CM7SoftwareUpdateDeployment | 🟢 Passed | 20 | 0 | 0 | 96.08% | 130.61s |
 | Get-CM7SoftwareUpdateDeploymentPackage | 🟢 Passed | 18 | 0 | 0 | 91.36% | 6.45s |
 | Get-CM7SoftwareUpdateGroup | 🟢 Passed | 18 | 0 | 0 | 94.64% | 34.33s |
+| Get-CM7SoftwareUpdateSyncStatus | 🟢 Passed | 9 | 0 | 0 | 64% | 10.49s |
 | Get-CM7TaskSequence | 🟢 Passed | 18 | 0 | 0 | 89.89% | 195.82s |
 | Get-CM7TaskSequenceDeployment | 🟢 Passed | 25 | 0 | 0 | 85.98% | 575.2s |
 | Get-CM7User | 🟢 Passed | 10 | 0 | 0 | 85.29% | 50.81s |

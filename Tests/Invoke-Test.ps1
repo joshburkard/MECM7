@@ -144,8 +144,7 @@ if ($SubprocessMode) {
         } | ConvertTo-Json -Depth 3 | Set-Content -Path $ResultFile -Encoding UTF8
         exit 1
     }
-    Import-Module -Name Pester -MinimumVersion 6.0.0 -ErrorAction Stop
-
+    Import-Module -Name Pester -MinimumVersion 6.0.0 -ErrorAction Stop -DisableNameChecking
     $TestsPath = $PSScriptRoot
     $Root = (Get-Item $TestsPath).Parent.FullName
     $DeclarationsPath = Join-Path -Path $TestsPath -ChildPath "declarations.ps1"
@@ -259,7 +258,7 @@ if(-not (Get-Module -Name Pester -ListAvailable | Where-Object { $_.Version -ge 
     exit 1
 }
 
-Import-Module -Name Pester -MinimumVersion 6.0.0 -ErrorAction Stop
+Import-Module -Name Pester -MinimumVersion 6.0.0 -ErrorAction Stop -DisableNameChecking
 
 # Get script paths
 $TestsPath = $PSScriptRoot
@@ -472,7 +471,7 @@ if($IncludeStructuralTests -and $FunctionName) {
 
                         $parameterKeys = @( $ScriptCommand.Parameters.Keys | Where-Object { $_ -notin $DefaultParams } | Sort-Object )
 
-                        It "Should have help text for parameter '<_>'" -ForEach @( $parameterKeys ) {
+                        It "Should have help text for parameter '<_>'" -ForEach @( $parameterKeys ) -AllowNullOrEmptyForEach {
                             # Robustly parse the comment-based help block for .PARAMETER documentation
                             $functionSource = $Ast.Extent.Text
                             $paramName = $_
@@ -483,7 +482,7 @@ if($IncludeStructuralTests -and $FunctionName) {
                             $hasDoc | Should -Be $true -Because "Parameter '$paramName' must have .PARAMETER documentation in the comment-based help block."
                         }
 
-                        It "Should have type declaration for parameter '<_>'" -ForEach @( $parameterKeys ) {
+                        It "Should have type declaration for parameter '<_>'" -ForEach @( $parameterKeys ) -AllowNullOrEmptyForEach {
                             $currentParam = $_
                             $Declaration = ( ( @( $Ast.FindAll( { $true }, $true ) ) |
                                 Where-Object { $_.Name.Extent.Text -eq "`$$currentParam" } ).Extent.Text -replace 'INT32', 'INT' )
