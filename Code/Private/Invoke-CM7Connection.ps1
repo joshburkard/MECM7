@@ -29,6 +29,11 @@ function Invoke-CM7Connection {
         .PARAMETER SkipCertificateCheck
             Skip certificate validation when using SSL. Useful for self-signed certificates.
 
+        .PARAMETER AddToTrustedHosts
+            Adds the SiteServer to the WinRM TrustedHosts list before connecting.
+            Required when the client computer is not domain-joined or is in a different domain/workgroup.
+            Requires running PowerShell as Administrator.
+
         .OUTPUTS
             PSCustomObject with the following properties:
             - CimSession: The established CIM session object
@@ -66,8 +71,28 @@ function Invoke-CM7Connection {
         [Parameter()]
         [switch]$UseSsl,
         [Parameter()]
-        [switch]$SkipCertificateCheck
+        [switch]$SkipCertificateCheck,
+        [Parameter()]
+        [switch]$AddToTrustedHosts
     )
+
+    # Add SiteServer to WinRM TrustedHosts if requested (needed for non-domain or cross-domain connections)
+    if ($AddToTrustedHosts) {
+        Write-Verbose "Adding $SiteServer to WinRM TrustedHosts..."
+        try {
+            $currentTrustedHosts = (Get-Item WSMan:\localhost\Client\TrustedHosts -ErrorAction Stop).Value
+            if ($currentTrustedHosts -notmatch [regex]::Escape($SiteServer)) {
+                $newValue = if ([string]::IsNullOrEmpty($currentTrustedHosts)) { $SiteServer } else { "$currentTrustedHosts,$SiteServer" }
+                Set-Item WSMan:\localhost\Client\TrustedHosts -Value $newValue -Force -ErrorAction Stop
+                Write-Verbose "Added $SiteServer to TrustedHosts."
+            } else {
+                Write-Verbose "$SiteServer is already in TrustedHosts."
+            }
+        }
+        catch {
+            throw "Failed to modify TrustedHosts. Ensure you are running as Administrator. Error: $($_.Exception.Message)"
+        }
+    }
 
     # Build CIM session parameters
     $cimParams = @{

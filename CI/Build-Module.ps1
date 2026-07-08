@@ -1,9 +1,10 @@
 ﻿# Semantic Versioning: https://semver.org/
 Clear-Host
 
-if((Get-Module -Name Pester).Version -match '^3\.\d{1}\.\d{1}'){
+$pesterModule = Get-Module -Name Pester
+if (-not $pesterModule -or $pesterModule.Version -lt [Version]'6.0.0') {
     try { Remove-Module -Name Pester -ErrorAction Stop } catch {}
-    Import-Module -Name Pester -MinimumVersion 5.2.2
+    Import-Module -Name Pester -MinimumVersion 6.0.0
 }
 
 Write-Host "[BUILD] [START] Launching Build Process" -ForegroundColor Green
@@ -112,7 +113,7 @@ if(Test-Path -Path $TestsFailures){
 
 Write-Host "[BUILD] [TEST]  Running Function-Tests" -ForegroundColor Green
 #$TestsResult = Invoke-Pester -Script $TestsScript -PassThru -Show None -> for Pester before 5.2.2
-$TestsResult = Invoke-Pester -Script $TestsScript -Output Normal -PassThru
+$TestsResult = Invoke-Pester -Path $TestsScript -Output Normal -PassThru
 if($TestsResult.FailedCount -eq 0){
 
     #$ModuleFolderPath = Join-Path -Path $Root -ChildPath $ModuleName
@@ -194,7 +195,7 @@ else{
         $FailedTests | ConvertTo-Json -Depth 1 -WarningAction Ignore | Out-File -FilePath $TestsFailures -Encoding utf8
         Write-Host "[BUILD] [END]   [TEST] Function-Tests, any Errors can be found in $($TestsFailures)" -ForegroundColor Red
     }else{
-        Write-Warning "There is something wrong in paradise $($TestArray.Get()))"
+        Write-Warning "There is something wrong in paradise (no failed test details available)"
     }
     Write-Host "[BUILD] [END]   Launching Build Process with $($TestsResult.FailedCount) Errors" -ForegroundColor Red
 }
@@ -204,7 +205,7 @@ else{
 $ModuleTestFile = Join-Path -Path $TestsPath -ChildPath "Module.Tests.ps1"
 if(Test-Path -Path $ModuleTestFile){
     Write-Host "`n"
-    Invoke-Pester -Script $ModuleTestFile -Output Detailed
+    Invoke-Pester -Path $ModuleTestFile -Output Detailed
 }
 #endregion
 

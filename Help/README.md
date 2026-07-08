@@ -9,7 +9,7 @@ This documentation provides details on the functions available in the Public Pow
 | [Add-CM7BoundaryToGroup](./Add-CM7BoundaryToGroup.md) | Assigns a boundary to a boundary group in MECM using CIM. |
 | [Add-CM7CollectionMembershipRule](./Add-CM7CollectionMembershipRule.md) | Adds a membership rule to a MECM collection using CIM. |
 | [Add-CM7SoftwareUpdateToGroup](./Add-CM7SoftwareUpdateToGroup.md) | Adds one or more software updates to a software update group in Microsoft Endpoint Configuration Manager (MECM) using CIM. |
-| [Connect-CM7](./Connect-CM7.md) | Establishes a connection to a Microsoft Endpoint Configuration Manager (MECM) site server. |
+| [Connect-CM7](./Connect-CM7.md) | Connects to a MECM site using CIM over WinRM. |
 | [Get-CM7Application](./Get-CM7Application.md) | Retrieves application information from MECM using CIM. |
 | [Get-CM7Boundary](./Get-CM7Boundary.md) | Retrieves boundary information from MECM using CIM. |
 | [Get-CM7BoundaryGroup](./Get-CM7BoundaryGroup.md) | Retrieves boundary group information from MECM using CIM. |

@@ -1,4 +1,4 @@
-﻿# Connect-CM7
+# Connect-CM7
 
 ## SYNOPSIS
 
@@ -26,7 +26,7 @@ The connection details are stored in `$script:CMConnection` hashtable containing
 
 ## PARAMETERS
 
-### -SiteServer
+### SiteServer
 
 Specifies the fully qualified domain name (FQDN) or IP address of the MECM site server.
 
@@ -39,7 +39,7 @@ Specifies the fully qualified domain name (FQDN) or IP address of the MECM site 
 
 Example: `mecm.yourdomain.local` or `192.168.1.100`
 
-### -Credential
+### Credential
 
 Specifies a PSCredential object (username and password) to use for authentication. If not specified, the current user's credentials are used.
 
@@ -61,13 +61,13 @@ When specified, SSL certificate validation is bypassed. Use this when:
 
 Important: Only use when necessary, as this reduces security.
 
-- **Type**: SwitchParameter
-- **Position**: Named
-- **Default**: False
-- **Required**: No
-- **Accept pipeline input**: False
+- Type: SwitchParameter
+- Required: false
+- Default value: False
+- Accept pipeline input: false
+- Accept wildcard characters: false
 
-### -UseSsl
+### UseSsl
 
 Specifies that SSL (HTTPS) should be used instead of standard HTTP for the WinRM connection.
 
@@ -78,6 +78,18 @@ Note: The target server must have HTTPS WinRM configured on port 5986.
 - **Default**: False
 - **Required**: No
 - **Accept pipeline input**: False
+-
+### AddToTrustedHosts
+
+Adds the SiteServer to the WinRM TrustedHosts list before connecting.
+Required when the client computer is not domain-joined or is in a different domain/workgroup.
+Requires running PowerShell as Administrator.
+
+- Type: SwitchParameter
+- Required: false
+- Default value: False
+- Accept pipeline input: false
+- Accept wildcard characters: false
 
 ## EXAMPLES
 
