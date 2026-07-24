@@ -162,7 +162,7 @@ function Save-CM7SoftwareUpdate {
             }
         } elseif ($PSCmdlet.ParameterSetName -in @('SaveByIdPkgName', 'SaveByIdPkgID', 'DownloadOnlyById')) {
             foreach ($id in $SoftwareUpdateId) {
-                $Updates += Get-CimInstance -CimSession $CimSession -Namespace "root/SMS/site_$SiteCode" -ClassName SMS_SoftwareUpdate -Filter "ArticleID='$id'"
+                $Updates += Get-CimInstance -CimSession $CimSession -Namespace "root/SMS/site_$SiteCode" -Query "SELECT * FROM SMS_SoftwareUpdate WHERE CI_ID='$($id)' OR ArticleID='$($id)'"
             }
         } elseif ($PSCmdlet.ParameterSetName -in @('SaveByObjectPkgName', 'SaveByObjectPkgID', 'DownloadOnlyByObject')) {
             # $Updates += $SoftwareUpdate
@@ -228,6 +228,50 @@ function Save-CM7SoftwareUpdate {
         }
 
         #region Download Content
+        # If the target path is a UNC path and we have stored credentials, establish an SMB
+        # session so that New-Item / Invoke-WebRequest -OutFile work with the correct identity.
+        $targetBasePath = if (-not [string]::IsNullOrEmpty($Location)) { $Location } else { $DeploymentPackage.PkgSourcePath }
+        $tempDrive = $null
+        if ($targetBasePath -and $targetBasePath.StartsWith('\\') -and $script:CMConnection.Credential) {
+            $uncParts = $targetBasePath.TrimStart('\').Split('\')
+            $uncRoot  = "\\$($uncParts[0])\$($uncParts[1])"
+            $driveName = "CM7T$(Get-Random -Maximum 9999)"
+            try {
+                $tempDrive = New-PSDrive -Name $driveName -PSProvider FileSystem -Root $uncRoot `
+                    -Credential $script:CMConnection.Credential -Scope Global -ErrorAction Stop
+                Write-Verbose "Established SMB session to '$uncRoot' for file operations."
+            } catch {
+                Write-Verbose "Could not establish PSDrive for '$uncRoot': $($_.Exception.Message)"
+            }
+        }
+
+        # AddUpdateContent must run on the MECM server itself:
+        #   1. The SMS Provider reads content from ContentSourcePath.
+        #   2. It then writes (creates directories + copies files) into PkgSourcePath.
+        #   3. If PkgSourcePath is a loopback UNC (\\sccm01\share on sccm01 itself), the
+        #      SMS service account hits the Windows loopback check and cannot create the
+        #      destination directory → "Generic failure".
+        # Solution: run via PSSession; inside, resolve both paths to local filesystem paths
+        # via Win32_Share, temporarily set PkgSourcePath to the local equivalent, call
+        # AddUpdateContent, then restore the original UNC path.
+        $addContentSession = $null
+        $psSessionParams = @{
+            ComputerName = $script:CMConnection.SiteServer
+            ErrorAction  = 'Stop'
+        }
+        if ($script:CMConnection.Credential)        { $psSessionParams.Credential    = $script:CMConnection.Credential }
+        if ($script:CMConnection.UseSsl)             { $psSessionParams.UseSSL        = $true }
+        if ($script:CMConnection.SkipCertificateCheck) {
+            $psSessionParams.SessionOption = New-PSSessionOption -SkipCACheck -SkipCNCheck -SkipRevocationCheck
+        }
+        try {
+            $addContentSession = New-PSSession @psSessionParams
+            Write-Verbose "Established PSSession on MECM server for AddUpdateContent calls."
+        } catch {
+            Write-Verbose "Could not establish PSSession: $($_.Exception.Message)"
+        }
+
+        try {
         foreach ($Update in $Updates) {
             $updateResult = [PSCustomObject]@{
                 CI_ID = $Update.CI_ID
@@ -245,11 +289,9 @@ function Save-CM7SoftwareUpdate {
 
             foreach ($UpdateContent in $UpdateContents) {
                 $FileName = Split-Path -Leaf $UpdateContent.SourceURL
-                if ( [string]::IsNullOrEmpty($Location)) {
-                    $FilePath = Join-Path -Path $DeploymentPackage.PkgSourcePath -ChildPath $FileName
-                } else {
-                    $FilePath = Join-Path -Path $Location -ChildPath $FileName
-                }
+                # Content must be in a per-ContentID subdirectory; AddUpdateContent passes that
+                # subdirectory as ContentSourcePath so the Provider can hash-verify the files.
+                $FilePath = Join-Path -Path (Join-Path -Path $targetBasePath -ChildPath ([string]$UpdateContent.ContentID)) -ChildPath $FileName
 
                 $DownloadSuccess = $false
                 $DownloadAttempts = 0
@@ -258,12 +300,12 @@ function Save-CM7SoftwareUpdate {
                     $DownloadAttempts++
                     try {
                         $Directory = Split-Path -Path $FilePath -Parent
-                        if (-not ([System.IO.Directory]::Exists( $Directory ) ) ) {
+                        if (-not ([System.IO.Directory]::Exists($Directory))) {
                             New-Item -Path $Directory -ItemType Directory -Force | Out-Null
                         }
                         $ProgressPreference = 'SilentlyContinue'
                         Invoke-WebRequest -Uri $UpdateContent.SourceURL -OutFile $FilePath -TimeoutSec $TimeoutSec -ErrorAction Stop
-                        if ( [System.IO.File]::Exists($FilePath) -and (Get-Item -Path $FilePath).Length -gt 0) {
+                        if ([System.IO.File]::Exists($FilePath) -and (Get-Item -Path $FilePath).Length -gt 0) {
                             $DownloadSuccess = $true
                         } else {
                             throw "Downloaded file is empty or doesn't exist"
@@ -273,7 +315,7 @@ function Save-CM7SoftwareUpdate {
                         $errMsg = "Download attempt $DownloadAttempts failed for $FileName : $($_.Exception.Message)"
                         $updateResult.Errors += $errMsg
                         $summary.Errors += $errMsg
-                        if ( [System.IO.File]::Exists($FilePath) ) {
+                        if ([System.IO.File]::Exists($FilePath)) {
                             Remove-Item -Path $FilePath -Force -ErrorAction SilentlyContinue
                         }
                         if ($DownloadAttempts -lt $RetryCount) {
@@ -292,27 +334,74 @@ function Save-CM7SoftwareUpdate {
             }
 
             # Add ContentID to package
-
-            if ( [boolean]$DownloadOnly ) {
-                # If we're only downloading, we skip adding content to the package
+            if ([boolean]$DownloadOnly) {
                 $updateResult.Status = 'Downloaded'
-
                 $ContentIDs = $UpdateContents | Select-Object -ExpandProperty ContentID -Unique
                 $summary.UpdatesSucceeded += $ContentIDs.Count
                 continue
-            }
-            else {
-                # If we successfully downloaded the content, we can add it to the deployment package
+            } else {
                 $ContentIDs = $UpdateContents | Select-Object -ExpandProperty ContentID -Unique
                 foreach ($cid in $ContentIDs) {
-                    $ContentIDArray   = @([uint32]$cid)
-                    $SourcePathArray  = @([string]$DeploymentPackage.PkgSourcePath)
-                    $Arguments = @{
-                        bRefreshDPs       = $false
-                        ContentIDs        = $ContentIDArray
-                        ContentSourcePath = $SourcePathArray
+                    if ($addContentSession) {
+                        $ns         = "root/SMS/site_$SiteCode"
+                        $pkgId      = $DeploymentPackage.PackageID
+                        $srcPath    = Join-Path -Path $targetBasePath -ChildPath ([string]$cid)
+                        $pkgSrcPath = [string]$DeploymentPackage.PkgSourcePath
+
+                        $Result = Invoke-Command -Session $addContentSession -ScriptBlock {
+                            param($ns, $pkgId, $cid, $srcPath, $pkgSrcPath)
+
+                            function Resolve-LocalPath {
+                                param([string]$Path)
+                                if (-not $Path.StartsWith('\\')) { return $Path }
+                                $parts = $Path.TrimStart('\').Split('\')
+                                if ($parts.Length -lt 2) { return $Path }
+                                $share = Get-CimInstance -ClassName Win32_Share -Filter "Name='$($parts[1])'" -ErrorAction SilentlyContinue
+                                if (-not $share) { return $Path }
+                                $sub = if ($parts.Length -gt 2) { $parts[2..($parts.Length-1)] -join '\' } else { '' }
+                                if ($sub) { Join-Path $share.Path $sub } else { $share.Path }
+                            }
+
+                            $resolvedSrc    = Resolve-LocalPath $srcPath
+                            $resolvedPkgSrc = Resolve-LocalPath $pkgSrcPath
+                            Write-Verbose "  [AddContent] ContentSourcePath='$resolvedSrc'  PkgSourcePath='$resolvedPkgSrc'"
+
+                            $pkg = Get-CimInstance -Namespace $ns -ClassName SMS_SoftwareUpdatesPackage -Filter "PackageID='$pkgId'"
+
+                            # The SMS Provider writes content to PkgSourcePath. If that is a loopback
+                            # UNC (server accessing its own share), Windows blocks the directory creation.
+                            # Temporarily switch to the local path so the Provider writes locally.
+                            $pathChanged = $false
+                            if ($resolvedPkgSrc -ne $pkgSrcPath) {
+                                Set-CimInstance -InputObject $pkg -Property @{ PkgSourcePath = $resolvedPkgSrc } -ErrorAction Stop
+                                $pkg         = Get-CimInstance -Namespace $ns -ClassName SMS_SoftwareUpdatesPackage -Filter "PackageID='$pkgId'"
+                                $pathChanged = $true
+                            }
+                            try {
+                                $Arguments = @{
+                                    bRefreshDPs       = [bool]$false
+                                    ContentIDs        = [uint32[]]@([uint32]$cid)
+                                    ContentSourcePath = [string[]]@([string]$resolvedSrc)
+                                }
+                                Invoke-CimMethod -InputObject $pkg -MethodName 'AddUpdateContent' -Arguments $Arguments -ErrorAction Stop
+                            } finally {
+                                if ($pathChanged) {
+                                    $pkg = Get-CimInstance -Namespace $ns -ClassName SMS_SoftwareUpdatesPackage -Filter "PackageID='$pkgId'"
+                                    Set-CimInstance -InputObject $pkg -Property @{ PkgSourcePath = $pkgSrcPath } -ErrorAction SilentlyContinue
+                                }
+                            }
+                        } -ArgumentList $ns, $pkgId, $cid, $srcPath, $pkgSrcPath
+                    } else {
+                        # Fallback: direct CIM call (may fail on loopback UNC environments)
+                        $pkg = Get-CimInstance -CimSession $CimSession -Namespace "root/SMS/site_$SiteCode" `
+                            -ClassName SMS_SoftwareUpdatesPackage -Filter "PackageID='$($DeploymentPackage.PackageID)'"
+                        $Arguments = @{
+                            bRefreshDPs       = [bool]$false
+                            ContentIDs        = [uint32[]]@([uint32]$cid)
+                            ContentSourcePath = [string[]]@(Join-Path -Path $targetBasePath -ChildPath ([string]$cid))
+                        }
+                        $Result = Invoke-CimMethod -InputObject $pkg -MethodName 'AddUpdateContent' -Arguments $Arguments
                     }
-                    $Result = Invoke-CimMethod -CimSession $CimSession -InputObject $DeploymentPackage -MethodName 'AddUpdateContent' -Arguments $Arguments
                     if ($Result.ReturnValue -eq 0) {
                         $summary.UpdatesSucceeded++
                     } else {
@@ -328,6 +417,16 @@ function Save-CM7SoftwareUpdate {
                 $summary.UpdatesFailed++
             }
             $summary.UpdateResults += $updateResult
+        }
+        } finally {
+            if ($tempDrive) {
+                Remove-PSDrive -Name $tempDrive.Name -Force -ErrorAction SilentlyContinue
+                Write-Verbose "Removed temporary SMB session drive '$($tempDrive.Name)'."
+            }
+            if ($addContentSession) {
+                Remove-PSSession $addContentSession -ErrorAction SilentlyContinue
+                Write-Verbose "Removed PSSession for AddUpdateContent."
+            }
         }
         if ($summary.Errors.Count -gt 0) {
             $summary.Status = 'Error'

@@ -20,6 +20,9 @@ function Get-CM7SoftwareUpdate {
             The security bulletin ID of the software update to retrieve (e.g. "MS17-010").
             Supports wildcard characters (* and ?).
 
+        .PARAMETER CI_ID
+            The unique Configuration Item ID of the software update to retrieve.
+
         .PARAMETER Name
             The localized display name of the software update. Supports wildcard characters (* and ?).
 
@@ -84,6 +87,10 @@ function Get-CM7SoftwareUpdate {
         [SupportsWildcards()]
         [ValidateNotNullOrEmpty()]
         [string]$Name,
+
+        [Parameter(ParameterSetName = 'ByCIID', Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [string]$CI_ID,
 
         [Parameter()]
         [ValidateSet('None', 'Low', 'Moderate', 'Important', 'Critical')]
@@ -155,6 +162,9 @@ function Get-CM7SoftwareUpdate {
                     } else {
                         $filters += "BulletinID = '$BulletinId'"
                     }
+                }
+                'ByCIID' {
+                    $filters += "CI_ID = '$CI_ID'"
                 }
                 'ByName' {
                     $wqlName = $Name.Replace('*', '%').Replace('?', '_')

@@ -303,11 +303,11 @@ Describe "Set-CM7Boundary Function Tests" -Tag "Integration", "Boundary", "Set" 
             $origData = $script:TestSetBoundaryData.NewBoundaries.IPSubnet
 
             # Re-create if the previous test changed its value
-            $boundary = Get-CM7Boundary -BoundaryId (Get-CM7Boundary -Name $origData.Name -ErrorAction SilentlyContinue)?.BoundaryID -ErrorAction SilentlyContinue
-            if (-not $boundary) {
-                $leftoverByName = Get-CM7Boundary -Name $origData.Name -ErrorAction SilentlyContinue
-                $boundary = $leftoverByName
+            $leftoverByName = Get-CM7Boundary -Name $origData.Name -ErrorAction SilentlyContinue
+            $boundary = if ($leftoverByName) {
+                Get-CM7Boundary -BoundaryId $leftoverByName.BoundaryID -ErrorAction SilentlyContinue
             }
+            if (-not $boundary) { $boundary = $leftoverByName }
             if (-not $boundary) {
                 $boundary = New-CM7Boundary -Name $origData.Name -BoundaryType $origData.BoundaryType -Value $origData.Value -Force
             }

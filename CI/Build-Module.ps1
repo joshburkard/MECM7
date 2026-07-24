@@ -280,5 +280,5 @@ if($FunctionalTestFiles){
 Write-Host "`nIf you have dependencies to other modules, please fill in to the module manifest (psd1) as RequiredModules. See at " -ForegroundColor Cyan
 Write-Host "https://learn.microsoft.com/en-us/powershell/scripting/developer/module/how-to-write-a-powershell-module-manifest?view=powershell-7.3" -ForegroundColor Cyan
 Write-Host "`nModule Manifest:"
-Import-LocalizedData -BaseDirectory $ModuleFolderPath -FileName "$($ModuleName).psd1"
+Import-PowerShellDataFile -Path (Join-Path $ModuleFolderPath "$($ModuleName).psd1")
 #endregion

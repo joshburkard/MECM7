@@ -12,20 +12,17 @@ function New-CM7SoftwareUpdateDeploymentPackage {
             3. Creates a new SMS_SoftwareUpdatePackage instance via CIM with the specified parameters
             4. Returns the created package as a formatted MECM7.SoftwareUpdateDeploymentPackage object
 
-        .PARAMETER SoftwareUpdateGroupName
-            The name of the software update group to package.
-
-        .PARAMETER DeploymentPackageName
+        .PARAMETER Name
             The name for the new deployment package.
 
-        .PARAMETER PackageSourcePath
+        .PARAMETER Path
             The UNC path for the package source (e.g., \\server\share\path).
 
         .PARAMETER Description
             An optional description for the deployment package.
 
         .EXAMPLE
-            New-CM7SoftwareUpdateDeploymentPackage -SoftwareUpdateGroupName "Test-SUG" -DeploymentPackageName "Test-DeploymentPackage" -PackageSourcePath "\\mecm.yourdomain.local\Patches\Test" -Description "Test deployment package created by automated tests"
+            New-CM7SoftwareUpdateDeploymentPackage -Name "Test-DeploymentPackage" -Path "\\<FQDN>\Data\SCCM\Security-Patches\Test" -Description "Test deployment package created by automated tests"
     #>
     [CmdletBinding()]
     param(
@@ -48,21 +45,41 @@ function New-CM7SoftwareUpdateDeploymentPackage {
         throw "A deployment package with the name '$Name' already exists."
     }
 
-    # check if the unc path exists
-    # Test-Path does not support UNC paths, so we will use Get-Item and check for exceptions
-    if (-not ( [System.IO.Directory]::Exists($Path) )) {
-        throw "The specified package source path '$Path' does not exist or is not accessible."
+    # Check for existing package with the same source path
+    $existingPath = Get-CM7SoftwareUpdateDeploymentPackage -ErrorAction Ignore | Where-Object { $_.PkgSourcePath -eq $Path }
+    if ($existingPath) {
+        throw "A deployment package with the source path '$Path' already exists (PackageID: $($existingPath.PackageID), Name: $($existingPath.Name))."
+    }
+
+    if (-not (Test-CM7RemotePath -Path $Path)) {
+        $parentPath = Split-Path -Path $Path -Parent
+        if (-not (Test-CM7RemotePath -Path $parentPath)) {
+            throw "The specified package source path '$Path' does not exist or is not accessible from the MECM server. Additionally, the parent path '$parentPath' is also inaccessible."
+        }
+        else {
+            # The parent path exists, but the specified path does not. Create the directory on the MECM server.
+
+            New-CM7RemotePath -Path $Path -ErrorAction Stop
+            Write-Verbose "Created directory '$Path' on the MECM server."
+        }
     }
 
     $namespace = "root/SMS/site_$($script:CMConnection.SiteCode)"
     $cimSession = $script:CMConnection.CimSession
+
+    # PkgSourceFlag is computed by the SMS Provider when PkgSourcePath is set — do not pass it explicitly
     $packageProps = @{
-        Name = $Name
-        Description = $Description
+        Name          = $Name
         PkgSourcePath = $Path
-        PkgSourceFlag = 2 # UNC source
+        PkgSourceFlag = 2
     }
-    $newPackage = New-CimInstance -CimSession $cimSession -Namespace $namespace -ClassName "SMS_SoftwareUpdatesPackage" -Property $packageProps
+    if ($Description) { $packageProps['Description'] = $Description }
+
+    $newPackage = New-CimInstance -CimSession $cimSession -Namespace $namespace -ClassName "SMS_SoftwareUpdatesPackage" -Property $packageProps -ErrorAction Stop
+
+    if (-not $newPackage) {
+        throw "Failed to create deployment package '$Name'. New-CimInstance returned null."
+    }
 
     # Return object
     $newPackage

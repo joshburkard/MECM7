@@ -53,14 +53,16 @@ function Connect-CM7 {
         # Call the private function with direct parameters to avoid splatting issues with switches
         $connectionInfo = Invoke-CM7Connection -SiteServer $SiteServer -Credential:$Credential -UseSsl:$UseSsl -SkipCertificateCheck:$SkipCertificateCheck -AddToTrustedHosts:$AddToTrustedHosts
 
-        $script:CMConnection.SiteServer = $SiteServer
-        $script:CMConnection.CimSession = $connectionInfo.CimSession
-        $script:CMConnection.SiteCode = $connectionInfo.SiteCode
-        $script:CMConnection.ProviderMachineName = $connectionInfo.ProviderMachineName
-        $script:CMConnection.SkipCertificateCheck = [bool]$SkipCertificateCheck
-        $script:CMConnection.UseSsl = [bool]$UseSsl
-        $script:CMConnection.AddToTrustedHosts = [bool]$AddToTrustedHosts
-        $script:CMConnection.Credential = if ($Credential) { $Credential } else { $null }
+        $script:CMConnection = @{
+            SiteServer = $SiteServer
+            CimSession = $connectionInfo.CimSession
+            SiteCode = $connectionInfo.SiteCode
+            ProviderMachineName = $connectionInfo.ProviderMachineName
+            SkipCertificateCheck = [bool]$SkipCertificateCheck
+            UseSsl = [bool]$UseSsl
+            AddToTrustedHosts = [bool]$AddToTrustedHosts
+            Credential = if ($Credential) { $Credential } else { $null }
+        }
 
         Write-Verbose "Connected to $SiteServer (SiteCode: $($script:CMConnection.SiteCode), Provider: $($script:CMConnection.ProviderMachineName))"
 

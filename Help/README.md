@@ -10,6 +10,7 @@ This documentation provides details on the functions available in the Public Pow
 | [Add-CM7CollectionMembershipRule](./Add-CM7CollectionMembershipRule.md) | Adds a membership rule to a MECM collection using CIM. |
 | [Add-CM7SoftwareUpdateToGroup](./Add-CM7SoftwareUpdateToGroup.md) | Adds one or more software updates to a software update group in Microsoft Endpoint Configuration Manager (MECM) using CIM. |
 | [Connect-CM7](./Connect-CM7.md) | Establishes a connection to a Microsoft Endpoint Configuration Manager (MECM) site server. |
+| [Disconnect-CM7](./Disconnect-CM7.md) | Disconnects from the current CM7 session. |
 | [Get-CM7Application](./Get-CM7Application.md) | Retrieves application information from MECM using CIM. |
 | [Get-CM7Boundary](./Get-CM7Boundary.md) | Retrieves boundary information from MECM using CIM. |
 | [Get-CM7BoundaryGroup](./Get-CM7BoundaryGroup.md) | Retrieves boundary group information from MECM using CIM. |
@@ -28,7 +29,7 @@ This documentation provides details on the functions available in the Public Pow
 | [Get-CM7Folder](./Get-CM7Folder.md) | Retrieves folder information from MECM using CIM. |
 | [Get-CM7MaintenanceWindow](./Get-CM7MaintenanceWindow.md) | Retrieves maintenance windows from a Microsoft Endpoint Configuration Manager (MECM) collection using CIM. |
 | [Get-CM7ScriptExecutionStatus](./Get-CM7ScriptExecutionStatus.md) | Retrieves the execution status of MECM scripts using CIM. |
-| [Get-CM7SoftwareUpdate](./Get-CM7SoftwareUpdate.md) | Retrieves software update information from Microsoft Endpoint Configuration Manager (MECM) using CIM. |
+| [Get-CM7SoftwareUpdate](./Get-CM7SoftwareUpdate.md) | Retrieves software update information from MECM using CIM. |
 | [Get-CM7SoftwareUpdateDeployment](./Get-CM7SoftwareUpdateDeployment.md) | Retrieves software update deployment information from Microsoft Endpoint Configuration Manager (MECM) using CIM. |
 | [Get-CM7SoftwareUpdateDeploymentPackage](./Get-CM7SoftwareUpdateDeploymentPackage.md) | Retrieves software update deployment package information from Microsoft Endpoint Configuration Manager (MECM) using CIM. |
 | [Get-CM7SoftwareUpdateGroup](./Get-CM7SoftwareUpdateGroup.md) | Retrieves software update group information from Microsoft Endpoint Configuration Manager (MECM) using CIM. |

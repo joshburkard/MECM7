@@ -105,7 +105,7 @@ Describe 'Save-CM7SoftwareUpdate' {
         It 'should save updates by object to package by ID' {
             $params = $script:TestData['Save-CM7SoftwareUpdate']['ByUpdateIDandPackageID']
 
-            $update = Get-CM7SoftwareUpdate -ArticleId $params.SoftwareUpdateId
+            $update = Get-CM7SoftwareUpdate -CI_ID $params.SoftwareUpdateId
 
             $result = Save-CM7SoftwareUpdate -DeploymentPackageID $params.DeploymentPackageID -SoftwareUpdate $update
 
