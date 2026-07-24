@@ -7,7 +7,7 @@
     It automatically loads declarations and dependencies before running the tests.
 
 .PARAMETER FunctionName
-    The name of the function to test (e.g., "Get-CMASCollection").
+    The name of the function to test (e.g., "Get-CM7Collection").
     If not specified, runs all functional tests (Test-*.Tests.ps1).
 
 .PARAMETER Tag
@@ -24,15 +24,15 @@
     Only applied when testing a specific function with -FunctionName.
 
 .EXAMPLE
-    .\Invoke-Test.ps1 -FunctionName "Get-CMASCollection"
-    Run tests for the Get-CMASCollection function.
+    .\Invoke-Test.ps1 -FunctionName "Get-CM7Collection"
+    Run tests for the Get-CM7Collection function.
 
 .EXAMPLE
-    .\Invoke-Test.ps1 -FunctionName "Get-CMASCollection" -IncludeStructuralTests
-    Run both structural and functional tests for Get-CMASCollection.
+    .\Invoke-Test.ps1 -FunctionName "Get-CM7Collection" -IncludeStructuralTests
+    Run both structural and functional tests for Get-CM7Collection.
 
 .EXAMPLE
-    .\Invoke-Test.ps1 -FunctionName "Get-CMASCollectionExcludeMembershipRule" -Output Normal
+    .\Invoke-Test.ps1 -FunctionName "Get-CM7CollectionExcludeMembershipRule" -Output Normal
     Run tests with normal output level.
 
 .EXAMPLE
@@ -44,8 +44,8 @@
     Run all functional tests tagged with "Integration".
 
 .EXAMPLE
-    .\Invoke-Test.ps1 -FunctionName "Invoke-CMASScript" -Tag "Unit"
-    Run only Unit tests for Invoke-CMASScript.
+    .\Invoke-Test.ps1 -FunctionName "Invoke-CM7Script" -Tag "Unit"
+    Run only Unit tests for Invoke-CM7Script.
 
 .PARAMETER PSVersion
     Which PowerShell version(s) to run tests in.
@@ -339,7 +339,7 @@ if($IncludeStructuralTests -and $FunctionName) {
     # Load module settings for prefix
     $CISourcePath = Join-Path -Path $Root -ChildPath "CI"
     $Settings = Join-Path -Path $CISourcePath -ChildPath "Module-Settings.json"
-    $CommonPrefix = "CMAS"  # Default
+    $CommonPrefix = "CM7"  # Default
     if(Test-Path -Path $Settings) {
         $ModuleSettings = Get-content -Path $Settings | ConvertFrom-Json
         $CommonPrefix = $ModuleSettings.ModulePrefix

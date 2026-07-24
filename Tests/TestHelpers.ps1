@@ -21,7 +21,7 @@ function Initialize-TestEnvironment {
     }
 
     # Get module root (load functions if they're not already available in this scope)
-    if(-not (Get-Command -Name Connect-CMAS -ErrorAction SilentlyContinue)){
+    if(-not (Get-Command -Name Connect-CM7 -ErrorAction SilentlyContinue)){
         $Root = (Get-Item $TestRoot).Parent.FullName
         $CodePath = Join-Path -Path $Root -ChildPath "Code"
 
@@ -63,7 +63,7 @@ function Connect-TestEnvironment {
         $params.Credential = $script:TestCredential
     }
 
-    Connect-CMAS @params
+    Connect-CM7 @params
 }
 
 function Assert-PropertyExists {

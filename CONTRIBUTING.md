@@ -60,7 +60,7 @@ This project follows a **feature branch workflow** with branch protection on the
 Use descriptive names with prefixes:
 
 - **feature/** - New features or functions
-  - `feature/add-get-cmas-user`
+  - `feature/add-get-CM7-user`
   - `feature/collection-export`
 
 - **fix/** - Bug fixes
@@ -98,7 +98,7 @@ graph LR
     B -->|3. Commit & push| B
     B -->|4. Create PR| C[Pull Request]
     C -->|5. Code review| C
-    C -->|6. Tests pass| C
+    C -->|6. Tests pass | C
     C -->|7. Merge| A
 ```
 
@@ -113,11 +113,11 @@ MECM7/
 ├── Code/                          # Source code
 │   ├── function-template.ps1      # Template for new functions
 │   ├── Private/                   # Internal helper functions
-│   │   └── Invoke-CMASApi.ps1     # Core API interaction function
+│   │   └── Invoke-CM7Api.ps1     # Core API interaction function
 │   └── Public/                    # Exported module functions
-│       ├── Connect-CMAS.ps1
-│       ├── Get-CMASDevice.ps1
-│       ├── Get-CMASCollection.ps1
+│       ├── Connect-CM7.ps1
+│       ├── Get-CM7Device.ps1
+│       ├── Get-CM7Collection.ps1
 │       └── ...                    # Other public functions
 │
 ├── CI/                            # Continuous Integration scripts
@@ -134,8 +134,8 @@ MECM7/
 │   └── declarations.ps1           # Your test configuration (git-ignored)
 │
 ├── Help/                          # Generated markdown documentation
-│   ├── Connect-CMAS.md
-│   ├── Get-CMASDevice.md
+│   ├── Connect-CM7.md
+│   ├── Get-CM7Device.md
 │   └── ...                        # One file per function
 │
 ├── MECM7/                         # Built module output
@@ -202,7 +202,7 @@ code .\Tests\declarations.ps1
 - Create or modify functions in `Code/Public/` or `Code/Private/`
 - Follow the function template in `Code/function-template.ps1`
 - Use approved PowerShell verbs (Get, Set, New, Remove, etc.)
-- Follow naming convention: `Verb-CMASNoun` (CMAS is the module prefix)
+- Follow naming convention: `Verb-CM7Noun` (CM7 is the module prefix)
 - Commit frequently with clear messages
 
 ### 5. Test Your Changes
@@ -212,7 +212,7 @@ code .\Tests\declarations.ps1
 Invoke-Pester -Script .\Tests\Functions.Tests.ps1
 
 # Run tests for your specific function
-.\Tests\Invoke-Test.ps1 -FunctionName "Get-CMASDevice" -IncludeStructuralTests
+.\Tests\Invoke-Test.ps1 -FunctionName "Get-CM7Device" -IncludeStructuralTests
 ```
 
 ### 6. Build the Module
@@ -241,7 +241,7 @@ The build script will:
 git add .
 
 # Commit with a descriptive message
-git commit -m "Add Get-CMASNewFeature function"
+git commit -m "Add Get-CM7NewFeature function"
 
 # Push to your feature branch
 git push origin feature/your-feature-name
@@ -266,7 +266,7 @@ This creates/updates markdown files in the `Help/` folder based on your comment-
 
 ```powershell
 git add .
-git commit -m "Add Get-CMASNewFeature function"
+git commit -m "Add Get-CM7NewFeature function"
 git push
 ```
 
@@ -278,10 +278,10 @@ Start with the provided template when creating new functions:
 
 ```powershell
 # Copy the template
-Copy-Item .\Code\function-template.ps1 .\Code\Public\Get-CMASNewFeature.ps1
+Copy-Item .\Code\function-template.ps1 .\Code\Public\Get-CM7NewFeature.ps1
 
 # Edit the new file
-code .\Code\Public\Get-CMASNewFeature.ps1
+code .\Code\Public\Get-CM7NewFeature.ps1
 ```
 
 ### Function Structure Requirements
@@ -289,7 +289,7 @@ code .\Code\Public\Get-CMASNewFeature.ps1
 Every function must include:
 
 1. **Approved PowerShell Verb**: Use `Get-Verb` to see approved verbs
-2. **Module Prefix**: All functions must use `CMAS` prefix (e.g., `Get-CMASDevice`)
+2. **Module Prefix**: All functions must use `CM7` prefix (e.g., `Get-CM7Device`)
 3. **CmdletBinding Attribute**: `[CmdletBinding()]`
 4. **Comment-Based Help** with:
    - `.SYNOPSIS` - Brief description
@@ -306,7 +306,7 @@ Every function must include:
 ### Example Function Structure
 
 ```powershell
-function Get-CMASDevice {
+function Get-CM7Device {
     <#
     .SYNOPSIS
     Retrieve Configuration Manager device information
@@ -322,11 +322,11 @@ function Get-CMASDevice {
     The ResourceID of the device to retrieve
 
     .EXAMPLE
-    Get-CMASDevice -Name "WORKSTATION01"
+    Get-CM7Device -Name "WORKSTATION01"
     Retrieves information for the device named WORKSTATION01
 
     .NOTES
-    Requires an active connection established with Connect-CMAS
+    Requires an active connection established with Connect-CM7
     #>
 
     [CmdletBinding()]
@@ -396,10 +396,10 @@ Invoke-Pester -Script .\Tests\Functions.Tests.ps1
 .\Tests\Invoke-Test.ps1
 
 # Run tests for specific function
-.\Tests\Invoke-Test.ps1 -FunctionName "Get-CMASDevice"
+.\Tests\Invoke-Test.ps1 -FunctionName "Get-CM7Device"
 
 # Run with structural tests included
-.\Tests\Invoke-Test.ps1 -FunctionName "Get-CMASCollection" -IncludeStructuralTests
+.\Tests\Invoke-Test.ps1 -FunctionName "Get-CM7Collection" -IncludeStructuralTests
 ```
 
 #### 3. Module Tests (INFORMATIONAL)
@@ -411,8 +411,8 @@ Invoke-Pester -Script .\Tests\Functions.Tests.ps1
 
 1. **Copy an existing test file** as a template:
    ```powershell
-   Copy-Item .\Tests\Test-Get-CMASDevice.Tests.ps1 `
-             .\Tests\Test-Get-CMASNewFeature.Tests.ps1
+   Copy-Item .\Tests\Test-Get-CM7Device.Tests.ps1 `
+             .\Tests\Test-Get-CM7NewFeature.Tests.ps1
    ```
 
 2. **Update the test file**:
@@ -493,7 +493,7 @@ Enter the Version number of this module in the Semantic Versioning notation [0.0
 > 0.0.14
 
 Describe what did you change
-> Added Get-CMASNewFeature function for retrieving new feature data
+> Added Get-CM7NewFeature function for retrieving new feature data
 ```
 
 ### Semantic Versioning
@@ -586,7 +586,7 @@ When adding new functions, update the "Available Functions" section in README.md
 
 ```markdown
 ### Category Management
-- `Get-CMASCategory` - Description of function
+- `Get-CM7Category` - Description of function
 ```
 
 ## 🔀 Pull Request Process
@@ -635,9 +635,9 @@ Brief description of what this PR does.
 - [ ] Test improvements
 
 ## Changes Made
-- Added `Get-CMASNewFeature` function
+- Added `Get-CM7NewFeature` function
 - Updated README.md with new function
-- Added test file `Test-Get-CMASNewFeature.Tests.ps1`
+- Added test file `Test-Get-CM7NewFeature.Tests.ps1`
 
 ## Testing
 - [ ] Structural tests pass
@@ -645,7 +645,7 @@ Brief description of what this PR does.
 - [ ] Tested against SCCM environment (if applicable)
 
 ## Checklist
-- [ ] Function follows naming convention (Verb-CMASNoun)
+- [ ] Function follows naming convention (Verb-CM7Noun)
 - [ ] Comment-based help is complete (SYNOPSIS, DESCRIPTION, EXAMPLES)
 - [ ] Parameters are documented
 - [ ] Error handling implemented
@@ -790,11 +790,11 @@ This prevents you from accidentally committing to main locally.
 Use clear, descriptive commit messages:
 
 **Good examples:**
-- `Add Get-CMASNewFeature function`
-- `Fix error handling in Get-CMASDevice`
-- `Update documentation for Connect-CMAS`
-- `Refactor Invoke-CMASApi for better error messages`
-- `Test: Add integration tests for Get-CMASCollection`
+- `Add Get-CM7NewFeature function`
+- `Fix error handling in Get-CM7Device`
+- `Update documentation for Connect-CM7`
+- `Refactor Invoke-CM7Api for better error messages`
+- `Test: Add integration tests for Get-CM7Collection`
 - `Docs: Update README with new examples`
 
 **Commit message format:**

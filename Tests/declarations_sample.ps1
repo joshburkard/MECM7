@@ -685,7 +685,7 @@ $script:TestData = @{
     # ========================================================================
     # Get-CM7CollectionDirectMembershipRule
     # ========================================================================
-    'Get-CMASCollectionDirectMembershipRule' = @{
+    'Get-CM7CollectionDirectMembershipRule' = @{
         ByCollectionName = @{
             CollectionName = "All Systems"
             # May return empty if no direct membership rules exist
@@ -1106,9 +1106,9 @@ $script:TestData = @{
     }
 
     # ========================================================================
-    # Add-CMASCollectionMembershipRule
+    # Add-CM7CollectionMembershipRule
     # ========================================================================
-    'Add-CMASCollectionMembershipRule' = @{
+    'Add-CM7CollectionMembershipRule' = @{
         TestCollection = @{
             CollectionName = "Test-Collection-Rules"  # Replace with test collection name
             CollectionId = "SMS00104"  # Replace with test collection ID
@@ -1276,9 +1276,9 @@ $script:TestData = @{
     }
 
     # ========================================================================
-    # Get-CMASScript (Legacy)
+    # Get-CM7Script (Legacy)
     # ========================================================================
-    'Get-CMASScript' = @{
+    'Get-CM7Script' = @{
         ByName = @{
             ScriptName = "Test-Script"  # Replace with an existing script name
             ExpectedCount = 1
@@ -1297,9 +1297,9 @@ $script:TestData = @{
     }
 
     # ========================================================================
-    # Invoke-CMASScript (Legacy)
+    # Invoke-CM7Script (Legacy)
     # ========================================================================
-    'Invoke-CMASScript' = @{
+    'Invoke-CM7Script' = @{
         ByScriptNameAndDeviceName = @{
             ScriptName = "Test-Script"
             DeviceName = "TEST-DEVICE-001"
@@ -1371,9 +1371,9 @@ $script:TestData = @{
     }
 
     # ========================================================================
-    # Get-CMASScriptExecutionStatus (Legacy)
+    # Get-CM7ScriptExecutionStatus (Legacy)
     # ========================================================================
-    'Get-CMASScriptExecutionStatus' = @{
+    'Get-CM7ScriptExecutionStatus' = @{
         ByClientOperationId = @{
             ClientOperationId = 16777220  # Replace with actual operation ID from a script execution
         }
@@ -1387,9 +1387,9 @@ $script:TestData = @{
     }
 
     # ========================================================================
-    # New-CMASCollection
+    # New-CM7Collection
     # ========================================================================
-    'New-CMASCollection' = @{
+    'New-CM7Collection' = @{
         DeviceCollectionByLimitingId = @{
             Name = "Test-DeviceCollection-ByID"
             LimitingCollectionId = "SMS00001"  # All Systems
@@ -1441,9 +1441,9 @@ $script:TestData = @{
     }
 
     # ========================================================================
-    # Remove-CMASCollection
+    # Remove-CM7Collection
     # ========================================================================
-    'Remove-CMASCollection' = @{
+    'Remove-CM7Collection' = @{
         ByName = @{
             # Note: Test collections will be created dynamically during tests
             # This ensures we don't accidentally delete real collections
@@ -1525,9 +1525,9 @@ $script:TestData = @{
     }
 
     # ========================================================================
-    # Set-CMASCollection
+    # Set-CM7Collection
     # ========================================================================
-    'Set-CMASCollection' = @{
+    'Set-CM7Collection' = @{
         UpdateName = @{
             # Note: Test collection will be created dynamically during tests
             OriginalName = "Test-Set-Collection-Original"
@@ -1572,9 +1572,9 @@ $script:TestData = @{
     }
 
     # ========================================================================
-    # Set-CMASCollectionSchedule
+    # Set-CM7CollectionSchedule
     # ========================================================================
-    'Set-CMASCollectionSchedule' = @{
+    'Set-CM7CollectionSchedule' = @{
         DailySchedule = @{
             CollectionName = "Test-Schedule-Daily"
             RecurInterval = "Days"
@@ -1593,9 +1593,9 @@ $script:TestData = @{
     }
 
     # ========================================================================
-    # Invoke-CMASCollectionUpdate
+    # Invoke-CM7CollectionUpdate
     # ========================================================================
-    'Invoke-CMASCollectionUpdate' = @{
+    'Invoke-CM7CollectionUpdate' = @{
         ByCollectionName = @{
             CollectionName = "All Systems"
             ExpectedSuccess = $true
@@ -1612,9 +1612,9 @@ $script:TestData = @{
     }
 
     # ========================================================================
-    # Get-CMASCollectionVariable
+    # Get-CM7CollectionVariable
     # ========================================================================
-    'Get-CMASCollectionVariable' = @{
+    'Get-CM7CollectionVariable' = @{
         ByCollectionName = @{
             CollectionName = "Test-Collection-WithVariables"  # Collection with variables
             ExpectedMinCount = 1  # Should have at least 1 variable
@@ -1653,9 +1653,9 @@ $script:TestData = @{
     }
 
     # ========================================================================
-    # New-CMASCollectionVariable
+    # New-CM7CollectionVariable
     # ========================================================================
-    'New-CMASCollectionVariable' = @{
+    'New-CM7CollectionVariable' = @{
         ByCollectionName = @{
             CollectionName = "Test-Collection-WithVariables"  # Existing test collection
             VariableName = "TestCollVar"  # Will be made unique with timestamp in tests
@@ -1763,9 +1763,9 @@ $script:TestData = @{
     }
 
     # ========================================================================
-    # Remove-CMASCollectionVariable
+    # Remove-CM7CollectionVariable
     # ========================================================================
-    'Remove-CMASCollectionVariable' = @{
+    'Remove-CM7CollectionVariable' = @{
         ByCollectionName = @{
             CollectionName = "Test-Collection-Direct"  # Replace with test collection name
             VariableName = "TestCollVar_Remove"  # Will be made unique with timestamp in tests
@@ -1789,9 +1789,9 @@ $script:TestData = @{
     }
 
     # ========================================================================
-    # Set-CMASCollectionVariable
+    # Set-CM7CollectionVariable
     # ========================================================================
-    'Set-CMASCollectionVariable' = @{
+    'Set-CM7CollectionVariable' = @{
         ByCollectionName = @{
             CollectionName = "Test-Collection-Direct"
             VariableName = "TestCollVar_Set"  # Will be made unique with timestamp in tests
@@ -1942,9 +1942,9 @@ $script:TestData = @{
     }
 
     # ========================================================================
-    # Set-CMASDeviceVariable
+    # Set-CM7DeviceVariable
     # ========================================================================
-    'Set-CMASDeviceVariable' = @{
+    'Set-CM7DeviceVariable' = @{
         ByDeviceName = @{
             DeviceName = "TEST-DEVICE-001"
             VariableName = "TestVar_Set"  # Will be made unique with timestamp in tests
@@ -2589,13 +2589,13 @@ function Test-HasTestData {
 # Keep old variable names for backward compatibility with existing tests
 # Remove this section once all tests are migrated to use $script:TestData
 
-$script:TestSiteServer = $script:CMASConnection.SiteServer
-$script:TestCredential = $script:CMASConnection.Credential
-$script:TestSkipCertificateCheck = $script:CMASConnection.SkipCertificateCheck
+$script:TestSiteServer = $script:CM7Connection.SiteServer
+$script:TestCredential = $script:CM7Connection.Credential
+$script:TestSkipCertificateCheck = $script:CM7Connection.SkipCertificateCheck
 
-$script:TestDeviceName = $script:TestData['Get-CMASDevice'].ByName.Name
-$script:TestDeviceResourceID = $script:TestData['Get-CMASDevice'].ByResourceId.ResourceId
-$script:TestNonExistentDeviceName = $script:TestData['Get-CMASDevice'].NonExistent.Name
+$script:TestDeviceName = $script:TestData['Get-CM7Device'].ByName.Name
+$script:TestDeviceResourceID = $script:TestData['Get-CM7Device'].ByResourceId.ResourceId
+$script:TestNonExistentDeviceName = $script:TestData['Get-CM7Device'].NonExistent.Name
 
 $script:TestCollectionID = $script:TestData['Get-CM7Collection'].ByCollectionID.CollectionID
 $script:TestCollectionName = $script:TestData['Get-CM7Collection'].ByName.Name
