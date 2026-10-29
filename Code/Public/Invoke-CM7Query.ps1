@@ -1,4 +1,4 @@
-﻿function Invoke-CM7Query {
+function Invoke-CM7Query {
     <#
         .SYNOPSIS
             Runs a saved Configuration Manager query using CIM.

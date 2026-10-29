@@ -217,6 +217,9 @@ function Get-CM7ScriptExecutionStatus {
                     $statusQuery = "SELECT * FROM SMS_ScriptsExecutionStatus WHERE ClientOperationId = $($ts.ClientOperationId)"
                     Write-Verbose "Querying per-device results: $statusQuery"
                     $ClientStatus = Get-CimInstance @cimParams -Query $statusQuery
+                    $ClientStatus = foreach ($client in $ClientStatus) {
+                        Get-CimInstance -CimSession $script:CMConnection.CimSession -InputObject $client -ErrorAction Stop
+                    }
 
                     $Results = @()
                     if ($ts.CompletedClients -eq $ts.TotalClients) {
@@ -227,6 +230,8 @@ function Get-CM7ScriptExecutionStatus {
                     }
 
                     foreach ($c in $ClientStatus) {
+                        # we need to get first the full script output and then attempt to parse it as JSON
+
                         $ScriptOutput = $c.ScriptOutput
                         try {
                             $ScriptOutput = $ScriptOutput -replace '\\r\\n', [System.Environment]::NewLine

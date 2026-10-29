@@ -82,3 +82,4 @@
 0.1.78 | add parameter AddToTrustedHosts to Connect-CM7 | 2026-07-08 | Josua Burkard
 0.1.79 | Get-CM7SoftwareUpdateSyncStatus | 2026-07-08 | Josua Burkard
 0.1.80 | Disconnect-CM7, Save-CM7SoftwareUpdate, Get-CM7SoftwareUpdate | 2026-07-24 | Josua Burkard
+0.1.82 | Get-CM7ScriptExecutionStatus returns full script output | 2026-10-29 | Josua Burkard
