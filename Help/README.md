@@ -41,6 +41,7 @@ This documentation provides details on the functions available in the Public Pow
 | [Get-CM7UserCollectionDirectMembershipRule](./Get-CM7UserCollectionDirectMembershipRule.md) | Retrieves direct membership information for a MECM user collection using CIM. |
 | [Invoke-CM7ClientNotification](./Invoke-CM7ClientNotification.md) | Sends a client notification action to target devices or a collection using CIM. |
 | [Invoke-CM7CollectionUpdate](./Invoke-CM7CollectionUpdate.md) | Triggers a collection membership evaluation (refresh) on a MECM collection using CIM. |
+| [Invoke-CM7Query](./Invoke-CM7Query.md) | Runs a saved Configuration Manager query using CIM. |
 | [Invoke-CM7Script](./Invoke-CM7Script.md) | Invokes (runs) a Configuration Manager script on target devices or a collection using CIM. |
 | [Move-CM7Object](./Move-CM7Object.md) | Moves one or more MECM objects to a specified folder using CIM. |
 | [New-CM7Application](./New-CM7Application.md) | Creates a new application in MECM using CIM. |
